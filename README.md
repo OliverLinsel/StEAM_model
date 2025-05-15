@@ -19,3 +19,6 @@ Installation:
 7. The subset_countries.csv defines the regional aggregation
 8. In the TSAM Tool the time aggregation can be defined
 9. Execute the project in SpineToolbox
+
+This model has been built in cooperation between the chair of energy systems and energy economics from the Ruhr-University Bochum and the chair of energy economics from the University Duisburg-Essen.
+This project was supported by the German Federal Ministry of Economic Affairs and Climate Action, research grant number 03El1043A.
