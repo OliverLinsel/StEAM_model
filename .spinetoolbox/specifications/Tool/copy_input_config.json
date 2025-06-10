@@ -1,0 +1,13 @@
+{
+    "name": "copy_input_config",
+    "tooltype": "python",
+    "includes": [
+        "copy_files_script.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

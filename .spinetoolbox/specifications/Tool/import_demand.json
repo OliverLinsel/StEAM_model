@@ -1,0 +1,13 @@
+{
+    "name": "Import_Demand",
+    "tooltype": "python",
+    "includes": [
+        "Import_Demand.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

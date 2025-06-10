@@ -1,0 +1,13 @@
+{
+    "name": "WACC_tool",
+    "tooltype": "python",
+    "includes": [
+        "WACC.py"
+    ],
+    "description": "WACC_tool",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

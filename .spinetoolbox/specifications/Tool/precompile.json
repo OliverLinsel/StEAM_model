@@ -1,0 +1,13 @@
+{
+    "name": "Precompile",
+    "tooltype": "executable",
+    "includes": [
+        "Batch.bat"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PrecompileScript"
+}

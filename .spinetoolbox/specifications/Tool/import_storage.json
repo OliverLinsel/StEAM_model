@@ -1,0 +1,13 @@
+{
+    "name": "import_storage",
+    "tooltype": "python",
+    "includes": [
+        "Import_storages.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

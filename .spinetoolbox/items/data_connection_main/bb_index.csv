@@ -1,0 +1,3 @@
+Type;Symbol;Rng;Rdim;Cdim;Dim;Values
+par;steam_model_duration;model_date!E5;;;0;
+par;steam_model_start;model_date!E6;;;0;

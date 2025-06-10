@@ -1,0 +1,121 @@
+{
+    "name": "BB_Importer_Demand_config",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "data": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "RelationshipClass",
+                                "position": "hidden",
+                                "value": "grid__node",
+                                "skip_columns": [
+                                    0,
+                                    1,
+                                    2,
+                                    3
+                                ]
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": "hidden",
+                                "value": "grid"
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": "hidden",
+                                "value": "node"
+                            },
+                            {
+                                "map_type": "Relationship",
+                                "position": "hidden",
+                                "value": "relationship"
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 0,
+                                "import_objects": true
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 1,
+                                "import_objects": true
+                            },
+                            {
+                                "map_type": "RelationshipMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "influx"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 3
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 4
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": 5
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "data"
+        ],
+        "table_options": {
+            "data": {
+                "delimiter": ",",
+                "encoding": "ascii",
+                "has_header": true,
+                "quotechar": "\"",
+                "skip": 0,
+                "header": true
+            }
+        },
+        "table_types": {
+            "data": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "float"
+            }
+        },
+        "table_default_column_type": {},
+        "table_row_types": {},
+        "source_type": "CSVConnector"
+    },
+    "description": ""
+}

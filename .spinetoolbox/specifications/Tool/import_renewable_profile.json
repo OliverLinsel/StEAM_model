@@ -1,0 +1,13 @@
+{
+    "name": "Import_Renewable_Profile",
+    "tooltype": "python",
+    "includes": [
+        "Importer_renewable_profile.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

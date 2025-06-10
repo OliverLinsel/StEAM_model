@@ -1,0 +1,51 @@
+Parameter;Object;Value;Alternative;Unit
+fuel_prices;Biomass;20;Base;EUR/MWh
+fuel_prices;Nuclear;3;Base;EUR/MWh
+fuel_prices;Coal;7;Base;EUR/MWh
+fuel_prices;Gas;18;Base;EUR/MWh
+fuel_prices;Oil;40;Base;EUR/MWh
+fuel_prices;Other;10;Base;EUR/MWh
+fuel_prices;Geothermal;0;Base;EUR/MWh
+fuel_prices;Hydro;0;Base;EUR/MWh
+fuel_prices;Solar;0;Base;EUR/MWh
+fuel_prices;Wind;0;Base;EUR/MWh
+subunit_size;every powerplant unit and investable connection (except hydro and storage);1000;Base;MW
+candidate_connections;Investable Connections;5000;Base;Number of Subunits
+connection_investment_cost;Investable Connections;75000000;Base;EUR/(yr*Subunit) hier wird unterstellt das HVDC Leitungen IMMER (Platzhalter) 100mikes lang sind und 1500$/MW*mile kosten vgl https://doi.org/10.1016/j.isci.2021.103495
+connection_investment_lifetime;Investable Connections;7D;Base;a
+candidate_units;Investable Units;5000;Base;Number of Subunits
+unit_investment_cost;Investable Units;800000000;Base;EUR/(a*Subunit)
+eps;All;0.0001;Base;Small number to immitate near zero (because of Backbone)
+RFNBO_option;All;No_reg;Base;Choose from Vanilla, No_reg, Island_Grids, Defossilized_Grid_prerun, Defossilized_Grid, Add_and_Corr and All _at_once
+Cap_Lim_option;All;Vanilla;Base;Choose from Vanilla, Base_case, Cap_lim, Kickstart
+ts_cf_fix;All;specific_scaling;Base;Choose from specific_scaling, flat_scaling
+hydro_noStorage;Hydro;yes;Base;Choose yes or no
+system_integration_factor;All;1.4;Base;VRE fom costs multiplier to represent system integration costs (grid expansion, stability reserve) (angelehnt an Ueckerdt et al)
+cross_border_transmission_cap;Investable electricity connections;5000;Base;Maximum investable cross border electricity transmission capacity [MW]
+emission_factor;Coal;0.35;Base;tCO2/MWh
+emission_factor;Gas;0.2;Base;tCO2/MWh
+emission_factor;Oil;0.263;Base;tCO2/MWh
+emission_factor;Biomass;0;Base;tCO2/MWh
+emission_tax;fuelGroup;30;Base;EUR/tCO2
+emission_tax;fuelGroup;22;APS_2020;EUR/tCO2
+emission_tax;fuelGroup;70;APS_2025;EUR/tCO2
+emission_tax;fuelGroup;100;APS_2030;EUR/tCO2
+emission_tax;fuelGroup;150;APS_2040;EUR/tCO2
+emission_tax;fuelGroup;180;APS_2045;EUR/tCO2
+emission_tax;fuelGroup;200;APS_2050;EUR/tCO2
+emission_tax;fuelGroup;240;APS_2060;EUR/tCO2
+emission_tax;fuelGroup;22;HRU_2020;EUR/tCO2
+emission_tax;fuelGroup;70;HRU_2025;EUR/tCO2
+emission_tax;fuelGroup;100;HRU_2030;EUR/tCO2
+emission_tax;fuelGroup;150;HRU_2040;EUR/tCO2
+emission_tax;fuelGroup;180;HRU_2045;EUR/tCO2
+emission_tax;fuelGroup;200;HRU_2050;EUR/tCO2
+emission_tax;fuelGroup;240;HRU_2060;EUR/tCO2
+emission_tax;fuelGroup;22;RES_2020;EUR/tCO2
+emission_tax;fuelGroup;70;RES_2025;EUR/tCO2
+emission_tax;fuelGroup;100;RES_2030;EUR/tCO2
+emission_tax;fuelGroup;150;RES_2040;EUR/tCO2
+emission_tax;fuelGroup;180;RES_2045;EUR/tCO2
+emission_tax;fuelGroup;200;RES_2050;EUR/tCO2
+emission_tax;fuelGroup;240;RES_2060;EUR/tCO2
+capital_costs;WACC_year;2024;Base;-

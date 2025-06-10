@@ -1,0 +1,13 @@
+{
+    "name": "LoadTempalte",
+    "tooltype": "julia",
+    "includes": [
+        "Load_Template.jl"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

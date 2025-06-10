@@ -1,0 +1,13 @@
+{
+    "name": "Results_visualization",
+    "tooltype": "python",
+    "includes": [
+        "BB_visualization.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

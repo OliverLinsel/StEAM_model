@@ -1,0 +1,13 @@
+{
+    "name": "Import_Hydropower_tool",
+    "tooltype": "python",
+    "includes": [
+        "Import_Hydropower.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

@@ -1,0 +1,142 @@
+{
+    "name": "Renewable_profiles",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "data": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "unit"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "header",
+                                "filter_re": "^((?!Wind\\\\|Onshore\\\\|SA-BRA-J).)*$"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "unit_availability_factor"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "Base"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "time_series"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "data"
+        ],
+        "table_options": {
+            "data": {
+                "encoding": "ascii",
+                "delimiter": ",",
+                "quotechar": "\"",
+                "skip": 0,
+                "has_header": true
+            }
+        },
+        "table_types": {
+            "data": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "float",
+                "11": "float",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "float",
+                "18": "float",
+                "19": "float",
+                "20": "float",
+                "21": "float",
+                "22": "float",
+                "23": "float",
+                "24": "float",
+                "25": "float",
+                "26": "float",
+                "27": "float",
+                "28": "float",
+                "29": "float",
+                "30": "float",
+                "31": "float",
+                "32": "float",
+                "33": "float",
+                "34": "float",
+                "35": "float",
+                "36": "float",
+                "37": "float",
+                "38": "float",
+                "39": "float",
+                "40": "float",
+                "41": "float",
+                "42": "float",
+                "43": "float",
+                "44": "float",
+                "45": "float",
+                "46": "float",
+                "47": "float",
+                "48": "float",
+                "49": "float",
+                "50": "float",
+                "51": "float",
+                "52": "float",
+                "53": "float",
+                "54": "float",
+                "55": "float",
+                "56": "float",
+                "57": "float",
+                "58": "float",
+                "59": "float",
+                "60": "float"
+            }
+        },
+        "table_default_column_type": {},
+        "table_row_types": {},
+        "source_type": "CSVConnector"
+    },
+    "description": ""
+}

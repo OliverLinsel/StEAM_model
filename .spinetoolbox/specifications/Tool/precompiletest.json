@@ -1,0 +1,15 @@
+{
+    "name": "PreCompileTest",
+    "tooltype": "julia",
+    "includes": [
+        "PreCompJulia.jl"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [
+        "--trace-compile=file.jl"
+    ],
+    "includes_main_path": "../../.."
+}

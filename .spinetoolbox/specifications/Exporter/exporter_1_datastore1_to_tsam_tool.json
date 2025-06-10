@@ -1,0 +1,146 @@
+{
+    "item_type": "Exporter",
+    "output_format": "csv",
+    "name": "exporter 1_DataStore1_to_tsam_tool",
+    "description": "",
+    "mappings": {
+        "Mapping 1": {
+            "type": "object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": 1,
+                    "filter_re": "^node"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": "table_name",
+                    "filter_re": "^demand"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Object",
+                    "position": -3,
+                    "filter_re": "^(?!Hydro\\|)"
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden",
+                    "filter_re": "^time_series"
+                },
+                {
+                    "map_type": "IndexName",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValueIndex",
+                    "position": 0
+                },
+                {
+                    "map_type": "ExpandedValue",
+                    "position": 5
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "one_or_none",
+            "use_fixed_table_name": false
+        },
+        "Mapping 2": {
+            "type": "object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": 1,
+                    "filter_re": "^unit"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": "table_name",
+                    "filter_re": "^unit_availability"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Object",
+                    "position": -3
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden",
+                    "filter_re": "^time_series"
+                },
+                {
+                    "map_type": "IndexName",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValueIndex",
+                    "position": 0
+                },
+                {
+                    "map_type": "ExpandedValue",
+                    "position": 5
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "one_or_none",
+            "use_fixed_table_name": false
+        },
+        "Mapping 3": {
+            "type": "relationships",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "nodes_group"
+                },
+                {
+                    "map_type": "RelationshipClass",
+                    "position": 0
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": 1,
+                    "filter_re": "^node"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 3
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "one_or_none",
+            "use_fixed_table_name": true
+        }
+    }
+}

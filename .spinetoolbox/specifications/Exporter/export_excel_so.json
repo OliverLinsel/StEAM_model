@@ -1,0 +1,71 @@
+{
+    "item_type": "Exporter",
+    "output_format": "csv",
+    "name": "export_excel_SO",
+    "description": "",
+    "mappings": {
+        "report__model": {
+            "type": "relationship_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "RelationshipClass",
+                    "position": 0,
+                    "filter_re": "^report__model$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": 1
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 3
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 4
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "IndexName",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValueIndex",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ExpandedValue",
+                    "position": 5
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        }
+    }
+}

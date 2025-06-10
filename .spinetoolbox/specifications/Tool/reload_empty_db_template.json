@@ -1,0 +1,13 @@
+{
+    "name": "reload_empty_db_template",
+    "tooltype": "julia",
+    "includes": [
+        "reload_empty_db_template.jl"
+    ],
+    "description": "reload_empty_db_template",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "."
+}

@@ -384,7 +384,7 @@ if terminals.empty == True:
 else:
     q = 0
 
-if len(terminals.index) <= 1:
+if len(terminals["terminal_name"].unique()) <= 1:
     q = 1
     print("not enough nodes with terminals selected" + "\n")
 else:
@@ -416,6 +416,7 @@ h2_pipelines['reg_fac'] = (h2_pipelines['reg_fac'] + 1) / 2
 h2_pipelines['connection_investment_cost_BB'] = h2_pipelines['connection_investment_cost_BB'] + (h2_pipelines['connection_fom_cost_MW_complete'] * ((h2_pipelines['reg_fac1'] + h2_pipelines['reg_fac2']) / 2) / h2_pipelines['annuity_factor'])    #add fomCosts to invCosts based on average reg_fac and average WACC of origin and destination region
 
 ############### Connect terminals to nodes ###############
+con_line = pd.DataFrame() #empty dataframe for the connection lines
 
 con_line3 = (terminals[
     ["terminal_name", "Regions", "alternative", "commodity", "node", "geometry", "WACC_conversion",'WACC_shipping', "terminal_connection_invest", "terminal_connection_fom_rel", "reg_fac", "terminal_connection_eff", "liquefaction_cost", "liquefaction_fom_rel","transf_lifetime", "transf_efficiency_substantial", "transf_efficiency_energetic", "regasification_cost", "regasification_fom_rel", "retransf_invest_cost", "retransf_lifetime", "retransf_efficiency_substantial", "retransf_efficiency_energetic"]]
@@ -506,6 +507,8 @@ def calculate_searoute(origin, destination):
     sr_geo = LineString(route["geometry"]["coordinates"])
     return route["properties"]["duration_hours"], route["properties"]["length"], route["geometry"]["coordinates"], sr_geo
 
+#%%
+
 if q == 0:
     names = (terminals.terminal_name.to_list())
     names = set(names)
@@ -537,6 +540,8 @@ if q == 0:
 
     df_sr = gpd.GeoDataFrame(df_sr, geometry=geo_list, crs="EPSG:4326")
     df_sr["connection_type"] = "connection_type_normal"
+
+#%%
 
 print("Succesfully built searoutes" + "\n")
 
@@ -707,49 +712,58 @@ print("Start preparing BB datasets" + "\n")
 terminals_og = terminals.copy()
 con_line_og = con_line.copy()
 # %%
-terminals = terminals_og
-con_line = con_line_og
+# terminals = terminals_og
+# con_line = con_line_og
 ## rework for shipping update
 ## moving regasification, liquefaction and cracker, haber-bosch to distinct units instead of aggregated to pipeline-import-export-transformation-transportation connection
 # terminals prep
-terminals['commodity']          = terminals['commodity'].str.replace('h2','h2_l')
+# terminals['commodity']          = terminals['commodity'].str.replace('h2','h2liq')
 terminals['name']               = terminals['terminal_name'] + '|' + terminals['commodity']
 terminals['name']               = terminals['name'].str.replace('terminal_','Terminal_')
 terminals['terminal_name']      = terminals['terminal_name'].str.replace('terminal_','Terminal_')
 terminals['con_terminal_name']  = 'ConTerminal|' + terminals['Regions'] + '|' + terminals['terminal_name'] + '|h2'
 
-terminals.loc[terminals['commodity'] == 'h2_l','unit_name_trans']   = 'Liquefaction|'   + terminals[terminals['commodity'] == 'h2_l']['Regions']    + '|' + terminals[terminals['commodity'] == 'h2_l']['terminal_name']
-terminals.loc[terminals['commodity'] == 'h2_l','unit_name_retrans'] = 'Regasification|' + terminals[terminals['commodity'] == 'h2_l']['Regions']    + '|' + terminals[terminals['commodity'] == 'h2_l']['terminal_name']
+terminals.loc[terminals['commodity'] == 'h2liq','unit_name_trans']   = 'Liquefaction|'   + terminals[terminals['commodity'] == 'h2liq']['Regions']    + '|' + terminals[terminals['commodity'] == 'h2liq']['terminal_name']
+terminals.loc[terminals['commodity'] == 'h2liq','unit_name_retrans'] = 'Regasification|' + terminals[terminals['commodity'] == 'h2liq']['Regions']    + '|' + terminals[terminals['commodity'] == 'h2liq']['terminal_name']
 terminals.loc[terminals['commodity'] == 'nh3','unit_name_trans']    = 'HaberBosch|'     + terminals[terminals['commodity'] == 'nh3']['Regions']     + '|' + terminals[terminals['commodity'] == 'nh3']['terminal_name']
 terminals.loc[terminals['commodity'] == 'nh3','unit_name_retrans']  = 'Cracker|'        + terminals[terminals['commodity'] == 'nh3']['Regions']     + '|' + terminals[terminals['commodity'] == 'nh3']['terminal_name']
 # con_line prep
-con_line['commodity']           = con_line['commodity'].str.replace('h2','h2_l')
-con_line['name']                = con_line['terminal_name'] + '|' + con_line['commodity']
-con_line['name']                = con_line['name'].str.replace('terminal_','Terminal_')
-con_line['terminal_name']       = con_line['terminal_name'].str.replace('terminal_','Terminal_')
-con_line['con_terminal_name']   = 'ConTerminal|'+ con_line['Regions'] + '|' + con_line['terminal_name'] + '|h2'
-# reduction from 56 entries for direct connection from country node to h2l terminal and nh3 terminal to 28 entries for connection from country node to h2(g) terminal
-con_line                        = con_line[['terminal_name','Regions','alternative','WACC_pipeline_regional','WACC_conline_local','terminal_connection_invest','reg_fac','terminal_connection_eff','connection_investment_lifetime','geometry','length','node1','node2','connection_capacity','connection_flow_cost','fix_ratio_out_in_connection_flow_origin','fix_ratio_out_in_connection_flow_destination','fix_ratio_out_in_connection_flow', 'connection_investment_cost_origin_BB','annuity_factor_origin','connection_investment_cost_origin','connection_investment_cost_destination_BB','annuity_factor_destination', 'connection_investment_cost_destination','connection_investment_cost_BB', 'annuity_factor', 'candidate_connections','con_terminal_name','connection_fom_cost']].drop_duplicates().reset_index(drop=True)    #newly added fom costs added but can not be used on connections in BB (only for units) (based only on pipelines, not liquefaction or regasification!)
 
-#total_shipping.drop(['duration_hours','geometry','connection_type','latitude','longitude','alternative','ship_lifetime','connection_investment_lifetime','connection_investment_variable_type','candidate_connections','connection_delay','region_org','region_dest','connection_capacity','ship_fuel_consumption','connection_flow_cost','name'],axis=1)
-total_shipping['commodity']         = total_shipping['commodity'].str.replace('h2','h2_l')
-total_shipping['origin']            = 'Terminal_' + total_shipping['origin']        .str.split('_', expand=True)[2] + '|' + total_shipping['commodity']
-total_shipping['destination']       = 'Terminal_' + total_shipping['destination']   .str.split('_', expand=True)[2] + '|' + total_shipping['commodity']
+if q == 0:
+    # con_line['commodity']           = con_line['commodity'].str.replace('h2','h2_l')
+    con_line['name']                = con_line['terminal_name'] + '|' + con_line['commodity']
+    con_line['name']                = con_line['name'].str.replace('terminal_','Terminal_')
+    con_line['terminal_name']       = con_line['terminal_name'].str.replace('terminal_','Terminal_')
+    con_line['con_terminal_name']   = 'ConTerminal|'+ con_line['Regions'] + '|' + con_line['terminal_name'] + '|h2'
+    # reduction from 56 entries for direct connection from country node to h2l terminal and nh3 terminal to 28 entries for connection from country node to h2(g) terminal
+    con_line                        = con_line[['terminal_name','Regions','alternative','WACC_pipeline_regional','WACC_conline_local','terminal_connection_invest','reg_fac','terminal_connection_eff','connection_investment_lifetime','geometry','length','node1','node2','connection_capacity','connection_flow_cost','fix_ratio_out_in_connection_flow_origin','fix_ratio_out_in_connection_flow_destination','fix_ratio_out_in_connection_flow', 'connection_investment_cost_origin_BB','annuity_factor_origin','connection_investment_cost_origin','connection_investment_cost_destination_BB','annuity_factor_destination', 'connection_investment_cost_destination','connection_investment_cost_BB', 'annuity_factor', 'candidate_connections','con_terminal_name','connection_fom_cost']].drop_duplicates().reset_index(drop=True)    #newly added fom costs added but can not be used on connections in BB (only for units) (based only on pipelines, not liquefaction or regasification!)
+
+    #total_shipping.drop(['duration_hours','geometry','connection_type','latitude','longitude','alternative','ship_lifetime','connection_investment_lifetime','connection_investment_variable_type','candidate_connections','connection_delay','region_org','region_dest','connection_capacity','ship_fuel_consumption','connection_flow_cost','name'],axis=1)
+    # total_shipping['commodity']         = total_shipping['commodity'].str.replace('h2','h2_l')
+    total_shipping['origin']            = 'Terminal_' + total_shipping['origin']        .str.split('_', expand=True)[2] + '|' + total_shipping['commodity']
+    total_shipping['destination']       = 'Terminal_' + total_shipping['destination']   .str.split('_', expand=True)[2] + '|' + total_shipping['commodity']
 # %% ## pipeline loss calculation
 # %%
 from math import log
 # configurable parameters for logarithmic pipeline loss function, fitted for average pipeline loss of about 2.3%
 pipeline_loss_fixMin    = 0.5       # percent
 pipeline_loss_log       = 100       # log base
-loss_calc = pd.concat([             # concat all pipelines
-    con_line[['length','node1','node2']].assign(**{'pipelineOrConline':'conline'}), 
-    h2_pipelines[['length','h2_node1','h2_node2']].rename(columns={'h2_node1':'node1','h2_node2':'node2'}).assign(**{'pipelineOrConline':'pipeline'})
-    ],ignore_index=True)
+# concat all pipelines and con_lines if q == 0, otherwise only pipelines
+if q == 0:
+    loss_calc = pd.concat([
+        con_line[['length','node1','node2']].assign(**{'pipelineOrConline':'conline'}),
+        h2_pipelines[['length','h2_node1','h2_node2']].rename(columns={'h2_node1':'node1','h2_node2':'node2'}).assign(**{'pipelineOrConline':'pipeline'})
+    ], ignore_index=True)
+else:
+    loss_calc = h2_pipelines[['length','h2_node1','h2_node2']].rename(columns={'h2_node1':'node1','h2_node2':'node2'}).assign(**{'pipelineOrConline':'pipeline'})
 loss_calc['log_loss'] = (1/100) * (pipeline_loss_fixMin +                                       # fix loss
                          loss_calc['length'].apply(lambda x: log(x)/log(pipeline_loss_log)) *   # length based logarithmic loss
                          (loss_calc['length'] / loss_calc['length'].mean()))                    # weighted by average
 loss_calc['fix_ratio_out_in_log'] = 1 - loss_calc['log_loss']
-con_line        = con_line      .merge(loss_calc[['length','fix_ratio_out_in_log']].drop_duplicates())
+
+if q == 0:
+    con_line        = con_line      .merge(loss_calc[['length','fix_ratio_out_in_log']].drop_duplicates())
+
 h2_pipelines    = h2_pipelines  .merge(loss_calc[['length','fix_ratio_out_in_log']].drop_duplicates())
 loss_calc
 ##
@@ -833,26 +847,26 @@ if q == 0:
     bb_gnn_ships_variableTransCost_concat = pd.DataFrame({"Relationship class names":"grid__node__node", "Object class names 1":"grid", "Object class names 2":"node", "Object class names 3":"node", "Object names 1":'derivatives', "Object names 2":total_shipping.origin, "Object names 3":total_shipping.destination, "Parameter names":"variableTransCost", "Alternative names":total_shipping.alternative, "Parameter values":total_shipping.connection_flow_cost})
     bb_gnn_ships_availability_concat = pd.DataFrame({"Relationship class names":"grid__node__node", "Object class names 1":"grid", "Object class names 2":"node", "Object class names 3":"node", "Object names 1":'derivatives', "Object names 2":total_shipping.origin, "Object names 3":total_shipping.destination, "Parameter names":"availability", "Alternative names":total_shipping.alternative, "Parameter values":1})
 
-bb_gnn_conlines_complete_concat = pd.concat([           #conlines
-    bb_gnn_con_lines_transferCap_concat,
-    bb_gnn_con_lines_transferLoss_concat, 
-    bb_gnn_con_lines_transferCapInvLimit_concat, 
-    bb_gnn_con_lines_unitSize_concat,           
-    bb_gnn_con_lines_invCost_concat,            
-    bb_gnn_con_lines_annuityFactor_concat,      
-    # bb_gnn_con_lines_variableTransCost_concat,        #no need for placeholder variableTransCost
-    bb_gnn_con_lines_availability_concat
-    ], ignore_index=True)
-bb_gnn_ships_complete_concat = pd.concat([              #ships
-    bb_gnn_ships_transferCap_concat,
-    bb_gnn_ships_transferLoss_concat, 
-    bb_gnn_ships_transferCapInvLimit_concat, 
-    bb_gnn_ships_unitSize_concat, 
-    bb_gnn_ships_invCost_concat, 
-    bb_gnn_ships_annuityFactor_concat,          
-    # bb_gnn_ships_variableTransCost_concat,            #no need for placeholder variableTransCost
-    bb_gnn_ships_availability_concat
-    ], ignore_index=True)
+    bb_gnn_conlines_complete_concat = pd.concat([           #conlines
+        bb_gnn_con_lines_transferCap_concat,
+        bb_gnn_con_lines_transferLoss_concat, 
+        bb_gnn_con_lines_transferCapInvLimit_concat, 
+        bb_gnn_con_lines_unitSize_concat,           
+        bb_gnn_con_lines_invCost_concat,            
+        bb_gnn_con_lines_annuityFactor_concat,      
+        # bb_gnn_con_lines_variableTransCost_concat,        #no need for placeholder variableTransCost
+        bb_gnn_con_lines_availability_concat
+        ], ignore_index=True)
+    bb_gnn_ships_complete_concat = pd.concat([              #ships
+        bb_gnn_ships_transferCap_concat,
+        bb_gnn_ships_transferLoss_concat, 
+        bb_gnn_ships_transferCapInvLimit_concat, 
+        bb_gnn_ships_unitSize_concat, 
+        bb_gnn_ships_invCost_concat, 
+        bb_gnn_ships_annuityFactor_concat,          
+        # bb_gnn_ships_variableTransCost_concat,            #no need for placeholder variableTransCost
+        bb_gnn_ships_availability_concat
+        ], ignore_index=True)
 
 if q == 0:
     bb_3D_concat = pd.concat([
@@ -999,6 +1013,7 @@ bb_4D_concat = pd.concat([bb_dim_4_unitSize_import_o,
                           bb_dim_4_conversionCoeff_import_i, 
                           bb_dim_4_conversionCoeff_export_i1, 
                           bb_dim_4_conversionCoeff_export_i2], ignore_index=True)
+bb_4D_concat = bb_4D_concat.drop_duplicates(subset=['Relationship class names', 'Object class names 1', 'Object class names 2', 'Object class names 3', 'Object class names 4', 'Object names 1', 'Object names 2', 'Object names 3', 'Object names 4', 'Parameter names', 'Alternative names'], keep='first').reset_index(drop=True)
 
 ############### Export the finished transport system ###############
 
@@ -1102,19 +1117,20 @@ new_nodes = (
         how='left')
 )
 
-# add the shipping lines in form of multiple points instead of one long linestring for further processing in Backbone 
-shipping_coords = total_shipping[['origin','destination','geometry']].copy()
-shipping_coords['origin___destination'] = shipping_coords['origin'] + '___' + shipping_coords['destination']
-shipping_coords = (shipping_coords.set_index('origin___destination').geometry
-        .apply(lambda x: list(x.coords))
-        .explode(ignore_index=False)
-        .apply(pd.Series)
-        .reset_index()
-        .rename(columns={0: 'y_Latitude', 1: 'x_Longitude'})).merge(shipping_coords[['origin___destination', 'origin','destination']], on='origin___destination', how='left')
-index_inside_shipping_routes = pd.Series()
-for number_of_points in shipping_coords.groupby('origin___destination').count().reset_index()['origin']:
-    index_inside_shipping_routes = pd.concat([index_inside_shipping_routes, pd.Series(range(number_of_points))], ignore_index=True, axis=0)
-shipping_coords = pd.concat([shipping_coords, index_inside_shipping_routes], ignore_index=True, axis=1)
+if q == 0:
+    # add the shipping lines in form of multiple points instead of one long linestring for further processing in Backbone 
+    shipping_coords = total_shipping[['origin','destination','geometry']].copy()
+    shipping_coords['origin___destination'] = shipping_coords['origin'] + '___' + shipping_coords['destination']
+    shipping_coords = (shipping_coords.set_index('origin___destination').geometry
+            .apply(lambda x: list(x.coords))
+            .explode(ignore_index=False)
+            .apply(pd.Series)
+            .reset_index()
+            .rename(columns={0: 'y_Latitude', 1: 'x_Longitude'})).merge(shipping_coords[['origin___destination', 'origin','destination']], on='origin___destination', how='left')
+    index_inside_shipping_routes = pd.Series()
+    for number_of_points in shipping_coords.groupby('origin___destination').count().reset_index()['origin']:
+        index_inside_shipping_routes = pd.concat([index_inside_shipping_routes, pd.Series(range(number_of_points))], ignore_index=True, axis=0)
+    shipping_coords = pd.concat([shipping_coords, index_inside_shipping_routes], ignore_index=True, axis=1)
 
 ############### Export dataframes for visualisation tool ###############
 
@@ -1123,8 +1139,9 @@ with pd.ExcelWriter(os.path.join(visualisation_output, "transport_visualisation.
     new_nodes.to_excel(writer, sheet_name="nodes", index=False)
     terminals.to_excel(writer, sheet_name="terminals", index=False)
     h2_pipelines.to_excel(writer, sheet_name="pipelines", index=False)
-    con_line.to_excel(writer, sheet_name="terminal_connections", index=False)
-    total_shipping.astype(str).to_excel(writer, sheet_name="shipping", index=False)
+    if q == 0:
+        con_line.to_excel(writer, sheet_name="terminal_connections", index=False)
+        total_shipping.astype(str).to_excel(writer, sheet_name="shipping", index=False)
 
 print("Succesfully exported data for visualisation tool to " + str(os.path.join(visualisation_output)) + "\n")
 

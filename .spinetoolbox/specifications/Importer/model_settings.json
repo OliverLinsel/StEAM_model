@@ -1,0 +1,215 @@
+{
+    "name": "model_settings",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "Input Table": [
+                {
+                    "Generate model": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0,
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Generate model relationships": {
+                        "mapping": [
+                            {
+                                "map_type": "RelationshipClass",
+                                "position": 7,
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": 8
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": 10
+                            },
+                            {
+                                "map_type": "Relationship",
+                                "position": "hidden",
+                                "value": "relationship"
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 9
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 11
+                            },
+                            {
+                                "map_type": "RelationshipMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Set time frame": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0,
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "20230728_13_30"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 3,
+                                "filter_re": "^(?!\\s*$).+"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Activate model relationship": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0,
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "20230728_13_30"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 5,
+                                "filter_re": "^(?!\\s*$).+"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Set temporal duration": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0,
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "20230728_13_30"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 6,
+                                "filter_re": "^(?!\\s*$).+"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "Input Table"
+        ],
+        "table_options": {
+            "Input Table": {
+                "row": 0
+            }
+        },
+        "table_types": {
+            "Input Table": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "datetime",
+                "4": "string",
+                "5": "boolean",
+                "6": "duration",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string",
+                "15": "string",
+                "16": "string",
+                "17": "string",
+                "18": "string",
+                "19": "string",
+                "20": "string",
+                "21": "string",
+                "22": "string"
+            }
+        },
+        "table_default_column_type": {},
+        "table_row_types": {},
+        "source_type": "ExcelConnector"
+    },
+    "description": "model_settings"
+}

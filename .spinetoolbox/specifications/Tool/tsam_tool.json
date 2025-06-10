@@ -1,0 +1,13 @@
+{
+    "name": "tsam_tool",
+    "tooltype": "python",
+    "includes": [
+        "tsam_tool.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

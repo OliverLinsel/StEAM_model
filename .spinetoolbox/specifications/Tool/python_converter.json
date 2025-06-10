@@ -1,0 +1,13 @@
+{
+    "name": "import_plexos_powerplants_tool",
+    "tooltype": "python",
+    "includes": [
+        "StEAM_powerplants.py"
+    ],
+    "description": "converts xlsx to csv",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

@@ -1,0 +1,14 @@
+{
+    "name": "BB_importer_Renew_profile_config_xlsx",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {},
+        "selected_tables": [],
+        "table_options": {},
+        "table_types": {},
+        "table_default_column_type": {},
+        "table_row_types": {},
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

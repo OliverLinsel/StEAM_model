@@ -1,0 +1,2930 @@
+{
+    "project": {
+        "version": 11,
+        "description": "",
+        "settings": {
+            "enable_execute_all": true
+        },
+        "specifications": {
+            "Tool": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/python_converter.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/import_renewable_profile.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/converter_countries_and_connections.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/loadtempalte.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/runspineopt.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/precompile.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/precompiletest.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/import_storage.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/tsam_tool.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/import_hydropower_tool.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/csv_to_xlsx.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/run_spineopt_default.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/import_demand.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/reload_empty_db_template.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/transport_model_building.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/sector_coupling_tool.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/copy_input_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/20240108_backbone_tool_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/timeseriesagg.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/results_visualization.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/wacc_tool.json"
+                }
+            ],
+            "Importer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/importdemand.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/main_model_input.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_plexos_units.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/renewable_profiles.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_countries_and_connections.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_storage.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/importer_tsam_2.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/importer_hydropower_specs.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/importer_spec_connection_invest.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/transport_model_importer.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/model_settings.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/sector_coupling_importer.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_to_spinedb_importoriginial_bb_20231222.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_kt.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_demand_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_renew_profile_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_connections_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_storage_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_powerplants_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_main_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_hydro_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_transport_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/bb_importer_sector_coupling_config.json"
+                }
+            ],
+            "Exporter": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Exporter/exporter_1_datastore1_to_tsam_tool.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Exporter/exporttobb.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Exporter/export_excel_so.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Exporter/export_excel_bb.json"
+                }
+            ],
+            "Data Transformer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Data Transformer/tobackbonesets.json"
+                }
+            ]
+        },
+        "connections": [
+            {
+                "name": "from Data_connection_pp_transm to import_storage",
+                "from": [
+                    "Data_connection_pp_transm",
+                    "right"
+                ],
+                "to": [
+                    "import_storage",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Solar, Wind, Demand PLEXOS_Globiom to Import_Renewable_Profile",
+                "from": [
+                    "Solar, Wind, Demand PLEXOS_Globiom",
+                    "right"
+                ],
+                "to": [
+                    "Import_Renewable_Profile",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_pp_transm to Import_Connections",
+                "from": [
+                    "Data_connection_pp_transm",
+                    "right"
+                ],
+                "to": [
+                    "Import_Connections",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_pp_transm to Import_Hydro",
+                "from": [
+                    "Data_connection_pp_transm",
+                    "right"
+                ],
+                "to": [
+                    "Import_Hydro",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_hydro to Import_Hydro",
+                "from": [
+                    "Data_connection_hydro",
+                    "right"
+                ],
+                "to": [
+                    "Import_Hydro",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_hydro_profiles to Import_Hydro",
+                "from": [
+                    "Data_connection_hydro_profiles",
+                    "right"
+                ],
+                "to": [
+                    "Import_Hydro",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection Demand to Import_Demand",
+                "from": [
+                    "Data Connection Demand",
+                    "right"
+                ],
+                "to": [
+                    "Import_Demand",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection Main to CSV_to_XLSX",
+                "from": [
+                    "Data Connection Main",
+                    "right"
+                ],
+                "to": [
+                    "CSV_to_XLSX",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_transport to transport_model_buidling",
+                "from": [
+                    "Data_connection_transport",
+                    "right"
+                ],
+                "to": [
+                    "transport_model_buidling",
+                    "left"
+                ]
+            },
+            {
+                "name": "from CSV_to_XLSX to Data Connection MainOnly",
+                "from": [
+                    "CSV_to_XLSX",
+                    "right"
+                ],
+                "to": [
+                    "Data Connection MainOnly",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to Import_Demand",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "Import_Demand",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to Import_Renewable_Profile",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "Import_Renewable_Profile",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to Import_Connections",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "Import_Connections",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to import_storage",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "import_storage",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to import_powerplants",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "import_powerplants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to Import_Hydro",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "Import_Hydro",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to transport_model_buidling",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "transport_model_buidling",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_sector_coupling to sector_coupling",
+                "from": [
+                    "Data_connection_sector_coupling",
+                    "right"
+                ],
+                "to": [
+                    "sector_coupling",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to sector_coupling",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "sector_coupling",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_data_template to BB_data_merger",
+                "from": [
+                    "BB_data_template",
+                    "right"
+                ],
+                "to": [
+                    "BB_data_merger",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_data_merger to BB_Spine_DB_direct",
+                "from": [
+                    "BB_data_merger",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "left"
+                ],
+                "options": {
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": true,
+                        "relationship_class": true,
+                        "parameter_value_list": true,
+                        "list_value": true,
+                        "parameter_definition": true,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": true,
+                        "parameter_value": true,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": true,
+                        "feature": true,
+                        "tool": true,
+                        "tool_feature": true,
+                        "tool_feature_method": true,
+                        "metadata": true,
+                        "entity_metadata": true,
+                        "parameter_value_metadata": true
+                    }
+                }
+            },
+            {
+                "name": "from Import_Demand to TEMP_BB",
+                "from": [
+                    "Import_Demand",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Demand",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Demand",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Import_Renewable_Profile to TEMP_BB",
+                "from": [
+                    "Import_Renewable_Profile",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Renew_profile",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Renew_profile",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Connections",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Connections",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Import_Connections to TEMP_BB",
+                "from": [
+                    "Import_Connections",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from import_storage to TEMP_BB",
+                "from": [
+                    "import_storage",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Storage",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Storage",
+                    "left"
+                ]
+            },
+            {
+                "name": "from import_powerplants to TEMP_BB",
+                "from": [
+                    "import_powerplants",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Export_to_BB to copy_input",
+                "from": [
+                    "Export_to_BB",
+                    "right"
+                ],
+                "to": [
+                    "copy_input",
+                    "left"
+                ]
+            },
+            {
+                "name": "from copy_input to Backbone_master",
+                "from": [
+                    "copy_input",
+                    "right"
+                ],
+                "to": [
+                    "Backbone_master",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Export_to_BB to Backbone_master",
+                "from": [
+                    "Export_to_BB",
+                    "right"
+                ],
+                "to": [
+                    "Backbone_master",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_config_master to Backbone_master",
+                "from": [
+                    "BB_config_master",
+                    "right"
+                ],
+                "to": [
+                    "Backbone_master",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Powerplants",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Powerplants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Powerplants to BB_Spine_DB_direct",
+                "from": [
+                    "BB_Importer_Powerplants",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Main to BB_Spine_DB_direct",
+                "from": [
+                    "BB_Importer_Main",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from Data Connection MainOnly to BB_Importer_Main",
+                "from": [
+                    "Data Connection MainOnly",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Main",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Import_Hydro to TEMP_BB",
+                "from": [
+                    "Import_Hydro",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Hydro",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Hydro",
+                    "left"
+                ]
+            },
+            {
+                "name": "from transport_model_buidling to TEMP_BB",
+                "from": [
+                    "transport_model_buidling",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Transport",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Transport",
+                    "left"
+                ]
+            },
+            {
+                "name": "from sector_coupling to TEMP_BB",
+                "from": [
+                    "sector_coupling",
+                    "right"
+                ],
+                "to": [
+                    "TEMP_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to BB_Importer_Sector_coupling",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "BB_Importer_Sector_coupling",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Connections to BB_Spine_DB_direct",
+                "from": [
+                    "BB_Importer_Connections",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Hydro to BB_Spine_DB_direct",
+                "from": [
+                    "BB_Importer_Hydro",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Transport to BB_Spine_DB_direct",
+                "from": [
+                    "BB_Importer_Transport",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Sector_coupling to BB_Spine_DB_direct",
+                "from": [
+                    "BB_Importer_Sector_coupling",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from copy_input to TimeSeriesAgg",
+                "from": [
+                    "copy_input",
+                    "right"
+                ],
+                "to": [
+                    "TimeSeriesAgg",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TimeSeriesAgg to Backbone_master",
+                "from": [
+                    "TimeSeriesAgg",
+                    "right"
+                ],
+                "to": [
+                    "Backbone_master",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Storage to BB_Spine_DB_direct",
+                "from": [
+                    "BB_Importer_Storage",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from vre_timeseries_db to vre_merger",
+                "from": [
+                    "vre_timeseries_db",
+                    "right"
+                ],
+                "to": [
+                    "vre_merger",
+                    "left"
+                ]
+            },
+            {
+                "name": "from demand_timeseries_db to demand_merger",
+                "from": [
+                    "demand_timeseries_db",
+                    "right"
+                ],
+                "to": [
+                    "demand_merger",
+                    "left"
+                ]
+            },
+            {
+                "name": "from demand_merger to BB_Spine_DB_direct",
+                "from": [
+                    "demand_merger",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from vre_merger to BB_Spine_DB_direct",
+                "from": [
+                    "vre_merger",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from BB_Importer_Renew_profile to vre_timeseries_db",
+                "from": [
+                    "BB_Importer_Renew_profile",
+                    "right"
+                ],
+                "to": [
+                    "vre_timeseries_db",
+                    "left"
+                ],
+                "options": {
+                    "write_index": 2,
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": true,
+                        "relationship_class": true,
+                        "parameter_value_list": true,
+                        "list_value": true,
+                        "parameter_definition": true,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": true,
+                        "parameter_value": true,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": true,
+                        "feature": true,
+                        "tool": true,
+                        "tool_feature": true,
+                        "tool_feature_method": true,
+                        "metadata": true,
+                        "entity_metadata": true,
+                        "parameter_value_metadata": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_Importer_Demand to demand_timeseries_db",
+                "from": [
+                    "BB_Importer_Demand",
+                    "right"
+                ],
+                "to": [
+                    "demand_timeseries_db",
+                    "left"
+                ],
+                "options": {
+                    "write_index": 2,
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": true,
+                        "relationship_class": true,
+                        "parameter_value_list": true,
+                        "list_value": true,
+                        "parameter_definition": true,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": true,
+                        "parameter_value": true,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": true,
+                        "feature": true,
+                        "tool": true,
+                        "tool_feature": true,
+                        "tool_feature_method": true,
+                        "metadata": true,
+                        "entity_metadata": true,
+                        "parameter_value_metadata": true
+                    }
+                }
+            },
+            {
+                "name": "from Data_connection_transport to Import_Demand",
+                "from": [
+                    "Data_connection_transport",
+                    "right"
+                ],
+                "to": [
+                    "Import_Demand",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_pp_transm to import_powerplants",
+                "from": [
+                    "Data_connection_pp_transm",
+                    "right"
+                ],
+                "to": [
+                    "import_powerplants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Scenario, VRE, WACC Data to Import_Demand",
+                "from": [
+                    "Scenario, VRE, WACC Data",
+                    "right"
+                ],
+                "to": [
+                    "Import_Demand",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Scenario, VRE, WACC Data to import_powerplants",
+                "from": [
+                    "Scenario, VRE, WACC Data",
+                    "right"
+                ],
+                "to": [
+                    "import_powerplants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Scenario, VRE, WACC Data to Import_Renewable_Profile",
+                "from": [
+                    "Scenario, VRE, WACC Data",
+                    "right"
+                ],
+                "to": [
+                    "Import_Renewable_Profile",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Scenario, VRE, WACC Data to import_storage",
+                "from": [
+                    "Scenario, VRE, WACC Data",
+                    "right"
+                ],
+                "to": [
+                    "import_storage",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Scenario, VRE, WACC Data to transport_model_buidling",
+                "from": [
+                    "Scenario, VRE, WACC Data",
+                    "right"
+                ],
+                "to": [
+                    "transport_model_buidling",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Scenario, VRE, WACC Data to sector_coupling",
+                "from": [
+                    "Scenario, VRE, WACC Data",
+                    "right"
+                ],
+                "to": [
+                    "sector_coupling",
+                    "left"
+                ]
+            },
+            {
+                "name": "from WACC_Tool to Scenario, VRE, WACC Data",
+                "from": [
+                    "WACC_Tool",
+                    "right"
+                ],
+                "to": [
+                    "Scenario, VRE, WACC Data",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Data_connection_transport to import_powerplants",
+                "from": [
+                    "Data_connection_transport",
+                    "right"
+                ],
+                "to": [
+                    "import_powerplants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_data_merger to demand_timeseries_db",
+                "from": [
+                    "BB_data_merger",
+                    "bottom"
+                ],
+                "to": [
+                    "demand_timeseries_db",
+                    "bottom"
+                ],
+                "options": {
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": true,
+                        "relationship_class": true,
+                        "parameter_value_list": true,
+                        "list_value": true,
+                        "parameter_definition": true,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": true,
+                        "parameter_value": true,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": true,
+                        "feature": true,
+                        "tool": true,
+                        "tool_feature": true,
+                        "tool_feature_method": true,
+                        "metadata": true,
+                        "entity_metadata": true,
+                        "parameter_value_metadata": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_data_merger to vre_timeseries_db",
+                "from": [
+                    "BB_data_merger",
+                    "bottom"
+                ],
+                "to": [
+                    "vre_timeseries_db",
+                    "bottom"
+                ],
+                "options": {
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": true,
+                        "relationship_class": true,
+                        "parameter_value_list": true,
+                        "list_value": true,
+                        "parameter_definition": true,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": true,
+                        "parameter_value": true,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": true,
+                        "feature": true,
+                        "tool": true,
+                        "tool_feature": true,
+                        "tool_feature_method": true,
+                        "metadata": true,
+                        "entity_metadata": true,
+                        "parameter_value_metadata": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_Spine_DB_direct to Merger_Stuetzjahr_1",
+                "from": [
+                    "BB_Spine_DB_direct",
+                    "right"
+                ],
+                "to": [
+                    "Merger_Stuetzjahr_1",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_direct": {
+                            "scenario_filter": {
+                                "APS_2030": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from Merger_Stuetzjahr_1 to BB_Spine_DB_Stuetzjahr_1",
+                "from": [
+                    "Merger_Stuetzjahr_1",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_Stuetzjahr_1",
+                    "left"
+                ],
+                "options": {
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": false,
+                        "relationship_class": false,
+                        "parameter_value_list": false,
+                        "list_value": false,
+                        "parameter_definition": false,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": false,
+                        "parameter_value": false,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": false,
+                        "feature": false,
+                        "tool": false,
+                        "tool_feature": false,
+                        "tool_feature_method": false,
+                        "metadata": false,
+                        "entity_metadata": false,
+                        "parameter_value_metadata": false
+                    }
+                }
+            },
+            {
+                "name": "from BB_Spine_DB_Stuetzjahr_1 to BB_sets",
+                "from": [
+                    "BB_Spine_DB_Stuetzjahr_1",
+                    "right"
+                ],
+                "to": [
+                    "BB_sets",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_Stuetzjahr_1": {
+                            "scenario_filter": {
+                                "APS_2030": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_sets to Export_to_BB",
+                "from": [
+                    "BB_sets",
+                    "right"
+                ],
+                "to": [
+                    "Export_to_BB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_data_template (1) to BB_data_merger (1)",
+                "from": [
+                    "BB_data_template (1)",
+                    "left"
+                ],
+                "to": [
+                    "BB_data_merger (1)",
+                    "right"
+                ]
+            },
+            {
+                "name": "from BB_Spine_DB_direct to Merger_Stuetzjahr_2",
+                "from": [
+                    "BB_Spine_DB_direct",
+                    "right"
+                ],
+                "to": [
+                    "Merger_Stuetzjahr_2",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_direct": {
+                            "scenario_filter": {
+                                "APS_2030": false,
+                                "APS_2040": false,
+                                "APS_2050": false,
+                                "APS_2060": false,
+                                "HRU_2030": false,
+                                "HRU_2040": false,
+                                "HRU_2050": false,
+                                "HRU_2060": false,
+                                "RES_2030": false,
+                                "RES_2040": true,
+                                "RES_2050": false,
+                                "RES_2060": false
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_Spine_DB_direct to Merger_Stuetzjahr_3",
+                "from": [
+                    "BB_Spine_DB_direct",
+                    "right"
+                ],
+                "to": [
+                    "Merger_Stuetzjahr_3",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_direct": {
+                            "scenario_filter": {
+                                "APS_2030": false,
+                                "APS_2040": false,
+                                "APS_2050": false,
+                                "APS_2060": false,
+                                "HRU_2030": false,
+                                "HRU_2040": false,
+                                "HRU_2050": false,
+                                "HRU_2060": false,
+                                "RES_2030": false,
+                                "RES_2040": false,
+                                "RES_2050": true,
+                                "RES_2060": false
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_Spine_DB_direct to Merger_Stuetzjahr_4",
+                "from": [
+                    "BB_Spine_DB_direct",
+                    "right"
+                ],
+                "to": [
+                    "Merger_Stuetzjahr_4",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_direct": {
+                            "scenario_filter": {
+                                "APS_2030": false,
+                                "APS_2040": false,
+                                "APS_2050": false,
+                                "APS_2060": false,
+                                "HRU_2030": false,
+                                "HRU_2040": false,
+                                "HRU_2050": false,
+                                "HRU_2060": false,
+                                "RES_2030": false,
+                                "RES_2040": false,
+                                "RES_2050": false,
+                                "RES_2060": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_data_merger (1) to BB_Spine_DB_Stuetzjahr_2",
+                "from": [
+                    "BB_data_merger (1)",
+                    "left"
+                ],
+                "to": [
+                    "BB_Spine_DB_Stuetzjahr_2",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_data_merger (1) to BB_Spine_DB_Stuetzjahr_3",
+                "from": [
+                    "BB_data_merger (1)",
+                    "left"
+                ],
+                "to": [
+                    "BB_Spine_DB_Stuetzjahr_3",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BB_data_merger (1) to BB_Spine_DB_Stuetzjahr_4",
+                "from": [
+                    "BB_data_merger (1)",
+                    "left"
+                ],
+                "to": [
+                    "BB_Spine_DB_Stuetzjahr_4",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Merger_Stuetzjahr_2 to BB_Spine_DB_Stuetzjahr_2",
+                "from": [
+                    "Merger_Stuetzjahr_2",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_Stuetzjahr_2",
+                    "left"
+                ],
+                "options": {
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": false,
+                        "relationship_class": false,
+                        "parameter_value_list": false,
+                        "list_value": false,
+                        "parameter_definition": false,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": false,
+                        "parameter_value": false,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": false,
+                        "feature": false,
+                        "tool": false,
+                        "tool_feature": false,
+                        "tool_feature_method": false,
+                        "metadata": false,
+                        "entity_metadata": false,
+                        "parameter_value_metadata": false
+                    }
+                }
+            },
+            {
+                "name": "from Merger_Stuetzjahr_3 to BB_Spine_DB_Stuetzjahr_3",
+                "from": [
+                    "Merger_Stuetzjahr_3",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_Stuetzjahr_3",
+                    "left"
+                ],
+                "options": {
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": false,
+                        "relationship_class": false,
+                        "parameter_value_list": false,
+                        "list_value": false,
+                        "parameter_definition": false,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": false,
+                        "parameter_value": false,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": false,
+                        "feature": false,
+                        "tool": false,
+                        "tool_feature": false,
+                        "tool_feature_method": false,
+                        "metadata": false,
+                        "entity_metadata": false,
+                        "parameter_value_metadata": false
+                    }
+                }
+            },
+            {
+                "name": "from Merger_Stuetzjahr_4 to BB_Spine_DB_Stuetzjahr_4",
+                "from": [
+                    "Merger_Stuetzjahr_4",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_Stuetzjahr_4",
+                    "left"
+                ],
+                "options": {
+                    "purge_before_writing": true,
+                    "purge_settings": {
+                        "object_class": false,
+                        "relationship_class": false,
+                        "parameter_value_list": false,
+                        "list_value": false,
+                        "parameter_definition": false,
+                        "object": true,
+                        "relationship": true,
+                        "entity_group": false,
+                        "parameter_value": false,
+                        "alternative": true,
+                        "scenario": true,
+                        "scenario_alternative": false,
+                        "feature": false,
+                        "tool": false,
+                        "tool_feature": false,
+                        "tool_feature_method": false,
+                        "metadata": false,
+                        "entity_metadata": false,
+                        "parameter_value_metadata": false
+                    }
+                }
+            },
+            {
+                "name": "from BB_Spine_DB_Stuetzjahr_2 to BB_sets_2",
+                "from": [
+                    "BB_Spine_DB_Stuetzjahr_2",
+                    "right"
+                ],
+                "to": [
+                    "BB_sets_2",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_Stuetzjahr_2": {
+                            "scenario_filter": {
+                                "APS_2030": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_Spine_DB_Stuetzjahr_3 to BB_sets_3",
+                "from": [
+                    "BB_Spine_DB_Stuetzjahr_3",
+                    "right"
+                ],
+                "to": [
+                    "BB_sets_3",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_Stuetzjahr_3": {
+                            "scenario_filter": {
+                                "APS_2030": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_Spine_DB_Stuetzjahr_4 to BB_sets_4",
+                "from": [
+                    "BB_Spine_DB_Stuetzjahr_4",
+                    "right"
+                ],
+                "to": [
+                    "BB_sets_4",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_Spine_DB_Stuetzjahr_4": {
+                            "scenario_filter": {
+                                "APS_2030": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_sets_2 to Export_to_BB",
+                "from": [
+                    "BB_sets_2",
+                    "right"
+                ],
+                "to": [
+                    "Export_to_BB",
+                    "bottom"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_sets_2": {
+                            "scenario_filter": {
+                                "RES_2040": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_sets_3 to Export_to_BB",
+                "from": [
+                    "BB_sets_3",
+                    "right"
+                ],
+                "to": [
+                    "Export_to_BB",
+                    "bottom"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_sets_3": {
+                            "scenario_filter": {
+                                "RES_2050": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from BB_sets_4 to Export_to_BB",
+                "from": [
+                    "BB_sets_4",
+                    "right"
+                ],
+                "to": [
+                    "Export_to_BB",
+                    "bottom"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_sets_4": {
+                            "scenario_filter": {
+                                "RES_2060": true
+                            },
+                            "tool_filter": {}
+                        }
+                    },
+                    "auto_online": true
+                }
+            },
+            {
+                "name": "from Data Connection MainOnly to WACC_Tool",
+                "from": [
+                    "Data Connection MainOnly",
+                    "bottom"
+                ],
+                "to": [
+                    "WACC_Tool",
+                    "left"
+                ]
+            },
+            {
+                "name": "from WACC Inputs to WACC_Tool",
+                "from": [
+                    "WACC Inputs",
+                    "right"
+                ],
+                "to": [
+                    "WACC_Tool",
+                    "left"
+                ]
+            }
+        ],
+        "jumps": []
+    },
+    "items": {
+        "Data Connection Demand": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -494.5265850479624,
+            "y": -138.83571343662925,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Plexos/MESSAGEix-GLOBIOM/Input timeseries EN_NPi2020_500_pool-bi_new/CSV Files/All Demand UTC 2015.csv"
+                }
+            ],
+            "db_references": []
+        },
+        "Data Connection Main": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -820.3609336469822,
+            "y": -239.94103082031495,
+            "file_references": [],
+            "db_references": []
+        },
+        "Import_Renewable_Profile": {
+            "type": "Tool",
+            "description": "",
+            "x": -199.34452334972593,
+            "y": -32.691617268616426,
+            "specification": "Import_Renewable_Profile",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/MESSAGEix-GLOBIOM/Input timeseries EN_NPi2020_500_pool-bi_new/CSV Files/All Nodes Solar Only Normalised.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/MESSAGEix-GLOBIOM/Input timeseries EN_NPi2020_500_pool-bi_new/CSV Files/All Demand UTC 2015.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Invest_Renew/Steps_5/df_profiles.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Invest_Renew/Steps_5/02_dim1.csv"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "import_storage": {
+            "type": "Tool",
+            "description": "",
+            "x": -196.35344549613657,
+            "y": 177.13753928252763,
+            "specification": "import_storage",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/MESSAGEix-GLOBIOM/PLEXOS-World model MESSAGEix - GLOBIOM Soft-Link.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/PLEXOS World/PLEXOS-World 2015 Gold V1.1.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/weighted_WACC_final.csv"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "import_powerplants": {
+            "type": "Tool",
+            "description": "",
+            "x": -198.29619223356235,
+            "y": 273.71718174479105,
+            "specification": "import_plexos_powerplants_tool",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Powerplants/20240425_pp_base_data.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Invest_Renew/Steps_5/02_dim1.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/weighted_WACC_final_long.csv"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "Solar, Wind, Demand PLEXOS_Globiom": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -493.5569170556133,
+            "y": -33.40917960936383,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Plexos/MESSAGEix-GLOBIOM/Input timeseries EN_NPi2020_500_pool-bi_new/CSV Files/All Nodes Solar Only Normalised.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Plexos/MESSAGEix-GLOBIOM/Input timeseries EN_NPi2020_500_pool-bi_new/CSV Files/All Nodes Wind Only Normalised.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Plexos/MESSAGEix-GLOBIOM/Input timeseries EN_NPi2020_500_pool-bi_new/CSV Files/All Demand UTC 2015.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Invest_Renew/Steps_5/df_profiles.csv"
+                }
+            ],
+            "db_references": []
+        },
+        "Import_Connections": {
+            "type": "Tool",
+            "description": "",
+            "x": -199.0283062948323,
+            "y": 70.97701175493057,
+            "specification": "converter_countries_and_connections",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/MESSAGEix-GLOBIOM/PLEXOS-World model MESSAGEix - GLOBIOM Soft-Link.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/PLEXOS World/PLEXOS-World 2015 Gold V1.1.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "Import_Hydro": {
+            "type": "Tool",
+            "description": "",
+            "x": -199.51002804528252,
+            "y": 384.99518286036346,
+            "specification": "Import_Hydropower_tool",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/MESSAGEix-GLOBIOM/PLEXOS-World model MESSAGEix - GLOBIOM Soft-Link.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/PLEXOS World/PLEXOS-World 2015 Gold V1.1.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/PLEXOS World/Hydro_Monthly_Profiles (2015).csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/JRC_Hydro_Power/jrc-hydro-power-plant-database.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "CSV_to_XLSX": {
+            "type": "Tool",
+            "description": "",
+            "x": -657.2603134327771,
+            "y": -241.82687999011205,
+            "specification": "CSV_to_XLSX",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<Data Connection Main>/model.csv"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "Import_Demand": {
+            "type": "Tool",
+            "description": "",
+            "x": -198.68388561880067,
+            "y": -139.49070464746637,
+            "specification": "Import_Demand",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Plexos/MESSAGEix-GLOBIOM/Input timeseries EN_NPi2020_500_pool-bi_new/CSV Files/All Demand UTC 2015.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/nodes/20240321_nodes_and_parameters.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Szenario_Data/03 - APS_scenario_data.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Szenario_Data/02 - RES_scenario_data.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Szenario_Data/01 - HRU_scenario_data.xlsx"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "transport_model_buidling": {
+            "type": "Tool",
+            "description": "Script for building the transport system",
+            "x": -199.87585038013026,
+            "y": 491.81450599242595,
+            "specification": "Transport_model_building",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/nodes/nodes_and_parameters.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/proposed_terminals/proposed_terminals.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/bm_world_3000mdepth/bm_world_3000mdepthres1.shp"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/nodes/reg_fac_list.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/weighted_WACC_final.csv"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "Data Connection MainOnly": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -488.7005296093665,
+            "y": -240.81417621491198,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/MainInput.xlsx"
+                }
+            ],
+            "db_references": []
+        },
+        "Data_connection_sector_coupling": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -493.45480785825043,
+            "y": 598.4498009119873,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Transport/data_input/sector_coupling/sector_coupling_technologies.xlsx"
+                }
+            ],
+            "db_references": []
+        },
+        "sector_coupling": {
+            "type": "Tool",
+            "description": "",
+            "x": -198.97368829458708,
+            "y": 597.5540012297706,
+            "specification": "sector_coupling_tool",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/sector_coupling/sector_coupling_technologies.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/weighted_WACC_final.csv"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "BB_Spine_DB_direct": {
+            "type": "Data Store",
+            "description": "",
+            "x": 433.6239649624171,
+            "y": -374.6291936383374,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/bb_spine_db_direct/BB_Spine_DB_direct.sqlite"
+                },
+                "schema": ""
+            }
+        },
+        "BB_data_template": {
+            "type": "Data Store",
+            "description": "",
+            "x": 177.38840286118602,
+            "y": -371.1533209384888,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/.spinetoolbox/items/bb_data_template/BB_data_template.sqlite"
+                },
+                "schema": ""
+            }
+        },
+        "BB_data_merger": {
+            "type": "Merger",
+            "description": "",
+            "x": 305.1046106875619,
+            "y": -371.5205620451832,
+            "cancel_on_error": true
+        },
+        "BB_sets": {
+            "type": "Data Transformer",
+            "description": "",
+            "x": 816.3705185858853,
+            "y": -373.96688473991514,
+            "specification": "ToBackboneSets"
+        },
+        "Export_to_BB": {
+            "type": "Exporter",
+            "description": "",
+            "x": 959.3314574167232,
+            "y": -216.77586903545725,
+            "output_time_stamps": false,
+            "cancel_on_error": true,
+            "output_labels": [
+                {
+                    "in_label": "db_url@BB_sets",
+                    "out_label": "inputData_2030.gdx"
+                },
+                {
+                    "in_label": "db_url@BB_sets_2",
+                    "out_label": "inputData_2040.gdx"
+                },
+                {
+                    "in_label": "db_url@BB_sets_3",
+                    "out_label": "inputData_2050.gdx"
+                },
+                {
+                    "in_label": "db_url@BB_sets_4",
+                    "out_label": "inputData_2060.gdx"
+                }
+            ],
+            "specification": "ExportToBB"
+        },
+        "TEMP_BB": {
+            "type": "Data Connection",
+            "description": "",
+            "x": 32.82943947947244,
+            "y": 259.10392764792596,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/Demand_BB.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/Renewable_profiles_BB.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/Plexos_storage_BB.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/Plexos_powerplants_BB.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/Hydropower_BB.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/transport_objects_BB.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/sector_coupling_BB.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/Countries_Connections_BB.xlsx"
+                }
+            ],
+            "db_references": []
+        },
+        "BB_Importer_Demand": {
+            "type": "Importer",
+            "description": "ts_influx... based on BB_to_SpineDB.json",
+            "x": -20.608161982193906,
+            "y": -137.05730715486177,
+            "specification": "BB_Importer_Demand_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ]
+            ]
+        },
+        "BB_Importer_Renew_profile": {
+            "type": "Importer",
+            "description": "ts_cf",
+            "x": -17.970749607440098,
+            "y": -38.89992686129932,
+            "specification": "BB_Importer_Renew_profile_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ]
+            ]
+        },
+        "BB_Importer_Connections": {
+            "type": "Importer",
+            "description": "",
+            "x": 261.0486491916381,
+            "y": 69.09444325078556,
+            "specification": "BB_Importer_Connections_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ]
+            ]
+        },
+        "BB_Importer_Storage": {
+            "type": "Importer",
+            "description": "",
+            "x": 264.27166056270795,
+            "y": 178.68853888517,
+            "specification": "bb_importer_storage_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ]
+            ]
+        },
+        "BB_Importer_Powerplants": {
+            "type": "Importer",
+            "description": "",
+            "x": 264.80930379345864,
+            "y": 283.00772142047737,
+            "specification": "bb_importer_powerplants_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ]
+            ]
+        },
+        "Backbone_master": {
+            "type": "Tool",
+            "description": "",
+            "x": 1208.644580598048,
+            "y": -389.284958084701,
+            "specification": "20240108 Backbone Tool config",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "literal",
+                    "arg": "--penalty=1000000"
+                },
+                {
+                    "type": "literal",
+                    "arg": "--debug=1"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "BB_config_master": {
+            "type": "Data Connection",
+            "description": "",
+            "x": 1086.778686154236,
+            "y": -389.5864947268948,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/input/1_options.gms"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/input/modelsInit.gms"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/input/timeAndSamples.inc"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/input/scheduleInit.gms"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/cplex.opt"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/input/investInit.gms"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/input/inputData.gdx"
+                }
+            ],
+            "db_references": []
+        },
+        "BB_Importer_Main": {
+            "type": "Importer",
+            "description": "",
+            "x": 261.61414256846865,
+            "y": -247.01375543783297,
+            "specification": "BB_Importer_Main_Config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/MainInput.xlsx",
+                    true
+                ]
+            ]
+        },
+        "BB_Importer_Hydro": {
+            "type": "Importer",
+            "description": "",
+            "x": 264.32431501340034,
+            "y": 388.7535661459397,
+            "specification": "bb_importer_hydro_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ]
+            ]
+        },
+        "BB_Importer_Transport": {
+            "type": "Importer",
+            "description": "",
+            "x": 264.52474529900655,
+            "y": 493.59158408899026,
+            "specification": "bb_importer_transport_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    true
+                ]
+            ]
+        },
+        "BB_Importer_Sector_coupling": {
+            "type": "Importer",
+            "description": "",
+            "x": 263.91423192090633,
+            "y": 597.7311041336677,
+            "specification": "bb_importer_sector_coupling_config",
+            "cancel_on_error": true,
+            "on_conflict": "replace",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ]
+            ]
+        },
+        "TimeSeriesAgg": {
+            "type": "Tool",
+            "description": "",
+            "x": 1249.558147113636,
+            "y": -219.24317619649858,
+            "specification": "TimeSeriesAgg",
+            "execute_in_work": false,
+            "cmd_line_args": [],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "demand_timeseries_db": {
+            "type": "Data Store",
+            "description": "",
+            "x": 146.23652949141479,
+            "y": -140.79877316499403,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/demand_timeseries_db/demand_timeseries_db.sqlite"
+                }
+            }
+        },
+        "vre_timeseries_db": {
+            "type": "Data Store",
+            "description": "",
+            "x": 141.40471869731778,
+            "y": -38.973794041918836,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/vre_timeseries_db/vre_timeseries_db.sqlite"
+                }
+            }
+        },
+        "demand_merger": {
+            "type": "Merger",
+            "description": "",
+            "x": 261.5686644083171,
+            "y": -141.04755540907877,
+            "cancel_on_error": true
+        },
+        "vre_merger": {
+            "type": "Merger",
+            "description": "",
+            "x": 262.56505686388437,
+            "y": -38.691452628928914,
+            "cancel_on_error": false
+        },
+        "Scenario, VRE, WACC Data": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -490.8478949749239,
+            "y": 64.23386968191411,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Szenario_Data/01 - HRU_scenario_data.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Szenario_Data/02 - RES_scenario_data.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Szenario_Data/03 - APS_scenario_data.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Invest_Renew/Steps_5/02_dim1.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/weighted_WACC_final.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/weighted_WACC_final_long.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Invest_Renew/Steps_5/03_dim2.csv"
+                }
+            ],
+            "db_references": []
+        },
+        "WACC_Tool": {
+            "type": "Tool",
+            "description": "WACC_Tool",
+            "x": -671.6818904707426,
+            "y": 65.90062068761239,
+            "specification": "WACC_tool",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/ctryprem_July24.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/alpha-3_countrycodes.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/alpha-3_manual_fix.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/waccGlobal_Jan24_StEAM_config.xlsx"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "BB_Spine_DB_Stuetzjahr_1": {
+            "type": "Data Store",
+            "description": "",
+            "x": 688.682589052017,
+            "y": -376.16219840499576,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/bb_spine_db_stuetzjahr_1/BB_Spine_DB_Stuetzjahr_1.sqlite"
+                }
+            }
+        },
+        "Merger_Stuetzjahr_1": {
+            "type": "Merger",
+            "description": "",
+            "x": 559.7967648933898,
+            "y": -372.8621289714472,
+            "cancel_on_error": false
+        },
+        "Merger_Stuetzjahr_2": {
+            "type": "Merger",
+            "description": "",
+            "x": 613.4775915096716,
+            "y": -14.694074048135846,
+            "cancel_on_error": false
+        },
+        "Merger_Stuetzjahr_3": {
+            "type": "Merger",
+            "description": "",
+            "x": 578.579165645349,
+            "y": 275.5138884025471,
+            "cancel_on_error": false
+        },
+        "Merger_Stuetzjahr_4": {
+            "type": "Merger",
+            "description": "",
+            "x": 534.4969435009416,
+            "y": 431.6384251639907,
+            "cancel_on_error": false
+        },
+        "BB_data_template (1)": {
+            "type": "Data Store",
+            "description": "",
+            "x": 903.6855539603542,
+            "y": 128.5731479211887,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": "backbone-master/.spinetoolbox/items/bb_data_template/BB_data_template.sqlite"
+                },
+                "schema": ""
+            }
+        },
+        "BB_data_merger (1)": {
+            "type": "Merger",
+            "description": "",
+            "x": 773.275646783149,
+            "y": 130.40990717720564,
+            "cancel_on_error": true
+        },
+        "BB_Spine_DB_Stuetzjahr_2": {
+            "type": "Data Store",
+            "description": "",
+            "x": 769.602128271115,
+            "y": -14.694074048135846,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/bb_spine_db_stuetzjahr_2/BB_Spine_DB_Stuetzjahr_2.sqlite"
+                }
+            }
+        },
+        "BB_Spine_DB_Stuetzjahr_3": {
+            "type": "Data Store",
+            "description": "",
+            "x": 778.7859245512,
+            "y": 270.0036106344962,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/bb_spine_db_stuetzjahr_3/BB_Spine_DB_Stuetzjahr_3.sqlite"
+                }
+            }
+        },
+        "BB_Spine_DB_Stuetzjahr_4": {
+            "type": "Data Store",
+            "description": "",
+            "x": 773.2756467831491,
+            "y": 427.96490665195654,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/bb_spine_db_stuetzjahr_4/BB_Spine_DB_Stuetzjahr_4.sqlite"
+                }
+            }
+        },
+        "BB_sets_2": {
+            "type": "Data Transformer",
+            "description": "",
+            "x": 907.3590724723888,
+            "y": -12.565740054301944,
+            "specification": "ToBackboneSets"
+        },
+        "BB_sets_3": {
+            "type": "Data Transformer",
+            "description": "",
+            "x": 909.1958317284058,
+            "y": 266.33009212246225,
+            "specification": "ToBackboneSets"
+        },
+        "BB_sets_4": {
+            "type": "Data Transformer",
+            "description": "",
+            "x": 911.0325909844224,
+            "y": 427.9649066519566,
+            "specification": "ToBackboneSets"
+        },
+        "WACC Inputs": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -833.0207797430563,
+            "y": 64.83127948073711,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/alpha-3_countrycodes.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/alpha-3_manual_fix.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/ctryprem_July24.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/waccGlobal_Jan24_StEAM_config.xlsx"
+                }
+            ],
+            "db_references": []
+        },
+        "copy_input": {
+            "type": "Tool",
+            "description": "",
+            "x": 1106.0990418039275,
+            "y": -218.07789541192741,
+            "specification": "copy_input_config",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "inputData_2030.gdx"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "Data_connection_transport": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -493.4225894656745,
+            "y": 492.39925564690316,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Transport/data_input/bm_world_3000mdepth/bm_world_3000mdepthres1.shp"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Transport/data_input/nodes/nodes_and_parameters.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Transport/data_input/proposed_terminals/proposed_terminals.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Transport/data_input/nodes/reg_fac_list.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Transport/data_input/nodes/20240321_nodes_and_parameters.xlsx"
+                }
+            ],
+            "db_references": []
+        },
+        "Data_connection_hydro": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -491.9224433021647,
+            "y": 387.72899480997086,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/JRC_Hydro_Power/jrc-hydro-power-plant-database.csv"
+                }
+            ],
+            "db_references": []
+        },
+        "Data_connection_hydro_profiles": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -493.1917991616417,
+            "y": 283.81914603678115,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Plexos/PLEXOS World/Hydro_Monthly_Profiles (2015).csv"
+                }
+            ],
+            "db_references": []
+        },
+        "Data_connection_pp_transm": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -491.25843579127167,
+            "y": 178.63945170346628,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Plexos/PLEXOS World/PLEXOS-World 2015 Gold V1.1.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Plexos/MESSAGEix-GLOBIOM/PLEXOS-World model MESSAGEix - GLOBIOM Soft-Link.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Powerplants/20240425_pp_base_data.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/Connections/20250606_transmission_data.xlsx"
+                }
+            ],
+            "db_references": []
+        }
+    }
+}

@@ -1,0 +1,267 @@
+{
+    "name": "Import_Plexos_Units",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "00_Placeholder": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "01_dim0": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1,
+                                "filter_re": "^((?!Hydro|CSP|Geothermal|Other).)*$"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "02_dim1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1,
+                                "filter_re": "^((?!Hydro|CSP|Geothermal|Other).)*$"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": 3
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 4
+                            }
+                        ]
+                    }
+                }
+            ],
+            "03_dim2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "RelationshipClass",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "Relationship",
+                                "position": "hidden",
+                                "value": "relationship"
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 3,
+                                "filter_re": "^((?!Hydro|CSP|Geothermal|Other).)*$",
+                                "import_objects": true
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 4,
+                                "import_objects": true
+                            },
+                            {
+                                "map_type": "RelationshipMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 5
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": 6
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 7
+                            }
+                        ]
+                    }
+                }
+            ],
+            "04_dim3": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "RelationshipClass",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "RelationshipClassObjectClass",
+                                "position": 3
+                            },
+                            {
+                                "map_type": "Relationship",
+                                "position": "hidden",
+                                "value": "relationship"
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 4,
+                                "filter_re": "^((?!Hydro|CSP|Geothermal|Other).)*$",
+                                "import_objects": true
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 5,
+                                "import_objects": true
+                            },
+                            {
+                                "map_type": "RelationshipObject",
+                                "position": 6,
+                                "import_objects": true
+                            },
+                            {
+                                "map_type": "RelationshipMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 7
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": 8
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 9
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "01_dim0",
+            "02_dim1",
+            "03_dim2",
+            "04_dim3"
+        ],
+        "table_options": {
+            "00_Placeholder": {},
+            "01_dim0": {
+                "header": true
+            },
+            "02_dim1": {
+                "header": true
+            },
+            "03_dim2": {
+                "header": true
+            },
+            "04_dim3": {
+                "header": true
+            }
+        },
+        "table_types": {
+            "01_dim0": {
+                "0": "string",
+                "1": "string"
+            },
+            "02_dim1": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string"
+            },
+            "03_dim2": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "float"
+            },
+            "04_dim3": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "float"
+            }
+        },
+        "table_default_column_type": {},
+        "table_row_types": {},
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

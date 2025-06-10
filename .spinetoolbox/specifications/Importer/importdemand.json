@@ -1,0 +1,89 @@
+{
+    "name": "ImportDemand",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "data": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "node"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "header"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "demand"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "time_series"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": 1
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "data"
+        ],
+        "table_options": {
+            "data": {
+                "encoding": "ascii",
+                "delimiter": ",",
+                "quotechar": "\"",
+                "skip": 0,
+                "has_header": true,
+                "column": 0,
+                "header": false
+            }
+        },
+        "table_types": {
+            "data": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string"
+            }
+        },
+        "table_default_column_type": {},
+        "table_row_types": {},
+        "source_type": "CSVConnector"
+    },
+    "description": ""
+}

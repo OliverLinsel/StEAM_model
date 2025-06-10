@@ -1,0 +1,18 @@
+# Local settings
+local/
+
+# Temporary and log files
+*.log
+*.bak
+*.sqlite-journal
+*.xlsx
+*.csv
+
+# Item output files
+items/*/output
+items/*/*.sqlite
+
+# Other files created by execution
+.export-manifest.json
+filter_config.json
+.exported.json

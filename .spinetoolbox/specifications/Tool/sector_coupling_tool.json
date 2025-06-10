@@ -1,0 +1,13 @@
+{
+    "name": "sector_coupling_tool",
+    "tooltype": "python",
+    "includes": [
+        "StEAM_sector_coupling.py"
+    ],
+    "description": "sector_coupling_tool",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}

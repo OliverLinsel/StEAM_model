@@ -1,0 +1,4 @@
+par=ts_cf rng=ts_cf!A1
+par=ts_influx rng=ts_influx!A1
+par=ts_node rng=ts_node!A1
+par=ts_unit rng=ts_unit!A1

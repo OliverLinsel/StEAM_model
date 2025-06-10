@@ -1,0 +1,13 @@
+{
+    "name": "CSV_to_XLSX",
+    "tooltype": "python",
+    "includes": [
+        "csv_to_xlsx.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}
