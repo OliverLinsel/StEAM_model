@@ -280,45 +280,30 @@ $ifthen.fileExists exist '%input_dir%/%input_file_debugGdx%'
     $$loaddcm p_roundingTs
     $$loaddcm p_roundingParam
     $$loaddcm node_superpos
-    $$gdxin
-
-    // Initialize certain sets
-    option clear = group_forecasts;
-$else.fileExists
-    put log '!!! Error on finding defined input debug gdx file' /;
-    put log '!!! Abort: Could not find input debug gdx!' /;
-    abort "Could not find input debug gdx!"
-$endif.fileExists
-
-// loading new input tables in v3.9
-$ifthene.debugGdx_v39 %debugGdx_ver%>3.08
-    $$gdxin  '%input_dir%/%input_file_debugGdx%'
-    $$loaddcm group_forecasts
-    $$loaddcm ts_reservePrice
-    $$loaddcm ts_reservePriceChange
-    $$loaddcm p_unitConstraintNew
-    $$loaddcm gn_tsCirculation
-    $$loaddcm unit_tsCirculation
-    $$loaddcm reserve_tsCirculation
-    $$loaddcm group_tsCirculation
-    $$loaddcm unit_deactivated
-    $$loaddcm gn_deactivated
-    $$loaddcm gnn_deactivated
-    $$loaddcm p_scaling
-    $$loaddcm p_scaling_n
-    $$loaddcm p_scaling_nn
-    $$loaddcm p_scaling_obj
-    $$loaddcm p_scaling_u
-    $$loaddcm ts_priceNew
-    $$loaddcm ts_emissionPriceNew
-    // priceChange data should not be imported because previous model has already processed it
-    //$$loaddcm ts_priceChangeNew
-    //$$loaddcm ts_emissionPriceChangeNew
-    // instead import p_price, p_emissionPrice, p_vomCost, p_startupCost
-    $$loaddcm p_priceNew
-    $$loaddcm p_emissionPriceNew
-    $$loaddcm p_vomCostNew
-    $$loaddcm p_startupCostNew
+    
+    $$loaddcm s_countries
+    $$loaddcm s_regions
+    $$loaddcm s_terminals
+    $$loaddcm steam_subset_countries
+    $$loaddcm s_scenario
+    $$loaddcm s_alternative
+    $$loaddcm steam_scenarioAlternative
+    $$loaddcm s_x_longitude
+    $$loaddcm s_y_latitude
+    $$loaddcm s_regional_WACC_avg
+    $$loaddcm steam_coordinates_regions
+    $$loaddcm steam_WACC
+    $$loaddcm steam_coordinates_terminals
+    $$loaddcm s_shipping_index
+    $$loaddcm s_shipping_route
+    $$loaddcm steam_coordinates_shipping
+    $$loaddcm s_config_parameter
+    $$loaddcm s_config_object
+    $$loaddcm s_config_value
+    $$loaddcm s_config_alternative
+    $$loaddcm s_config_info
+    $$loaddcm steam_model_config
+    
     $$gdxin
 $endif.debugGdx_v39
 

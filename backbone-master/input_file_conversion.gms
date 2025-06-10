@@ -46,6 +46,28 @@ Sets
     unitUnitEffLevel(*,*,*)                       "Aggregator unit linke to aggreted units with a definition when to start the aggregation"
     unit_fail(*)                                  "Units that might fail"
     uss_bound(*, *, *)                            "Bound the samples so that the unit online state at the last interval of the first sample equals the state at the first interval of the second sample"
+    s_countries                               "(KT) countries of subset_countries.csv"
+    s_regions                                 "(KT) regions of subset_countries.csv"
+    s_terminals                               "(KT) terminals of transport_visualisation.xlsx"
+    steam_subset_countries(*,*)                   "(KT) subset_countries.csv resulting in the regional configuration"
+    s_scenario                                "(KT) scenario of scenario.csv"
+    s_alternative                             "(KT) alternatives of scenario.csv"
+    steam_scenarioAlternative(*,*)                "(KT) scenarios.csv displaying the chosen scenario configuration"
+    s_x_longitude                                   "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
+    s_y_latitude                                    "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
+    s_regional_WACC_avg                             "(KT) technological and regional average of the WACC"
+    steam_coordinates_regions(*,*,*)              "(KT) coordinates of regions from transport_visualisation.xlsx"
+    steam_WACC(*,*)                               "(KT) assigning the average WACC to each region"
+    steam_coordinates_terminals(*,*,*,*)          "(KT) coordinates of terminals assigned to their respective regions from transport_visualisation.xlsx"
+    s_shipping_index                                "(KT) Index assigned to shipping routes points from start to finish"
+    s_shipping_route                          "(KT) Shipping routes with origin and destination seperated by '___'"
+    steam_coordinates_shipping(*,*,*,*,*,*)       "(KT) Split linestrings of shipping connecting two terminals from transport_visualisation.xlsx"
+    s_config_parameter                              "(KT) part of Steam model config"
+    s_config_object                                 "(KT) part of Steam model config"
+    s_config_value                                  "(KT) part of Steam model config"
+    s_config_alternative                            "(KT) part of Steam model config"
+    s_config_info                                   "(KT) part of Steam model config"
+    steam_model_config(*,*,*,*,*)                 "(KT) Steam model config sheet of MainInput.xlsx"
 ;
 Parameters
     p_fuelEmission(*,*)                           "Fuel emission content"
@@ -141,6 +163,29 @@ $loaddc  ts_influx
 $loaddc  ts_node
 $loaddc  ts_reserveDemand
 $loaddc  ts_unit
+$loaddc  s_countries
+$loaddc  s_regions
+$loaddc  s_terminals
+$loaddc  steam_subset_countries
+$loaddc  s_scenario
+$loaddc  s_alternative
+$loaddc  steam_scenarioAlternative
+$loaddc  s_x_longitude
+$loaddc  s_y_latitude
+$loaddc  s_regional_WACC_avg
+$loaddc  steam_coordinates_regions
+$loaddc  steam_WACC
+$loaddc  steam_coordinates_terminals
+$loaddc  s_shipping_index
+$loaddc  s_shipping_route
+$loaddc  steam_coordinates_shipping
+$loaddc  s_config_parameter
+$loaddc  s_config_object
+$loaddc  s_config_value
+$loaddc  s_config_alternative
+$loaddc  s_config_info
+$loaddc  steam_model_config
+
 
 *============================================================================
 *----------Necessary or intermediary sets and parameters---------------------
@@ -385,6 +430,28 @@ execute_unload 'conversion/%output_name%.gdx', grid_2=grid
                                                p_groupPolicy3D
                                                gnss_bound
                                                uss_bound
+                                               s_countries
+                                               s_regions
+                                               s_terminals
+                                               steam_subset_countries
+                                               s_scenario
+                                               s_alternative
+                                               steam_scenarioAlternative
+                                               s_x_longitude
+                                               s_y_latitude
+                                               s_regional_WACC_avg
+                                               steam_coordinates_regions
+                                               steam_WACC
+                                               steam_coordinates_terminals
+                                               s_shipping_index
+                                               s_shipping_route
+                                               steam_coordinates_shipping
+                                               s_config_parameter
+                                               s_config_object
+                                               s_config_value
+                                               s_config_alternative
+                                               s_config_info
+                                               steam_model_config
                                                ;
 *============================================================================
 *----------END-----------------------------------------------------
