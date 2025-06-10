@@ -1,0 +1,49 @@
+# GAMS specific
+*.gdx
+*.gpr
+*.gsp
+*.lst
+*.lxi
+*.~*
+*.tmp
+*.put
+*.log*
+*.gchf
+*.lic
+
+# Backbone
+version_git
+*.lp
+
+# Data files
+*.dat
+*.xlsx
+*.csv
+
+# Other files
+*.pptx
+*.docx
+*.pdf
+*.par
+*.txt
+*.zip
+*.cmd
+*.bat
+
+# All folders except
+/*/
+!/.spinetoolbox/
+!/defModels/
+!/defOutput/
+!/hooks/
+!/images/
+!/inc/
+!/input/
+!/inputTemplates/
+!/mods/
+!/tools/
+
+# GAMS specific in subfolders
+/*/*.~*
+/*/*.tmp
+/*/*.lic

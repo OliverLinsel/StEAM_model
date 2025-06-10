@@ -1,0 +1,1766 @@
+{
+    "object_classes": [
+        [
+            "boundary",
+            "Slacks and types of boundaries that can be set for a node",
+            281473533933630
+        ],
+        [
+            "constraint",
+            "Possible names for custom constraints",
+            281473533932850
+        ],
+        [
+            "effLevel",
+            "Pre-defined levels for efficiency representation that can start from t_solve + x",
+            281224891724130
+        ],
+        [
+            "effSelector",
+            "Select equations and lambdas/slope for efficiency calculations",
+            281224891724128
+        ],
+        [
+            "emission",
+            "Emissions",
+            281470681806687
+        ],
+        [
+            "flow",
+            "Flow based energy resources (time series)",
+            281470681805291
+        ],
+        [
+            "grid",
+            "Forms of energy",
+            281470681805032
+        ],
+        [
+            "group",
+            "Groups of units, transfer links, nodes, etc.",
+            281470681804992
+        ],
+        [
+            "io",
+            "Designating nodes as either inputs or outputs",
+            281473533932386
+        ],
+        [
+            "model",
+            "Model instances",
+            281473533931932
+        ],
+        [
+            "node",
+            "Nodes maintain the energy balance or track exogenous commodities",
+            281470681805765
+        ],
+        [
+            "restype",
+            "Reserve types",
+            281470681805031
+        ],
+        [
+            "unit",
+            "Energy conversion devices and facilities",
+            281470681805429
+        ],
+        [
+            "unittype",
+            "Unit technology types",
+            281470681804843
+        ],
+        [
+            "up_down",
+            "Direction set used by some variables, e.g. reserve provisions and generation ramps",
+            281473533932344
+        ]
+    ],
+    "relationship_classes": [
+        [
+            "effLevel__effSelector__unit",
+            [
+                "effLevel",
+                "effSelector",
+                "unit"
+            ],
+            "What efficiency selectors are in use for each unit at each efficiency representation level",
+            null
+        ],
+        [
+            "flow__node",
+            [
+                "flow",
+                "node"
+            ],
+            "Nodes with flows",
+            null
+        ],
+        [
+            "flow__unit",
+            [
+                "flow",
+                "unit"
+            ],
+            "Units linked to a certain energy flow time series",
+            null
+        ],
+        [
+            "gnu__restype__up_down__restype",
+            [
+                "grid",
+                "node",
+                "unit",
+                "restype",
+                "up_down",
+                "restype"
+            ],
+            "The first type of reserve can be used also in the second reserve category (with a possible multiplier)",
+            null
+        ],
+        [
+            "grid__node",
+            [
+                "grid",
+                "node"
+            ],
+            "Nodes within grids",
+            null
+        ],
+        [
+            "grid__node__boundary",
+            [
+                "grid",
+                "node",
+                "boundary"
+            ],
+            "Node state boundaries and limits",
+            null
+        ],
+        [
+            "grid__node__group",
+            [
+                "grid",
+                "node",
+                "group"
+            ],
+            "Combination of grids and nodes in particular groups",
+            null
+        ],
+        [
+            "grid__node__node",
+            [
+                "grid",
+                "node",
+                "node"
+            ],
+            "Interconnections between energy nodes",
+            null
+        ],
+        [
+            "grid__node__node__group",
+            [
+                "grid",
+                "node",
+                "node",
+                "group"
+            ],
+            "Interconnections in particular groups",
+            null
+        ],
+        [
+            "grid__node__node__restype",
+            [
+                "grid",
+                "node",
+                "node",
+                "restype"
+            ],
+            "Reserve provision data for interconnections",
+            null
+        ],
+        [
+            "grid__node__unit__boundary",
+            [
+                "grid",
+                "node",
+                "unit",
+                "boundary"
+            ],
+            "Unit boundaries where energy type matters",
+            null
+        ],
+        [
+            "grid__node__unit__emission",
+            [
+                "grid",
+                "node",
+                "unit",
+                "emission"
+            ],
+            "Unit data of energy specific emission factors (t/MWh)",
+            null
+        ],
+        [
+            "grid__node__unit__group",
+            [
+                "grid",
+                "node",
+                "unit",
+                "group"
+            ],
+            "Units in particular groups where energy type matters",
+            null
+        ],
+        [
+            "grid__node__unit__io",
+            [
+                "grid",
+                "node",
+                "unit",
+                "io"
+            ],
+            "Unit properties where energy type matters",
+            null
+        ],
+        [
+            "grid__node__unit__restype",
+            [
+                "grid",
+                "node",
+                "unit",
+                "restype"
+            ],
+            "Reserve provision data for units",
+            null
+        ],
+        [
+            "group__emission",
+            [
+                "group",
+                "emission"
+            ],
+            "Emission policy in particular node groups",
+            null
+        ],
+        [
+            "group__restype",
+            [
+                "group",
+                "restype"
+            ],
+            "Reserve rules in each node group",
+            null
+        ],
+        [
+            "group__restype__up_down",
+            [
+                "group",
+                "restype",
+                "up_down"
+            ],
+            "Reserve policy in each node group separately for each reserve type and direction",
+            null
+        ],
+        [
+            "group__restype__up_down__group",
+            [
+                "group",
+                "restype",
+                "up_down",
+                "group"
+            ],
+            "Reserve policy in each node group separately for each reserve type and direction, also linking to another group",
+            null
+        ],
+        [
+            "node__emission",
+            [
+                "node",
+                "emission"
+            ],
+            "Emission content (t/MWh)",
+            null
+        ],
+        [
+            "restype__up_down",
+            [
+                "restype",
+                "up_down"
+            ],
+            "Combinations of reserve types and directions",
+            null
+        ],
+        [
+            "unit__constraint",
+            [
+                "unit",
+                "constraint"
+            ],
+            "Constant for constraints (eq1-9, gt1-9) between inputs and outputs",
+            null
+        ],
+        [
+            "unit__constraint__node",
+            [
+                "unit",
+                "constraint",
+                "node"
+            ],
+            "Coefficients for constraints (eq1-9, gt1-9) between inputs and outputs",
+            null
+        ],
+        [
+            "unit__group",
+            [
+                "unit",
+                "group"
+            ],
+            "Units in particular groups",
+            null
+        ],
+        [
+            "unit__node",
+            [
+                "unit",
+                "node"
+            ],
+            "Startup fuels",
+            null
+        ],
+        [
+            "unit__unittype",
+            [
+                "unit",
+                "unittype"
+            ],
+            "Units linked to technology types",
+            null
+        ],
+        [
+            "unit_aggregate__unit__efflevel",
+            [
+                "unit",
+                "unit",
+                "effLevel"
+            ],
+            "Aggregator unit linked to aggreted units with a definition when to start the aggregation",
+            null
+        ]
+    ],
+    "object_parameters": [
+        [
+            "group",
+            "ROCOF",
+            null,
+            null,
+            "Maximum rate of change of frequency (Hz/s)"
+        ],
+        [
+            "group",
+            "constrainedCapTotalMax",
+            null,
+            null,
+            "Total maximum b for unit investments in equation Sum(i, a(i)*v_invest(i)) <= b"
+        ],
+        [
+            "group",
+            "constrainedOnlineTotalMax",
+            null,
+            null,
+            "Total maximum b for online units in equation Sum(i, a(i)*v_online(i)) <= b"
+        ],
+        [
+            "group",
+            "defaultFrequency",
+            null,
+            null,
+            "Nominal frequency in the system (Hz)"
+        ],
+        [
+            "group",
+            "dynamicInertia",
+            null,
+            null,
+            "A flag to indicate dynamic inertia constraint should be implemented - q_rateOfChangeOfFrequencyUnit/Transfer"
+        ],
+        [
+            "group",
+            "energyMax",
+            null,
+            null,
+            "Maximum energy production or consumption from particular grid-node-units over particular samples"
+        ],
+        [
+            "group",
+            "energyMin",
+            null,
+            null,
+            "Minimum energy production or consumption from particular grid-node-units over particular samples"
+        ],
+        [
+            "group",
+            "energyShareMax",
+            null,
+            null,
+            "Maximum share of energy production from particular grid-node-units over particular samples"
+        ],
+        [
+            "group",
+            "energyShareMin",
+            null,
+            null,
+            "Minimum share of energy production from particular grid-node-units over particular samples"
+        ],
+        [
+            "group",
+            "samples",
+            null,
+            null,
+            "Active samples in the group (Map)"
+        ],
+        [
+            "group",
+            "staticInertia",
+            null,
+            null,
+            "A flag to indicate static inertia constraint should be implemented - q_inertiaMin"
+        ],
+        [
+            "model",
+            "discountFactor",
+            null,
+            null,
+            "Discount factor of each sample (Map)"
+        ],
+        [
+            "model",
+            "t_invest",
+            null,
+            null,
+            "Time steps when investments can be made (Map)"
+        ],
+        [
+            "node",
+            "price",
+            null,
+            null,
+            "Commodity price (EUR/MWh). Values are read directly from input data or calculated from ts_priceChange. Can use both, but only one option for each node allowed."
+        ],
+        [
+            "node",
+            "priceChange",
+            null,
+            null,
+            "Initial commodity price and consequent changes in commodity price (EUR/MWh)"
+        ],
+        [
+            "restype",
+            "restypeReleasedForRealization",
+            null,
+            null,
+            "A flag to indicate that the reserve is released for the realized time intervals (1 if true)"
+        ],
+        [
+            "restype",
+            "restype_inertia",
+            null,
+            null,
+            "A flag to indicate that the requirement can also be fulfilled with the inertia of synchronous machines (1 if true)"
+        ],
+        [
+            "unit",
+            "availability",
+            null,
+            null,
+            "Availability of given energy conversion technology (constant or time series Map, p.u.)"
+        ],
+        [
+            "unit",
+            "becomeAvailable",
+            null,
+            null,
+            "The time step when the unit becomes available (Map)"
+        ],
+        [
+            "unit",
+            "becomeUnavailable",
+            null,
+            null,
+            "The time step when the unit becomes unavailable (Map)"
+        ],
+        [
+            "unit",
+            "boundSamples",
+            null,
+            null,
+            "Bound the samples so that the unit online state at the last interval of the first sample equals the state at the first interval of the second sample (Map)"
+        ],
+        [
+            "unit",
+            "efficiency",
+            null,
+            null,
+            "Efficiency of the unit, expressed in eff00-eff12, opFirstCross, op00-op12, and section; or hr00-hr12, hrop00-hrop12, and hrsection (Map)"
+        ],
+        [
+            "unit",
+            "efficiency_ts",
+            null,
+            null,
+            "Efficiency of the unit, expressed in time series form of eff00-eff12 - use only with directOff (Map)"
+        ],
+        [
+            "unit",
+            "fixedFlow",
+            null,
+            null,
+            "A flag to fix the production or consumption of the unit based on availability, flow, and capacity"
+        ],
+        [
+            "unit",
+            "initialOnlineStatus",
+            null,
+            null,
+            "Initial online status of the unit in the first time step (0-1)"
+        ],
+        [
+            "unit",
+            "investMIP",
+            null,
+            null,
+            "A flag to make integer investment instead of continous investment"
+        ],
+        [
+            "unit",
+            "maxUnitCount",
+            null,
+            null,
+            "Maximum number of units when making integer investments"
+        ],
+        [
+            "unit",
+            "minOperationHours",
+            null,
+            null,
+            "Minimum operation time (h), prevents shutdown after startup until the defined amount of time has passed"
+        ],
+        [
+            "unit",
+            "minShutDownHours",
+            null,
+            null,
+            "Minimum shut down time (h), prevents starting up again after the defined amount of time has passed"
+        ],
+        [
+            "unit",
+            "minUnitCount",
+            null,
+            null,
+            "Minimum number of units when making integer investments"
+        ],
+        [
+            "unit",
+            "outputCapacityTotal",
+            null,
+            null,
+            "Output capacity of the unit, calculated by summing all the outputs together by default, unless defined in data"
+        ],
+        [
+            "unit",
+            "rampSpeedFromMinLoad",
+            null,
+            null,
+            "Ramping speed from shutdown decision to zero load (p.u./min)"
+        ],
+        [
+            "unit",
+            "rampSpeedToMinLoad",
+            null,
+            null,
+            "Ramping speed from start-up to minimum load (p.u./min)"
+        ],
+        [
+            "unit",
+            "startColdAfterXhours",
+            null,
+            null,
+            "Offline hours after which the start-up will be a cold start (h)"
+        ],
+        [
+            "unit",
+            "startWarmAfterXHours",
+            null,
+            null,
+            "Offline hours after which the start-up will be a warm start (h)"
+        ],
+        [
+            "unit",
+            "unitCount",
+            null,
+            null,
+            "Number of subunits if aggregated"
+        ],
+        [
+            "unit",
+            "unit_fail",
+            null,
+            null,
+            "A flag to indicate that there should be enough reserve capacity to cover a trip of the unit (1 if true)"
+        ],
+        [
+            "unit",
+            "useInitialOnlineStatus",
+            null,
+            null,
+            "A flag to fix the online status of a unit for the first time step (binary)"
+        ],
+        [
+            "unit",
+            "useTimeseries",
+            null,
+            null,
+            "A flag to use time series form efficiency parameters"
+        ],
+        [
+            "unit",
+            "useTimeseriesAvailability",
+            null,
+            null,
+            "A flag to use time series form availability parameter"
+        ]
+    ],
+    "relationship_parameters": [
+        [
+            "flow__node",
+            "capacityFactor",
+            null,
+            null,
+            "Mean available capacity factor time series (Map, p.u.)"
+        ],
+        [
+            "gnu__restype__up_down__restype",
+            "forwardReserve",
+            null,
+            null,
+            "Multiplier for using the first type of reserve also in the second reserve category"
+        ],
+        [
+            "grid__node",
+            "boundAll",
+            null,
+            null,
+            "A flag to bound the state to the reference in all time steps"
+        ],
+        [
+            "grid__node",
+            "boundEnd",
+            null,
+            null,
+            "A flag to bound last t in eachn solve based on the reference constant or time series"
+        ],
+        [
+            "grid__node",
+            "boundSamples",
+            null,
+            null,
+            "Bound the samples so that the node state at the last interval of the first sample equals the state at the first interval of the second sample (Map)"
+        ],
+        [
+            "grid__node",
+            "boundStart",
+            null,
+            null,
+            "A flag to bound the first t in the run using reference constant or time series"
+        ],
+        [
+            "grid__node",
+            "boundStartAndEnd",
+            null,
+            null,
+            "A flag that both start and end are bound using reference constant or time series"
+        ],
+        [
+            "grid__node",
+            "boundStartToEnd",
+            null,
+            null,
+            "Force the last states to equal the first state"
+        ],
+        [
+            "grid__node",
+            "capacityMargin",
+            null,
+            null,
+            "Capacity margin used in invest mode (MW)"
+        ],
+        [
+            "grid__node",
+            "energyStoredPerUnitOfState",
+            null,
+            null,
+            "A possible unit conversion if v_state uses something else than MWh (MWh/[v_state])"
+        ],
+        [
+            "grid__node",
+            "influx",
+            null,
+            null,
+            "External power inflow/outflow during a time step (MWh/h)"
+        ],
+        [
+            "grid__node",
+            "nodeBalance",
+            null,
+            null,
+            "A flag to decide whether node balance constraint is to be used"
+        ],
+        [
+            "grid__node",
+            "selfDischargeLoss",
+            null,
+            null,
+            "Self discharge rate of the node (MW/[v_state])"
+        ],
+        [
+            "grid__node",
+            "storageValue",
+            null,
+            null,
+            "Value of stored something at the end of a time step (constant or timeseries Map, EUR/<v_state_unit>)"
+        ],
+        [
+            "grid__node",
+            "storageValueUseTimeSeries",
+            null,
+            null,
+            "A flag to determine whether to use time series form `storageValue`"
+        ],
+        [
+            "grid__node",
+            "usePrice",
+            null,
+            null,
+            "A flag to decide whether priceChange parameter of the node is to be used"
+        ],
+        [
+            "grid__node__boundary",
+            "constant",
+            null,
+            null,
+            "A constant value for the boundary or the reference"
+        ],
+        [
+            "grid__node__boundary",
+            "multiplier",
+            null,
+            null,
+            "A multiplier to change the constant or timeseries value, default 1"
+        ],
+        [
+            "grid__node__boundary",
+            "slackCost",
+            null,
+            null,
+            "The cost of exceeding the slack boundary"
+        ],
+        [
+            "grid__node__boundary",
+            "timeseries",
+            null,
+            null,
+            "Timeseries values for the boundary or the reference (Map)"
+        ],
+        [
+            "grid__node__boundary",
+            "useConstant",
+            null,
+            null,
+            "A flag to use constant to set state bounds and limits"
+        ],
+        [
+            "grid__node__boundary",
+            "useTimeseries",
+            null,
+            null,
+            "A flag to use time series to set state bounds and limits"
+        ],
+        [
+            "grid__node__node",
+            "ICrampDown",
+            null,
+            null,
+            "Ramp down limit of the interconnection"
+        ],
+        [
+            "grid__node__node",
+            "ICrampUp",
+            null,
+            null,
+            "Ramp up limit of the interconnection"
+        ],
+        [
+            "grid__node__node",
+            "annuity",
+            null,
+            null,
+            "Investment annuity"
+        ],
+        [
+            "grid__node__node",
+            "availability",
+            null,
+            null,
+            "Availability of the interconnection (constant or timeseries Map, p.u.)"
+        ],
+        [
+            "grid__node__node",
+            "boundStateMaxDiff",
+            null,
+            null,
+            "Maximum difference of node state pairs ([v_state])"
+        ],
+        [
+            "grid__node__node",
+            "diffCoeff",
+            null,
+            null,
+            "Coefficients for energy diffusion between nodes (MW/[v_state])"
+        ],
+        [
+            "grid__node__node",
+            "invCost",
+            null,
+            null,
+            "Investment cost (EUR/MW)"
+        ],
+        [
+            "grid__node__node",
+            "investMIP",
+            null,
+            null,
+            "A flag to make integer investment instead of continuous investment (MW versus number of links)"
+        ],
+        [
+            "grid__node__node",
+            "portion_of_transfer_to_reserve",
+            null,
+            null,
+            "Portion of the import/export that needs to be available as reserve if the interconnection fails"
+        ],
+        [
+            "grid__node__node",
+            "transferCap",
+            null,
+            null,
+            "Transfer capacity limits (MW)"
+        ],
+        [
+            "grid__node__node",
+            "transferCapBidirectional",
+            null,
+            null,
+            "Total bidirectional transfer capacity limit (MW)"
+        ],
+        [
+            "grid__node__node",
+            "transferCapInvLimit",
+            null,
+            null,
+            "Capacity limit for investments (MW)"
+        ],
+        [
+            "grid__node__node",
+            "transferLoss",
+            null,
+            null,
+            "Transfer losses (constant or timeseries Map, p.u.)"
+        ],
+        [
+            "grid__node__node",
+            "unitSize",
+            null,
+            null,
+            "Size of one link for integer investments (MW)"
+        ],
+        [
+            "grid__node__node",
+            "useTimeSeriesAvailability",
+            null,
+            null,
+            "A flag to use time series form input for availability"
+        ],
+        [
+            "grid__node__node",
+            "useTimeSeriesLoss",
+            null,
+            null,
+            "A flag to use time series form input for transferLoss"
+        ],
+        [
+            "grid__node__node",
+            "variableTransCost",
+            null,
+            null,
+            "Variable cost applied to transfers (EUR/MW)"
+        ],
+        [
+            "grid__node__node__restype",
+            "down",
+            null,
+            null,
+            "Downwards reserve provision data for node node connections"
+        ],
+        [
+            "grid__node__node__restype",
+            "up",
+            null,
+            null,
+            "Upwards reserve provision data for node node connections"
+        ],
+        [
+            "grid__node__unit__boundary",
+            "rampCost",
+            null,
+            null,
+            "Wear and tear cost of ramping up (EUR/MW)"
+        ],
+        [
+            "grid__node__unit__boundary",
+            "rampLimit",
+            null,
+            null,
+            "Maximum ramp speed (p.u./min)"
+        ],
+        [
+            "grid__node__unit__emission",
+            "fomEmissions",
+            null,
+            null,
+            "Emissions from fixed operation and maintenance (tEmission/MW/a)"
+        ],
+        [
+            "grid__node__unit__emission",
+            "invEmissionFactor",
+            null,
+            null,
+            "Factor used to multiply investment emissions to divide them over multiple years (0-1). Default 1."
+        ],
+        [
+            "grid__node__unit__emission",
+            "invEmissions",
+            null,
+            null,
+            "Emissions from capacity investments (tEmission/MW)"
+        ],
+        [
+            "grid__node__unit__emission",
+            "vomEmissions",
+            null,
+            null,
+            "Emissions from variable operation and maintenance (tEmission/MWh)"
+        ],
+        [
+            "grid__node__unit__io",
+            "annuity",
+            null,
+            null,
+            "Investment annuity factor"
+        ],
+        [
+            "grid__node__unit__io",
+            "availabilityCapacityMargin",
+            null,
+            null,
+            "Availability of the unit in the capacity margin equation (p.u.). If zero, v_gen is used. Currently used only for output capacity."
+        ],
+        [
+            "grid__node__unit__io",
+            "capacity",
+            null,
+            null,
+            "Maximum capacity (MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "conversionCoeff",
+            null,
+            null,
+            "Coefficient for conversion equation (multiplies each input or output when summing v_gen from multiple inputs/outputs)"
+        ],
+        [
+            "grid__node__unit__io",
+            "fomCosts",
+            null,
+            null,
+            "Fixed operation and maintenance costs (EUR/MW/a)"
+        ],
+        [
+            "grid__node__unit__io",
+            "inertia",
+            null,
+            null,
+            "Inertia of the unit (s)"
+        ],
+        [
+            "grid__node__unit__io",
+            "initialGeneration",
+            null,
+            null,
+            "Initial generation/consumption of the unit in the first time step (MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "invCosts",
+            null,
+            null,
+            "Investment costs (EUR/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "maxRampDown",
+            null,
+            null,
+            "Speed to ramp down (p.u./min)"
+        ],
+        [
+            "grid__node__unit__io",
+            "maxRampUp",
+            null,
+            null,
+            "Speed to ramp up (p.u./min)"
+        ],
+        [
+            "grid__node__unit__io",
+            "shutdownCost",
+            null,
+            null,
+            "Cost of shutting down the unit (EUR/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "startCostCold",
+            null,
+            null,
+            "Variable start-up costs for cold starts excluding fuel costs (EUR/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "startCostHot",
+            null,
+            null,
+            "Variable start-up costs for hot starts excluding fuel costs (EUR/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "startCostWarm",
+            null,
+            null,
+            "Variable start-up costs for warm starts excluding fuel costs (EUR/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "startFuelConsCold",
+            null,
+            null,
+            "Consumption of start-up fuel per cold subunit started up (MWh_fuel/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "startFuelConsHot",
+            null,
+            null,
+            "Consumption of start-up fuel per hot subunit started up (MWh_fuel/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "startFuelConsWarm",
+            null,
+            null,
+            "Consumption of start-up fuel per warm subunit started up (MWh_fuel/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "unitSize",
+            null,
+            null,
+            "Input/Output capacity of one subunit for integer investments (MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "unitSizeMVA",
+            null,
+            null,
+            "Generator MVA rating of one subunit (MVA)"
+        ],
+        [
+            "grid__node__unit__io",
+            "upperLimitCapacityRatio",
+            null,
+            null,
+            "Ratio of the upper limit of the node state and the unit capacity investment ([v_state]/MW)"
+        ],
+        [
+            "grid__node__unit__io",
+            "useInitialGeneration",
+            null,
+            null,
+            "A flag to indicate whether to fix generation for the first time step (binary)"
+        ],
+        [
+            "grid__node__unit__io",
+            "vomCosts",
+            null,
+            null,
+            "Variable operation and maintenance costs (EUR/MWh)"
+        ],
+        [
+            "grid__node__unit__restype",
+            "down",
+            null,
+            null,
+            "Downwards reserve provision data for units"
+        ],
+        [
+            "grid__node__unit__restype",
+            "offlineReserveCapability",
+            null,
+            null,
+            "Proportion of an offline unit which can contribute to a category of reserve"
+        ],
+        [
+            "grid__node__unit__restype",
+            "portion_of_infeed_to_reserve",
+            null,
+            null,
+            "Proportion of the generation of a tripping unit that needs to be covered by reserves from other units"
+        ],
+        [
+            "grid__node__unit__restype",
+            "reserveReliability",
+            null,
+            null,
+            "Reliability parameter of reserve provisions"
+        ],
+        [
+            "grid__node__unit__restype",
+            "reserve_increase_ratio",
+            null,
+            null,
+            "Unit output is multiplied by this factor to get the increase in reserve demand"
+        ],
+        [
+            "grid__node__unit__restype",
+            "up",
+            null,
+            null,
+            "Upwards reserve provision data for units"
+        ],
+        [
+            "group__emission",
+            "emissionCap",
+            null,
+            null,
+            "Emission limit (tonne)"
+        ],
+        [
+            "group__emission",
+            "emissionPriceChange",
+            null,
+            null,
+            "Initial emission group price and consequent changes in price (EUR/tCO2)"
+        ],
+        [
+            "group__emission",
+            "emissionTax",
+            null,
+            null,
+            "Emission tax (EUR/tonne)"
+        ],
+        [
+            "group__restype",
+            "gate_closure",
+            null,
+            null,
+            "Number of timesteps ahead of dispatch that reserves are fixed"
+        ],
+        [
+            "group__restype",
+            "reserve_activation_duration",
+            null,
+            null,
+            "How long the reserve should be provided once activated (h)"
+        ],
+        [
+            "group__restype",
+            "reserve_length",
+            null,
+            null,
+            "Length of reserve horizon (number of timesteps)"
+        ],
+        [
+            "group__restype",
+            "reserve_reactivation_time",
+            null,
+            null,
+            "How soon the unit providing reserve needs to be able to reactivate after the start of the previous activation (h)"
+        ],
+        [
+            "group__restype",
+            "update_frequency",
+            null,
+            null,
+            "Frequency of updating reserve contributions (number of timesteps)"
+        ],
+        [
+            "group__restype",
+            "update_offset",
+            null,
+            null,
+            "Optional offset for delaying the reserve update frequency (number of timesteps)"
+        ],
+        [
+            "group__restype",
+            "useTimeseries",
+            null,
+            null,
+            "A flag for using time series data"
+        ],
+        [
+            "group__restype__up_down",
+            "LossOfTrans",
+            null,
+            null,
+            "A flag to tell that N-1 reserve is needed due to a possibility that an interconnector to/from the node group fails"
+        ],
+        [
+            "group__restype__up_down",
+            "reserveDemand",
+            null,
+            null,
+            "Reserve demand in region (constant or timeseries Map, MW)"
+        ],
+        [
+            "group__restype__up_down__group",
+            "ReserveShareMax",
+            null,
+            null,
+            "Maximum reserve share of a group of units"
+        ],
+        [
+            "node__emission",
+            "emission_content",
+            null,
+            null,
+            "Emission content (t/MWh)"
+        ],
+        [
+            "unit__constraint",
+            "constant",
+            null,
+            null,
+            "Constant when binding inputs/outputs"
+        ],
+        [
+            "unit__constraint__node",
+            "coefficient",
+            null,
+            null,
+            "Coefficient when binding inputs/outputs"
+        ],
+        [
+            "unit__group",
+            "constrainedCapMultiplier",
+            null,
+            null,
+            "Multiplier a(i) for unit investments in equation Sum(i, a(i)*v_invest(i)) <= b"
+        ],
+        [
+            "unit__group",
+            "constrainedOnlineMultiplier",
+            null,
+            null,
+            "Multiplier a(i) for online units in equation Sum(i, a(i)*v_online(i)) <= b"
+        ],
+        [
+            "unit__node",
+            "fixedFuelFraction",
+            null,
+            null,
+            "Fixed share of a fuel in the start-up fuel consumption mix"
+        ]
+    ],
+    "objects": [
+        [
+            "boundary",
+            "balancePenalty",
+            "Penalty value for violating the energy balance of that particular node (EUR/MWh) (can be interpretated as the energy price in certain settings)"
+        ],
+        [
+            "boundary",
+            "downwardLimit",
+            "Absolute minimum energy in the node (unit of measure depends on energyStoredPerUnitOfState)"
+        ],
+        [
+            "boundary",
+            "downwardSlack01",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack02",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack03",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack04",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack05",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack06",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack07",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack08",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack09",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack10",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack11",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack12",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack13",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack14",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack15",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack16",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack17",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack18",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack19",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "downwardSlack20",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "maxSpill      ",
+            "Maximum spill rate from the node (MWh/h)"
+        ],
+        [
+            "boundary",
+            "minSpill      ",
+            "Minimum spill rate from the node (MWh/h)"
+        ],
+        [
+            "boundary",
+            "reference     ",
+            "Reference value for a state that can be used to bound a state (unit of measure depends on energyStoredPerUnitOfState)"
+        ],
+        [
+            "boundary",
+            "upwardLimit",
+            "Absolute maximum state of the node (unit of measure depends on energyStoredPerUnitOfState)"
+        ],
+        [
+            "boundary",
+            "upwardSlack01",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack02",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack03",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack04",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack05",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack06",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack07",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack08",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack09",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack10",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack11",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack12",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack13",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack14",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack15",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack16",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack17",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack18",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack19",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "boundary",
+            "upwardSlack20",
+            "A threshold after which a specific cost co-efficient is applied"
+        ],
+        [
+            "constraint",
+            "eq1",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq2",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq3",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq4",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq5",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq6",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq7",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq8",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "eq9",
+            "Equality constraints"
+        ],
+        [
+            "constraint",
+            "gt1",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt2",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt3",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt4",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt5",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt6",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt7",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt8",
+            "Greater than constraints"
+        ],
+        [
+            "constraint",
+            "gt9",
+            "Greater than constraints"
+        ],
+        [
+            "effLevel",
+            "level1",
+            null
+        ],
+        [
+            "effLevel",
+            "level2",
+            null
+        ],
+        [
+            "effLevel",
+            "level3",
+            null
+        ],
+        [
+            "effLevel",
+            "level4",
+            null
+        ],
+        [
+            "effLevel",
+            "level5",
+            null
+        ],
+        [
+            "effLevel",
+            "level6",
+            null
+        ],
+        [
+            "effLevel",
+            "level7",
+            null
+        ],
+        [
+            "effLevel",
+            "level8",
+            null
+        ],
+        [
+            "effLevel",
+            "level9",
+            null
+        ],
+        [
+            "effSelector",
+            "directOff",
+            "Direct input to output equation without online variable, i.e. constant efficiency"
+        ],
+        [
+            "effSelector",
+            "directOnLP",
+            "Direct input to output equation with continuous online variable"
+        ],
+        [
+            "effSelector",
+            "directOnMIP",
+            "Direct input to output equation with integer online variable"
+        ],
+        [
+            "effSelector",
+            "incHR",
+            "Incremental heat rate equation"
+        ],
+        [
+            "effSelector",
+            "lambda01",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda02",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda03",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda04",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda05",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda06",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda07",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda08",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda09",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda10",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda11",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "effSelector",
+            "lambda12",
+            "Lambdas in use for part-load efficiency representation"
+        ],
+        [
+            "io",
+            "input",
+            null
+        ],
+        [
+            "io",
+            "output",
+            null
+        ],
+        [
+            "up_down",
+            "down",
+            null
+        ],
+        [
+            "up_down",
+            "up",
+            null
+        ]
+    ],
+    "alternatives": [
+        [
+            "Base",
+            "Base alternative"
+        ]
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "name": "Backbone",
+    "tooltype": "gams",
+    "includes": [
+        "Backbone.gms",
+        "inc/*.gms",
+        "inc/rampSched/*.gms",
+        "defModels/*.gms",
+        "defOutput/debugSymbols.inc",
+        "defOutput/resultSymbols.inc",
+        "cplex.opt",
+        "version"
+    ],
+    "description": "Backbone",
+    "inputfiles": [
+        "input/1_options.gms",
+        "input/timeAndSamples.inc",
+        "input/inputData.gdx",
+        "input/modelsInit.gms"
+    ],
+    "inputfiles_opt": [
+        "input/*.*",
+        "version_git"
+    ],
+    "outputfiles": [
+        "Backbone.lst",
+        "output/results.gdx"
+    ],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "."
+}

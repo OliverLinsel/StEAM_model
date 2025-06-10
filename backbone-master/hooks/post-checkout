@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# A hook script to write the version info.
+#
+# To enable this hook, copy this file to ".git/hooks/".
+#
+
+echo -n "'version' " > version_git
+git describe --dirty=+ --always >> version_git

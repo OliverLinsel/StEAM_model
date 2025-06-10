@@ -1,0 +1,366 @@
+{
+    "project": {
+        "version": 13,
+        "description": "",
+        "settings": {
+            "enable_execute_all": true
+        },
+        "specifications": {
+            "Tool": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "spineToolbox.json"
+                }
+            ],
+            "Exporter": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "tools/export_to_bb.json"
+                }
+            ],
+            "Importer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "tools/import_from_gdx.json"
+                }
+            ],
+            "Data Transformer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "tools/transform_to_bb_sets.json"
+                }
+            ]
+        },
+        "connections": [
+            {
+                "name": "from BB_data to Transform_to_BB_sets",
+                "from": [
+                    "BB_data",
+                    "right"
+                ],
+                "to": [
+                    "Transform_to_BB_sets",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_data": {
+                            "scenario_filter": {},
+                            "alternative_filter": {}
+                        }
+                    },
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_config_files to Backbone_benchmark",
+                "from": [
+                    "BB_config_files",
+                    "right"
+                ],
+                "to": [
+                    "Backbone_benchmark",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from Import_from_GDX to BB_data",
+                "from": [
+                    "Import_from_GDX",
+                    "right"
+                ],
+                "to": [
+                    "BB_data",
+                    "bottom"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_config_files to Backbone",
+                "from": [
+                    "BB_config_files",
+                    "right"
+                ],
+                "to": [
+                    "Backbone",
+                    "bottom"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from Export_to_BB to Backbone",
+                "from": [
+                    "Export_to_BB",
+                    "right"
+                ],
+                "to": [
+                    "Backbone",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from Transform_to_BB_sets to Export_to_BB",
+                "from": [
+                    "Transform_to_BB_sets",
+                    "right"
+                ],
+                "to": [
+                    "Export_to_BB",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_InputData_GDX to Backbone_benchmark",
+                "from": [
+                    "BB_InputData_GDX",
+                    "right"
+                ],
+                "to": [
+                    "Backbone_benchmark",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_InputData_GDX to Import_from_GDX",
+                "from": [
+                    "BB_InputData_GDX",
+                    "right"
+                ],
+                "to": [
+                    "Import_from_GDX",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_data_template to BB_data merger",
+                "from": [
+                    "BB_data_template",
+                    "right"
+                ],
+                "to": [
+                    "BB_data merger",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {
+                        "db_url@BB_data_template": {
+                            "scenario_filter": {},
+                            "alternative_filter": {
+                                "Base": true
+                            }
+                        }
+                    },
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            },
+            {
+                "name": "from BB_data merger to BB_data",
+                "from": [
+                    "BB_data merger",
+                    "right"
+                ],
+                "to": [
+                    "BB_data",
+                    "left"
+                ],
+                "filter_settings": {
+                    "known_filters": {},
+                    "auto_online": true,
+                    "enabled_filter_types": {
+                        "alternative_filter": false,
+                        "scenario_filter": true
+                    }
+                }
+            }
+        ],
+        "jumps": []
+    },
+    "items": {
+        "BB_data": {
+            "type": "Data Store",
+            "description": "",
+            "x": -103.33707852823673,
+            "y": -135.86089180146524,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/bb_data/bb_data.sqlite"
+                },
+                "schema": ""
+            }
+        },
+        "BB_config_files": {
+            "type": "Data Connection",
+            "description": "",
+            "x": 224.79620087181706,
+            "y": -18.074508998597892,
+            "file_references": [],
+            "db_references": []
+        },
+        "Backbone": {
+            "type": "Tool",
+            "description": "",
+            "x": 370.0293661569585,
+            "y": -122.35328386386612,
+            "specification": "Backbone",
+            "execute_in_work": true,
+            "cmd_line_args": [],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "Export_to_BB": {
+            "type": "Exporter",
+            "description": "",
+            "x": 224.04709492885146,
+            "y": -128.7838020219262,
+            "output_time_stamps": false,
+            "cancel_on_error": true,
+            "output_labels": [
+                {
+                    "in_label": "db_url@Transform_to_BB_sets",
+                    "out_label": "inputData.gdx"
+                }
+            ],
+            "specification": "Export_to_BB"
+        },
+        "BB_data_template": {
+            "type": "Data Store",
+            "description": "",
+            "x": -366.29817274576214,
+            "y": -143.39191254748494,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/bb_data_template/bb_data_template.sqlite"
+                },
+                "schema": ""
+            }
+        },
+        "BB_data merger": {
+            "type": "Merger",
+            "description": "Merges data into BB_data",
+            "x": -233.1641649453353,
+            "y": -139.78349263409575,
+            "cancel_on_error": true
+        },
+        "BB_InputData_GDX": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -311.28501353639416,
+            "y": 111.18801819839976,
+            "file_references": [],
+            "db_references": []
+        },
+        "Import_from_GDX": {
+            "type": "Importer",
+            "description": "",
+            "x": -189.7460787659627,
+            "y": 3.395558713966615,
+            "specification": "Import_from_GDX",
+            "cancel_on_error": false,
+            "on_conflict": "merge",
+            "file_selection": []
+        },
+        "Transform_to_BB_sets": {
+            "type": "Data Transformer",
+            "description": "",
+            "x": 74.76735356404271,
+            "y": -131.01422286608698,
+            "specification": "Transform_to_BB_sets"
+        },
+        "Backbone_benchmark": {
+            "type": "Tool",
+            "description": "",
+            "x": 363.49524873799595,
+            "y": 111.45642877204835,
+            "specification": "Backbone",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "--t_start=1"
+                },
+                {
+                    "type": "resource",
+                    "arg": "--t_end=6"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        }
+    }
+}
