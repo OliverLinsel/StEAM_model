@@ -204,6 +204,29 @@ Sets
     groupRestype(group, restype) "Groups with reserve requirements"
     mSettingsReservesInUse(mType, restype, up_down) "Reserves that are used in each model type"
 
+* --- Background Infos for the Steam Model ------------------------------------
+    s_countries "(KT) countries of subset_countries.csv"
+    s_regions "(KT) regions of subset_countries.csv"
+    s_terminals "(KT) terminals of transport_visualisation.xlsx"
+    steam_subset_countries(s_countries, s_regions) "(KT) subset_countries.csv resulting in the regional configuration"
+    s_scenario "(KT) scenario of scenario.csv"
+    s_alternative "(KT) alternatives of scenario.csv"
+    steam_scenarioAlternative(s_scenario, s_alternative) "(KT) scenarios.csv displaying the chosen scenario configuration"
+    s_x_longitude "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
+    s_y_latitude "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
+    s_regional_WACC_avg "(KT) technological and regional average of the WACC"
+    steam_coordinates_regions(s_regions, s_x_longitude, s_y_latitude) "(KT) coordinates of regions from transport_visualisation.xlsx"
+    steam_WACC(s_regions, s_regional_WACC_avg) "(KT) assigning the average WACC to each region"
+    steam_coordinates_terminals(s_terminals, s_x_longitude, s_y_latitude, s_regions) "(KT) coordinates of terminals assigned to their respective regions from transport_visualisation.xlsx"
+    s_shipping_index "(KT) Index assigned to shipping routes points from start to finish"
+    s_shipping_route "(KT) Shipping routes with origin and destination seperated by '___'"
+    steam_coordinates_shipping(s_shipping_route, s_terminals, s_terminals, s_x_longitude, s_y_latitude, s_shipping_index) "(KT) Split linestrings of shipping connecting two terminals from transport_visualisation.xlsx"
+    s_config_parameter "(KT) part of Steam model config"
+    s_config_object "(KT) part of Steam model config"
+    s_config_value "(KT) part of Steam model config"
+    s_config_alternative "(KT) part of Steam model config"
+    s_config_info "(KT) part of Steam model config"
+    steam_model_config(s_config_parameter, s_config_object, s_config_value, s_config_alternative, s_config_info) "(KT) Steam model config sheet of MainInput.xlsx"
 ;
 * --- Sets to define time, forecasts and samples ------------------------------
 

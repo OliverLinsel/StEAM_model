@@ -2,31 +2,33 @@
 * input folder (e.g. c:\backbone\input) 
 
 * accept small infeasibilties in the solve of the fixed problem
+* Note: This is on by default as it helps MIP models, but turning it off 
+* might increase the solve speed when not using MIPs in the model
 relaxfixedinfeas = 1
 
 ** These options switch solver to barrier algorithm, that might be particularly useful
 ** with very large investment problems. 
 *lpmethod = 4
-baralg = 3
+*baralg = 3
 
 ** sometimes the model solve works fine for most of the year, but but remains infeasible for 
 ** single days. Solver might provide error message "infeasibilities after unscaling".
-** Try scaind = -1 in these cases to not apply scaling. Will increase the solve time.
+** In such cases, try first model scaling, e.g. mSettings('schedule', 'scalingMethod') = 2;  
+** If it doesn't help, try following two optional settings.  	
+**
+** option1:
 *scaind = -1
+*
+** option2:
+*relaxfixedinfeas = 0
+*numericalemphasis = 1
+*epmrk = 0.9
+*eprhs = 1.0e-09
 
-lpmethod = 4
-parallelmode = -1
+** full print of variables and equations to backbone.lp file
+*writelp backbone.lp
 
-** Solutiontype 1: cross over Solutiontype 2: no crossover
-Solutiontype = 2
-
-
-threads = -1
-**preInd = 0
-iis = 1
-barepcomp =  1.0e-08
-**barcolnz = 10000
-**BarDisplay = 2
-scaind =1
-predual = -1
-datacheck=2
+** increasing the solver resource limit, maximum allowed seconds for the solve.
+** some old cplex versions have 1000 seconds as default reslim that can cause issues 
+** particularly with large investment models.
+*reslim = 10000

@@ -25,11 +25,6 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/loadtempalte.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/runspineopt.json"
                 },
                 {
@@ -40,17 +35,7 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/precompiletest.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/import_storage.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/tsam_tool.json"
                 },
                 {
                     "type": "path",
@@ -71,11 +56,6 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/import_demand.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/reload_empty_db_template.json"
                 },
                 {
                     "type": "path",
@@ -101,11 +81,6 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/timeseriesagg.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/results_visualization.json"
                 },
                 {
                     "type": "path",
@@ -231,11 +206,6 @@
                 }
             ],
             "Exporter": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Exporter/exporter_1_datastore1_to_tsam_tool.json"
-                },
                 {
                     "type": "path",
                     "relative": true,

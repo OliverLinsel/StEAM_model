@@ -1,0 +1,13 @@
+{
+    "name": "Run SpineOpt default",
+    "tooltype": "julia",
+    "includes": [
+        "runSpineOpt_default.jl"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "."
+}

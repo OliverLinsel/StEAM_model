@@ -1,0 +1,13 @@
+{
+    "name": "Run SpineOpt Gurobi",
+    "tooltype": "julia",
+    "includes": [
+        "runSpineOpt_Gurobi.jl"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "."
+}

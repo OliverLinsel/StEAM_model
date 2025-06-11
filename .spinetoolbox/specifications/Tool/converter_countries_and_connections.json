@@ -1,0 +1,13 @@
+{
+    "name": "converter_countries_and_connections",
+    "tooltype": "python",
+    "includes": [
+        "Import_Countries_and_Connections.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "includes_main_path": "../../../PythonScripts"
+}
