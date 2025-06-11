@@ -1,8 +1,0 @@
-EU:
-https://data.europa.eu/data/datasets/52b00441-d3e0-44e0-8281-fda86a63546d?locale=en
-
-Github:
-https://github.com/energy-modelling-toolkit/hydro-power-database
-
-Direktlink
-https://github.com/energy-modelling-toolkit/hydro-power-database/raw/master/data/jrc-hydro-power-plant-database.csv
