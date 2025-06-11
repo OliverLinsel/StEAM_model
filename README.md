@@ -20,7 +20,7 @@ Clone repository:
 git clone https://github.com/OliverLinsel/StEAM_model.git
 ```
 2. Download the Dataset from Zenodo and add the content to the Data folder on the top level of the StEAM_model folder <br/>
-Zenodo: [pages.github.com](https://zenodo.org/records/15639823) DOI: 10.5281/zenodo.15639823
+Zenodo: [Link to Zenodo page](https://zenodo.org/records/15639823) DOI: 10.5281/zenodo.15639823
 3. Create python environment and install its requirements 
 ```
 conda create --name steam --y
