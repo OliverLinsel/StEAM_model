@@ -43,7 +43,7 @@ Use Toolbox Menu in the top left.
 6. Via the model_config.csv the model can be configured <br/>
 Default values for CO2 taxes, RFNBO criteria and capacity limitations can be defined here.
 7. The subset_countries.csv defines the regional aggregation <br/>
-The left columns lists all countries that should be included (care for nomenclature). The right columns contains the regions to which the coutnries on the left should be assigned to.
+The left columns lists all countries that should be included (care for nomenclature). The right columns contains the regions to which the countries on the left should be assigned to.
 8. In the TSAM Tool the time aggregation can be defined <br/>
 9. Execute the project in SpineToolbox <br/>
 
