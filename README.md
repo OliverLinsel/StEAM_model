@@ -10,7 +10,7 @@ and runs inside the workflow management software SpineToolbox https://github.com
 To use StEAM you need a GAMS environment to execute backbone.
 
 Installation:
-1. Download the software package
+1. Download the software package<br/>
 Define working folder:
 ```
 cd path\to\folder
@@ -19,9 +19,9 @@ Clone repository:
 ```
 git clone https://github.com/OliverLinsel/StEAM_model.git
 ```
-3. Download the Dataset from Zenodo and add the content to the Data folder on the top level of the StEAM_model folder
+2. Download the Dataset from Zenodo and add the content to the Data folder on the top level of the StEAM_model folder <br/>
 Zenodo Link:
-5. Create python environment and install its requirements
+3. Create python environment and install its requirements 
 ```
 conda create --name steam --y
 ```
@@ -31,21 +31,21 @@ conda activate steam
 ```
 Install requirements (in InstallationScript folder)
 ```
-pip install -r /path/to/requirements.txt
+pip install -r StEAM_model/InstallaltionScript/requirements.txt
 ```
-7. Start SpineToolbox and load the project
+4. Start SpineToolbox and load the project
 ```
 conda activate steam
 spinetoolbox
 ```
-9. If necessary, refresh data connections in the project
+5. If necessary, refresh data connections in the project <br/>
 Use Toolbox Menu in the top left.
-11. Via the model_config.csv the model can be configured
+6. Via the model_config.csv the model can be configured <br/>
 Default values for CO2 taxes, RFNBO criteria and capacity limitations can be defined here.
-13. The subset_countries.csv defines the regional aggregation
+7. The subset_countries.csv defines the regional aggregation <br/>
 The left columns lists all countries that should be included (care for nomenclature). The right columns contains the regions to which the coutnries on the left should be assigned to.
-15. In the TSAM Tool the time aggregation can be defined
-17. Execute the project in SpineToolbox
+8. In the TSAM Tool the time aggregation can be defined <br/>
+9. Execute the project in SpineToolbox <br/>
 
 In case you need to uninstall everything, delete the folder StEAM_model and remove the environment including all packages using this command:
 ```
