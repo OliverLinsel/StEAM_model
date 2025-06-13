@@ -76,8 +76,11 @@ m_conf                              = pd.read_excel(path_Main_Input, sheet_name=
 print("Start reading GIS base information" + "\n")
 
 #import geopandas included shapefiles
-#world = gpd.read_file(os.path.join(path_world))
-world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+#import geopandas included shapefiles
+world = gpd.read_file(os.path.join("Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
+world = world[["POP_EST", "CONTINENT", "NAME", "ISO_A3", "GDP_MD", "geometry"]]
+world = world.rename(columns={"NAME":"name", "ISO_A3":"iso_a3", "POP_EST":"pop_est", "GDP_MD":"gdp_md_est", "CONTINENT":"continent"}) #renaming columns to match the ones in the nodeset
+
 #define deepsea
 deepsea = gpd.read_file(os.path.join(path_deepsea))
 
@@ -209,7 +212,7 @@ new_nodes_disag = gpd.GeoDataFrame(new_nodes_disag, geometry=new_nodes_points) #
 new_nodes_disag.crs = "EPSG:4326" #anpassan der Projektion
 
 #copying geometry information from world where new_nodes_disag are within the geometry of the row in world
-world_regions = gpd.sjoin(world, new_nodes_disag, how="right", op="intersects")
+world_regions = gpd.sjoin(world, new_nodes_disag, how="right", predicate="intersects")
 world_regions = world_regions[["name_right", "Regions", "geometry", "balance_type", "connection_investment_lifetime"]]
 world_regions = world_regions.rename(columns={"name_right":"name"})
 #create lists of all countries that belong to each region
@@ -318,10 +321,11 @@ if exclude_countries == 1:
 h2_pipelines2 = h2_pipelines[["name","geometry"]]
 world2 = world[["name","geometry"]]
 world2["same"] = 1  #defining one value that is the same in all rows
-total_world = world2.dissolve(by='same', aggfunc='sum') #combine country areas to one multipolygon
+total_world = world2.dissolve(by='same', aggfunc='sum').reset_index()[['same', 'geometry', "name"]]  # combine country areas to one multipolygon, keep column names in one line
 total_world.geometry = total_world.geometry.buffer(offshore_factor_geometery_buffer) #enlarge landmass projection by factor
 subset2 = gpd.sjoin(h2_pipelines2, total_world, how='inner', predicate='within') #pipelines that do not cross the sea
-subset2 = subset2.drop(columns={"name_right", "index_right"})
+#%%
+subset2 = subset2.drop(columns={"name_right"})
 subset2 = subset2.rename(columns={"name_left":"name"})
 subset2_list = subset2.name
 onshore_connections_names_list = subset2_list.values.tolist()
@@ -474,6 +478,7 @@ if q == 0:
     con_line["annuity_factor_destination"]                  = ((con_line.WACC_pipeline_regional  + con_line.WACC_conline_local)/2) / (1 - (1 + (con_line.WACC_pipeline_regional  + con_line.WACC_conline_local)/2) ** (-1 * con_line.connection_investment_lifetime))
     con_line["connection_investment_cost_destination"]      = con_line.connection_investment_cost_destination_BB * con_line.annuity_factor_destination          #OUTDATED ## SPINE ONLY ##
     
+    #%%
     con_line['shore']               = gpd.sjoin(con_line, total_world, how='inner', predicate='within')['index_right']  # check if the con_line is on water (currently 50 of 76 are touching water compared to 36 of 72 h2_pipelines... seems like a lot. Could be that terminals are placed IN the water instead of NEAR the water) ## to do ##
     con_line['shore']               = con_line['shore'].fillna(h2_pipelines_offshore_factor)
 

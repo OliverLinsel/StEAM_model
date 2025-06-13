@@ -189,7 +189,13 @@ values_gn = ['grid__node','grid','node','elec','nodeXXX','parameterXXX','Base','
 template_gn = pd.DataFrame(dict(zip(columns_2d, values_gn)), index=range(len(dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"])))
 #parameters
 bb_dim_2_nodeBalance = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'nodeBalance','Parameter values':1})
-bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance],ignore_index=True)
+
+## 20250502 introduce capacityMargin for improved resiliency in (full year) schedule runs
+bb_dim_2_capacityMargin_el = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'capacityMargin','Parameter values':10000})
+bb_dim_2_capacityMargin_h2 = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"].str.strip('_el') + '_h2','Parameter names':'capacityMargin','Parameter values':10000})
+## 
+bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance, bb_dim_2_capacityMargin_h2],ignore_index=True)   # bb_dim_2_capacityMargin_el removed as h2 resiliency is much more critical atm
+
 
 #dim3
 columns_3d = ['Relationship class names', 'Object class names 1','Object class names 2','Object class names 3','Object names 1','Object names 2','Object names 3','Parameter names','Alternative names','Parameter values'] #new df based on length of old 1dim df with new 3dim columns (Spine2BB)
@@ -352,8 +358,8 @@ bb_dim_3_p_gnn_node_b_to_a = bb_dim_3_p_gnn_node_a_to_b.assign(**{'Object names 
 bb_dim_3_relationship_dtype_str = pd.concat([
     bb_dim_3_p_gnn_node_a_to_b, 
     bb_dim_3_p_gnn_node_b_to_a, 
-    bb_dim_3_node_slack_penalty,
-    bb_dim_3_node_slack_useConstant
+    # bb_dim_3_node_slack_penalty,
+    # bb_dim_3_node_slack_useConstant
     ],ignore_index=True)
 
 #%%

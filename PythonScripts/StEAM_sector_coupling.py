@@ -62,10 +62,12 @@ print(subset_countries["name"])
 print("\n" + "Start reading GIS base information" + "\n")
 
 #import geopandas included shapefiles
-world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+world = gpd.read_file(os.path.join("Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
+world = world[["POP_EST", "CONTINENT", "NAME", "ISO_A3", "GDP_MD", "geometry"]]
+world = world.rename(columns={"NAME":"name", "ISO_A3":"iso_a3", "POP_EST":"pop_est", "GDP_MD":"gdp_md_est", "CONTINENT":"continent"}) #renaming columns to match the ones in the nodeset
 
 print("Succesfully read all files" + "\n")
-
+#%%
 ############### Centrally define default model parameters ###############
 
 #reading basic temporal model information from MainInput
@@ -256,6 +258,7 @@ sector_coupling_nodes_points_disagg = sec_tech_disagg.apply(lambda row: Point(ro
 sec_tech_disagg = gpd.GeoDataFrame(sec_tech_disagg, geometry = sector_coupling_nodes_points_disagg) #hier werden die geo infos in die neue Spalte geometry im geodataframe eingefügt
 sec_tech_disagg.crs = "EPSG:4326" #anpassen der Projektion
 
+#%%
 #copying geometry information from world where h2_sector_coupling_nodes_disag are within the geometry of the row in world
 world_regions = gpd.sjoin(world, sec_tech_disagg, how="inner", predicate="contains")
 world_regions = world_regions[["name_right", "region", "geometry", "x", "y"]]
@@ -511,13 +514,17 @@ bb_dim_4_fom_costs = bb_dim_4_fom_costs[bb_dim_4_fom_costs['Parameter values'] !
 #utAvailabilityLimits -> becomeAvailable
 bb_dim_2_map_utAvailabilityLimits = pd.DataFrame(dict(zip(['Object class names', 'Object names','Parameter names','Alternative names','Parameter indexes','Parameter values'], ['unit','unitXXX','becomeAvailable','Base','t000001',1])), index=range(len(df_gnuio['Object names 3'].unique()))).assign(**{'Object names':df_gnuio['Object names 3'].unique()})
 bb_dim_2_map_ts_PriceChange         = pd.DataFrame(dict(zip(['Object class names', 'Object names','Parameter names','Alternative names','Parameter indexes','Parameter values'], ['node','commoditynodeXXX','priceChange','Base','t000000','fuelPricesXXX'])), index=range(len(bb_dim_2_usePrice[bb_dim_2_usePrice['Object names 1'] == 'h2o'].reset_index(drop=True)))).assign(**{'Object names':bb_dim_2_usePrice[bb_dim_2_usePrice['Object names 1'] == 'h2o'].reset_index(drop=True)['Object names 2'],'Parameter values':water_price}) #or eps, not sure
-####################################
+
+#availabilityCapacityMargin for q_capacityMargin's capacityMargin in the h2 grid ## this will force a deterministic electrolyzer overcapacity invest introducing a basic concept of resilience (sampled invest system adequecy for scheduling/short term pricing run)
+bb_dim_4_availabilityCapacityMargin = bb_dim_4_annuityFactor[bb_dim_4_annuityFactor['Object names 3'].str.contains('electrolyzer', case=False)].assign(**{'Parameter names':'availabilityCapacityMargin', 'Parameter values':1})
+
+##################################
 ## concat
 h2_units_concat_1D_BB = pd.concat([bb_dim_1_eff00,bb_dim_1_availability,bb_dim_1_investMIP,bb_dim_1_maxUnitCount],ignore_index=True)
 h2_units_concat_2D_BB = pd.concat([bb_dim_2_nodeBalance,bb_dim_2_usePrice,bb_dim_2_energyStored],ignore_index=True)
 bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_map_utAvailabilityLimits,bb_dim_2_map_ts_PriceChange],ignore_index=True)
 h2_units_concat_3D_BB = pd.concat([bb_dim_3_unitConstraintNode,bb_dim_3_effLevelGroupUnit],ignore_index=True)
-h2_units_concat_4D_BB = pd.concat([bb_dim_4_annuityFactor,bb_dim_4_fom_costs, bb_dim_4_vomCosts, bb_dim_4_capacity_o,bb_dim_4_conversionCoeff,bb_dim_4_unitSize,bb_dim_4_invCosts_o],ignore_index=True) #del vomCosts
+h2_units_concat_4D_BB = pd.concat([bb_dim_4_annuityFactor,bb_dim_4_fom_costs, bb_dim_4_vomCosts, bb_dim_4_capacity_o,bb_dim_4_conversionCoeff,bb_dim_4_unitSize,bb_dim_4_invCosts_o, bb_dim_4_availabilityCapacityMargin],ignore_index=True) #del vomCosts
 h2_units_concat_4D_BB = h2_units_concat_4D_BB.assign(**{'Object names 1':h2_units_concat_4D_BB['Object names 1'].replace(to_replace='el',value='elec'),'Object names 2':h2_units_concat_4D_BB['Object names 2']}) #.astype(str).str.removesuffix('_el')
 
 
