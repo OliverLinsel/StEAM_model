@@ -10,7 +10,8 @@ and runs inside the workflow management software SpineToolbox https://github.com
 To use StEAM you need a GAMS environment to execute backbone.
 
 Installation:
-1. Download the software package<br/>
+1. Download the software package <br/>
+Open your (mini)conda console of choice <br/>
 Define working folder:
 ```
 cd path\to\folder
