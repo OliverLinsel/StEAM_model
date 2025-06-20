@@ -14,6 +14,8 @@ candidate_connections;Investable Connections;5000;Base;Number of Subunits
 connection_investment_cost;Investable Connections;75000000;Base;EUR/(yr*Subunit) hier wird unterstellt das HVDC Leitungen IMMER (Platzhalter) 100mikes lang sind und 1500$/MW*mile kosten vgl https://doi.org/10.1016/j.isci.2021.103495
 connection_investment_lifetime;Investable Connections;7D;Base;a
 candidate_units;Investable Units;5000;Base;Number of Subunits
+capacityMargin;Investable Units;0;Base;Capacity margin used in invest mode (MW) added to capacity to reduce dummy generation when changing from invest to scheduling run
+availabilityCapacityMargin;Investable Units;0;Base;Availability of the unit in the capacity margin equation (p.u.). If zero, v_gen is used. Currently used only for output capacity
 unit_investment_cost;Investable Units;800000000;Base;EUR/(a*Subunit)
 eps;All;0.0001;Base;Small number to immitate near zero (because of Backbone)
 RFNBO_option;All;No_reg;Base;Choose from Vanilla, No_reg, Island_Grids, Defossilized_Grid_prerun, Defossilized_Grid, Add_and_Corr and All _at_once

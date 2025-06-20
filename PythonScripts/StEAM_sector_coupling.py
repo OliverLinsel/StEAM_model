@@ -83,7 +83,9 @@ eps                         = float(0.0001)  # read the eps value of the model_c
 eps                         = float(m_conf.loc[m_conf['Parameter'] == "eps", "Value"].values[0]) # eps read value
 
 #read RFNBO regulation option
-RFNBO_option                       = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", "Value"].values[0] # RFNBO read value
+RFNBO_option                = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", "Value"].values[0] # RFNBO read value
+#read capacityMargin
+availabilityCapacityMargin              = m_conf.loc[m_conf['Parameter'] == "availabilityCapacityMargin", "Value"].values[0] # capacityMargin read value
 
 print("Alternative: " + str(alternative) + "\n")
 
@@ -467,10 +469,10 @@ bb_dim_2_nodeBalance        = pd.DataFrame({'Relationship class names':'grid__no
                                      'Parameter names':'nodeBalance',
                                      'Alternative names':default_alternative,
                                      'Parameter values':1})
+
 bb_dim_2_nodeBalance[bb_dim_2_nodeBalance['Object names 1'] == 'h2o'] = bb_dim_2_nodeBalance[bb_dim_2_nodeBalance['Object names 1'] == 'h2o'].assign(**{'Parameter values':0}) #hier koennte man ansetzen und spaeter eventuell aus Rohwasser als unbegrenzte Commodity stattdessen ein regional spezifisches max. Volumen angeben... elec und h2 nodes gibts schon... ueberschreiben muesste trotzdem gehen
-bb_dim_2_usePrice           = bb_dim_2_nodeBalance.assign(**{
-    'Parameter names':'usePrice',
-    'Parameter values':0})
+
+bb_dim_2_usePrice           = bb_dim_2_nodeBalance.assign(**{'Parameter names':'usePrice','Parameter values':0})
 bb_dim_2_usePrice[bb_dim_2_usePrice['Object names 1'] == 'h2o'] = bb_dim_2_usePrice[bb_dim_2_usePrice['Object names 1'] == 'h2o'].assign(**{'Parameter values':1}) # Rohwasser als Commodity ohne nodeBalance, mit Preis (=0 atm)
 bb_dim_2_energyStored = bb_dim_2_nodeBalance[bb_dim_2_nodeBalance['Object names 1'].isin(['h2o','h2o_raw'])].assign(**{'Parameter names':'energyStoredPerUnitOfState',
                                                                                                                        'Parameter values':0}).reset_index(drop=True)
@@ -516,7 +518,7 @@ bb_dim_2_map_utAvailabilityLimits = pd.DataFrame(dict(zip(['Object class names',
 bb_dim_2_map_ts_PriceChange         = pd.DataFrame(dict(zip(['Object class names', 'Object names','Parameter names','Alternative names','Parameter indexes','Parameter values'], ['node','commoditynodeXXX','priceChange','Base','t000000','fuelPricesXXX'])), index=range(len(bb_dim_2_usePrice[bb_dim_2_usePrice['Object names 1'] == 'h2o'].reset_index(drop=True)))).assign(**{'Object names':bb_dim_2_usePrice[bb_dim_2_usePrice['Object names 1'] == 'h2o'].reset_index(drop=True)['Object names 2'],'Parameter values':water_price}) #or eps, not sure
 
 #availabilityCapacityMargin for q_capacityMargin's capacityMargin in the h2 grid ## this will force a deterministic electrolyzer overcapacity invest introducing a basic concept of resilience (sampled invest system adequecy for scheduling/short term pricing run)
-bb_dim_4_availabilityCapacityMargin = bb_dim_4_annuityFactor[bb_dim_4_annuityFactor['Object names 3'].str.contains('electrolyzer', case=False)].assign(**{'Parameter names':'availabilityCapacityMargin', 'Parameter values':1})
+bb_dim_4_availabilityCapacityMargin = bb_dim_4_annuityFactor[bb_dim_4_annuityFactor['Object names 3'].str.contains('electrolyzer', case=False)].assign(**{'Parameter names':'availabilityCapacityMargin', 'Parameter values':availabilityCapacityMargin})
 
 ##################################
 ## concat
@@ -526,7 +528,6 @@ bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_map_utAvailabilityLimits,b
 h2_units_concat_3D_BB = pd.concat([bb_dim_3_unitConstraintNode,bb_dim_3_effLevelGroupUnit],ignore_index=True)
 h2_units_concat_4D_BB = pd.concat([bb_dim_4_annuityFactor,bb_dim_4_fom_costs, bb_dim_4_vomCosts, bb_dim_4_capacity_o,bb_dim_4_conversionCoeff,bb_dim_4_unitSize,bb_dim_4_invCosts_o, bb_dim_4_availabilityCapacityMargin],ignore_index=True) #del vomCosts
 h2_units_concat_4D_BB = h2_units_concat_4D_BB.assign(**{'Object names 1':h2_units_concat_4D_BB['Object names 1'].replace(to_replace='el',value='elec'),'Object names 2':h2_units_concat_4D_BB['Object names 2']}) #.astype(str).str.removesuffix('_el')
-
 
 
 ####################################################################
@@ -612,6 +613,20 @@ for class_value in [['Object class names 3','Object names 3']]:
             (h2_units_concat_4D_BB[class_value[0]] == 'unit') &
             (h2_units_concat_4D_BB[class_value[1]].str.split('|', expand=True)[0] == tech_output[0]),
             class_value[1]] += tech_output[1]
+
+#%%        
+##### introduce unittype
+unittype                = pd.DataFrame({"unit": h2_units_concat_3D_BB["Object names 3"].drop_duplicates()})
+unittype["technology"]  = unittype["unit"].str.split('|', expand=True)[1]
+h2_dim2_unitunittype = pd.DataFrame({"Relationship class names": "unit__unittype", 
+                                     "Object class names 1": "unit",
+                                     "Object class names 2": "unittype",
+                                     "Object names 1": unittype["unit"],
+                                     "Object names 2": unittype["technology"]})
+
+h2_units_concat_2D_BB   = pd.concat([h2_units_concat_2D_BB, h2_dim2_unitunittype], ignore_index=True, axis=0)
+
+#%%
 #######################################################################
 
 #### Adding the constraints for the Delegated Act for RFNBOs ####

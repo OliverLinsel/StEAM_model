@@ -320,13 +320,13 @@
                 ]
             },
             {
-                "name": "from Data_connection_transport to transport_model_buidling",
+                "name": "from Data_connection_transport to transport_model_building",
                 "from": [
                     "Data_connection_transport",
                     "right"
                 ],
                 "to": [
-                    "transport_model_buidling",
+                    "transport_model_building",
                     "left"
                 ]
             },
@@ -408,13 +408,13 @@
                 ]
             },
             {
-                "name": "from Data Connection MainOnly to transport_model_buidling",
+                "name": "from Data Connection MainOnly to transport_model_building",
                 "from": [
                     "Data Connection MainOnly",
                     "bottom"
                 ],
                 "to": [
-                    "transport_model_buidling",
+                    "transport_model_building",
                     "left"
                 ]
             },
@@ -696,9 +696,9 @@
                 ]
             },
             {
-                "name": "from transport_model_buidling to TEMP_BB",
+                "name": "from transport_model_building to TEMP_BB",
                 "from": [
-                    "transport_model_buidling",
+                    "transport_model_building",
                     "right"
                 ],
                 "to": [
@@ -999,13 +999,13 @@
                 ]
             },
             {
-                "name": "from Scenario, VRE, WACC Data to transport_model_buidling",
+                "name": "from Scenario, VRE, WACC Data to transport_model_building",
                 "from": [
                     "Scenario, VRE, WACC Data",
                     "right"
                 ],
                 "to": [
-                    "transport_model_buidling",
+                    "transport_model_building",
                     "left"
                 ]
             },
@@ -1850,42 +1850,6 @@
                 {
                     "type": "resource",
                     "arg": "<project>/Data/Szenario_Data/01 - HRU_scenario_data.xlsx"
-                }
-            ],
-            "kill_completed_processes": false,
-            "log_process_output": false
-        },
-        "transport_model_buidling": {
-            "type": "Tool",
-            "description": "Script for building the transport system",
-            "x": -199.87585038013026,
-            "y": 491.81450599242595,
-            "specification": "Transport_model_building",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "<project>/Data/Transport/data_input/nodes/nodes_and_parameters.xlsx"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/Data/Transport/data_input/proposed_terminals/proposed_terminals.xlsx"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/Data/Transport/data_input/bm_world_3000mdepth/bm_world_3000mdepthres1.shp"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/Data/Transport/data_input/nodes/reg_fac_list.csv"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/PythonScripts/TEMP/weighted_WACC_final.csv"
                 }
             ],
             "kill_completed_processes": false,
@@ -2895,6 +2859,42 @@
                 }
             ],
             "db_references": []
+        },
+        "transport_model_building": {
+            "type": "Tool",
+            "description": "Script for building the transport system",
+            "x": -199.87585038013026,
+            "y": 491.81450599242595,
+            "specification": "Transport_model_building",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/nodes/nodes_and_parameters.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/proposed_terminals/proposed_terminals.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/bm_world_3000mdepth/bm_world_3000mdepthres1.shp"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/MainInput.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/Transport/data_input/nodes/reg_fac_list.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/PythonScripts/TEMP/weighted_WACC_final.csv"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         }
     }
 }

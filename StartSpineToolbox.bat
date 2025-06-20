@@ -1,6 +1,8 @@
 
+@echo off
 
+REM Activate the 'steam' conda environment
+call conda activate steam
 
-call myenv\Scripts\spinetoolbox
-
-REM Start spinetoolbox (assuming it's a command-line tool)
+REM Start spinetoolbox (assuming it's installed in the 'steam' environment)
+spinetoolbox

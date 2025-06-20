@@ -24,7 +24,7 @@ import numpy as np
 from itertools import combinations
 from scipy.spatial import Delaunay
 #from gams import GamsWorkspace, GamsException
-from BB_results import BackboneResult
+from backbonetools.io import BackboneResult
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 import seaborn as sns
@@ -51,7 +51,7 @@ print(os.getcwd() + "\n")
 print("Start reading input Data" + "\n")
 
 #Define Case Study
-case_study = "Project_presentation"
+case_study = "testing"
 
 try:
     #use if run in spine-toolbox
@@ -67,13 +67,14 @@ try:
     path_transport_visualisation    = os.path.join(case_study_path, "base_info", "transport_visualisation.xlsx") #use this in case of running from a manual backup and not from TEMP files
     path_RFNBO_paper_res            = os.path.join(case_study_path)
     path_RFNBO_paper_vis            = os.path.join(case_study_path, "figures")
+    world                           = gpd.read_file(os.path.join("..", "Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
 except: 
     #use if run in Python environment
     if str(os.getcwd()).find('PythonScripts') > -1:
         os.chdir('..')
     case_study_path                 = os.path.join("Data", "HPC_results", str(case_study))
-    path_world_eu_bz                = r"..\Data\Transport\data_input\world_eu_bz\world_eu_bz.shp"
-    path_nodes                      = r"..\Data\Transport\data_input\nodes\nodes_and_parameters.xlsx"
+    path_world_eu_bz                = r"Data\Transport\data_input\world_eu_bz\world_eu_bz.shp"
+    path_nodes                      = r"Data\Transport\data_input\nodes\nodes_and_parameters.xlsx"
     path_Main_Input                 = r".\PythonScripts\TEMP\MainInput.xlsx"
     path_Main_Input                 = os.path.join(case_study_path, "base_info", "MainInput.xlsx") #use this in case of running from a manual backup and not from TEMP files
     subset_countries                = pd.read_excel(os.path.join(path_Main_Input), sheet_name="subset_countries").rename(columns={"Countries":"name"})
@@ -83,6 +84,7 @@ except:
     path_transport_visualisation    = os.path.join(case_study_path, "base_info", "transport_visualisation.xlsx") #use this in case of running from a manual backup and not from TEMP files
     path_RFNBO_paper_res            = os.path.join(case_study_path)
     path_RFNBO_paper_vis            = os.path.join(case_study_path, "figures")
+    world = gpd.read_file(os.path.join("Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
 
 START = time.perf_counter() 
 
@@ -96,10 +98,10 @@ pie_scaling = 4
 #define plot limits
 # default_xlim = (40, 150) #Asia
 # default_ylim = (2, 75) #Asia
-# default_ylim = (28,70) #Europa
-# default_xlim = (-25,38) #Europa
-default_ylim = (-90,90) #Welt
-default_xlim = (-180,180) #Welt
+default_ylim = (28,70) #Europa
+default_xlim = (-25,38) #Europa
+# default_ylim = (-90,90) #Welt
+# default_xlim = (-180,180) #Welt
 #define legend position as 8% from the left side of the x range and 25% from the top of the y range
 legend_x = default_xlim[0] + (default_xlim[1] - default_xlim[0]) * 0.08
 legend_y = default_ylim[0] + (default_ylim[1] - default_ylim[0]) * 0.3
@@ -194,6 +196,7 @@ for i in filenames_df.index:
             # Use df_name as the key and BackboneResult(file_path) as the value
             key = filenames_df["df_name"][i]
             value = BackboneResult(filenames_df["file_path"][i])
+            print(str(value))
             
             # Assign the result to the dictionary
             results_dict[key] = value
@@ -209,7 +212,12 @@ print("Succesfully read BackboneResults into dictionary" + "\n")
 
 print(path_world_eu_bz)
 world_eu_bz = gpd.read_file(os.path.join(path_world_eu_bz))
-world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+# world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+#import geopandas included shapefiles
+world = world[["POP_EST", "CONTINENT", "NAME", "ISO_A3", "GDP_MD", "geometry"]]
+world = world.rename(columns={"NAME":"name", "ISO_A3":"iso_a3", "POP_EST":"pop_est", "GDP_MD":"gdp_md_est", "CONTINENT":"continent"}) #renaming columns to match the ones in the nodeset
+
+
 #%%
 print("Start initializing transport dataframes" + "\n")
 
@@ -229,9 +237,10 @@ shipping                        = pd.read_excel(os.path.join(path_transport_visu
 shipping["geometry"]            = gpd.GeoSeries.from_wkt(shipping["geometry"])
 shipping                        = gpd.GeoDataFrame(shipping, geometry="geometry")
 
+#%%
 #Get subset_countries from newly established "steam_subset_countries" sheet in debug
-key = "2_APS_noregbc_2030_debug"
-basecase = "2_APS_noregbc_2030_results"
+key = "0_testcase_2030_debug"
+basecase = "0_testcase_2030_debug"
 debug = results_dict[key]
 subset_countries = debug.param_as_df_gdxdump("steam_subset_countries")
 subset_countries = subset_countries.rename(columns={"s_countries":"name", "s_regions":"Regions"})
@@ -255,7 +264,7 @@ cmap1 = LinearSegmentedColormap.from_list("mycmap", colors)
 colors = ["#688e3b", "#bce48b", "#ffe99e", "#dccc3f"]
 cmap1_r = LinearSegmentedColormap.from_list("mycmap", colors)
 
-color_dict={"Solar":'gold','Solar old':'lemonchiffon', "Wind_Onshore":"cornflowerblue", "Wind_Offshore":"blue", "Hydro":"darkblue",
+color_dict={"Solar":'gold','Solar old':'lemonchiffon', "Wind_Onshore":"cornflowerblue", "Wind Onshore":"cornflowerblue", "Wind_Offshore":"blue", "Wind Offshore":"blue", "Hydro":"darkblue",
             "Gas":"red", "Coal":"black", "Oil":"brown", "Biomass":"darkgreen", "Nuclear":"purple", "Waste":"orange", "H2":"aquamarine",
             "Other":"grey", 'PHS':'grey', "HaberBosch":"darkgreen", "Liquefaction":"orange", "Cracker":"orange", "Electrolyzer":"turquoise"}
 
@@ -294,7 +303,7 @@ print("Define tool functions for preprocessing" + "\n")
 #Here all transport related dataframes are preprocessed and prepared for visualization
 def transport_df_preprocessing(scenario_results, key):
     transport_results = scenario_results.r_transfer_gnn()
-    transport_results = transport_results.groupby(["grid", "node", "node.1"]).agg({"Val":"sum"}).reset_index().rename(columns={'node':'from_node','node.1':'to_node'})
+    #transport_results = transport_results.groupby(["grid", "node", "node.1"]).agg({"Val":"sum"}).reset_index().rename(columns={'node':'from_node','node.1':'to_node'})
     transport_results = transport_results.groupby(["grid", "from_node", "to_node"]).agg({"Val":"sum"}).reset_index()
     transport_results = transport_results.rename(columns={"grid":"commodity", "from_node":"h2_node1", "to_node":"h2_node2", "Val":"value"})
     transport_results["connection"] = transport_results.h2_node1 + "_" + transport_results.h2_node2
@@ -350,15 +359,19 @@ def transport_df_preprocessing(scenario_results, key):
     shipping_m = gpd.GeoDataFrame(shipping_m, geometry="geometry")
     shipping_m["value"] = shipping_m["value"].astype(float).round(decimals=2).abs()
 
-    # Ausnutzung der 5 groessten Pipelines
-    pipeline_auslastung = (scenario_results.r_invest_transferCapacity_gnn()
-                        .sort_values(by='Val', ascending=False)
-                        .reset_index(drop=True)
-                        .rename(columns={'node':'h2_node1', 'node.1':'h2_node2', 'Val':'pipeline_capacity_MW'})
-                        .merge(transport_results_m[['h2_node1','h2_node2','value']], how='left')
-    )
-    pipeline_auslastung['auslastung in prozent'] = pipeline_auslastung['value'] / (pipeline_auslastung['pipeline_capacity_MW'] * 8760)
-    pipeline_auslastung = pipeline_auslastung[pipeline_auslastung['auslastung in prozent'].isna()==False].head(5)
+    # Check if r_invest_transferCapacity_gnn() returns a non-empty DataFrame
+    transfer_capacity_df = scenario_results.r_invest_transferCapacity_gnn()
+    if not transfer_capacity_df.empty:
+        # Ausnutzung der 5 groessten Pipelines
+        pipeline_auslastung = (
+            transfer_capacity_df
+            .sort_values(by='Val', ascending=False)
+            .reset_index(drop=True)
+            .rename(columns={'from_node':'h2_node1', 'to_node':'h2_node2', 'Val':'pipeline_capacity_MW'})
+            .merge(transport_results_m[['h2_node1','h2_node2','value']], how='left')
+        )
+        pipeline_auslastung['auslastung in prozent'] = pipeline_auslastung['value'] / (pipeline_auslastung['pipeline_capacity_MW'] * 8760)
+        pipeline_auslastung = pipeline_auslastung[pipeline_auslastung['auslastung in prozent'].notna()].head(5)
 
     transport_results_m["scenario"] = key
     transmission_results_m["scenario"] = key
@@ -382,8 +395,10 @@ def nodal_df_preprocessing(scenario_results, scenario_debug, key):
     #only using the rows that match the name in subset_countries
     nodes_disag = nodes_disag[nodes_disag["name"].isin(subset_countries["name"])]
 
+    #transform to align crs of the dataframes
+    nodes_disag = nodes_disag.to_crs(world.crs) #transforming the crs of the nodes_disag to match the world dataframe
     #copying geometry information from world where new_nodes_disag are within the geometry of the row in world
-    world_regions = gpd.sjoin(world, nodes_disag, how="inner", op="intersects").reset_index()
+    world_regions = gpd.sjoin(world, nodes_disag, how="inner", predicate="intersects").reset_index()
     world_regions = world_regions[["name_right", "region", "geometry"]]
     world_regions = world_regions.rename(columns={"name_right":"name"})
     #create lists of all countries that belong to each region
@@ -419,8 +434,6 @@ def nodal_df_preprocessing(scenario_results, scenario_debug, key):
     h2_prod_results = h2_prod_results.rename(columns={"grid":"commodity", "node":"region", "Val":"h2_production"})
     #drop all rows where the commodity is not h2 or elec
     h2_prod_results = h2_prod_results[h2_prod_results["commodity"] == "h2"]
-
-    print(h2_prod_results)
 
     # 1. Alle negativen Werte zwischenspeichern
     h2_prod_negative = h2_prod_results[h2_prod_results["h2_production"] < 0].copy()
@@ -474,17 +487,20 @@ def nodal_df_preprocessing(scenario_results, scenario_debug, key):
     r_balance_marginalValue_gnAverage_el["region"] = r_balance_marginalValue_gnAverage["region"].str.split("_").str[0]
     world_regions = world_regions.merge(r_balance_marginalValue_gnAverage_el, on="region", how="left")
     r_balance_marginalValue_gnAverage_h2 = r_balance_marginalValue_gnAverage[r_balance_marginalValue_gnAverage["commodity"] == "h2"]
+
     #drop all rows that contain a terminal
     r_balance_marginalValue_gnAverage_h2 = r_balance_marginalValue_gnAverage_h2[~r_balance_marginalValue_gnAverage_h2["region"].str.contains("terminal")]
     r_balance_marginalValue_gnAverage_h2["region"] = r_balance_marginalValue_gnAverage_h2["region"].str.split("_").str[0]
     world_regions = world_regions.merge(r_balance_marginalValue_gnAverage_h2, on="region", how="left")
     world_regions = world_regions.rename(columns={"marginals_x":"marginals_el", "marginals_y":"marginals_h2", "region":"Regions"})
     world_regions = world_regions.drop(columns=["grid"])
+
     #drop el_grid re rows
-    world_regions = world_regions[~world_regions["el_grid"].astype(str).str.contains("re")]
+    # world_regions = world_regions[~world_regions["el_grid"].astype(str).str.contains("re")] #commented out because it would all rows
     world_regions["marginals_el"] = world_regions["marginals_el"].abs()
     world_regions["marginals_h2"] = world_regions["marginals_h2"].abs()
     #merge with nodes dataframe in Regions column to get geometry as geometry_node
+
     world_regions = world_regions.merge(nodes[["Regions", "x", "y"]], on="Regions", how="inner")
 
     nodes_disag["scenario"] = key
@@ -501,69 +517,80 @@ def nodal_df_preprocessing(scenario_results, scenario_debug, key):
 
 def invest_df_preprocessing(result, debug):
     invest_df = result.r_invest_unitCapacity_gnu()
-    invest_df[["Technology","Region"]]= invest_df["unit"].str.rsplit("|",n=1, expand=True)
-    invest_df["Commodity"] = invest_df["Technology"].str.split("|").str[0]
-    invest_df = invest_df.rename(columns={"Val":"Capacity [MW]"})
+    if not invest_df.empty:
+        invest_df[["Technology","Region"]]= invest_df["unit"].str.rsplit("|",n=1, expand=True)
+        invest_df["Commodity"] = invest_df["Technology"].str.split("|").str[0]
+        invest_df = invest_df.rename(columns={"Val":"Capacity [MW]"})
 
-    invest_df = invest_df.query("grid!='storage'")
-    invest_df = invest_df.query("grid!='derivatives'")
-    is_discharge = invest_df["unit"].str.contains("Discharge" or "Charge" or "H2")
-    invest_df = invest_df[~is_discharge]
-    #rename Wind commodities Onshore or Offshore if the Technology strings contains Onshore or Offshore
-    invest_df.loc[invest_df["Technology"].str.contains("Wind_Onshore"), "Commodity"] = "Wind Onshore"
-    invest_df.loc[invest_df["Technology"].str.contains("Wind_Offshore"), "Commodity"] = "Wind Offshore"
+        invest_df = invest_df.query("grid!='storage'")
+        invest_df = invest_df.query("grid!='derivatives'")
+        is_discharge = invest_df["unit"].str.contains("Discharge" or "Charge" or "H2")
+        invest_df = invest_df[~is_discharge]
+        #rename Wind commodities Onshore or Offshore if the Technology strings contains Onshore or Offshore
+        invest_df.loc[invest_df["Technology"].str.contains("Wind_Onshore"), "Commodity"] = "Wind Onshore"
+        invest_df.loc[invest_df["Technology"].str.contains("Wind_Offshore"), "Commodity"] = "Wind Offshore"
 
-    invest_df["colors"] = invest_df["Commodity"].map(color_dict)
-    invest_df["Capacity [GW]"] = invest_df["Capacity [MW]"]/1000
+        invest_df["colors"] = invest_df["Commodity"].map(color_dict)
+        invest_df["Capacity [GW]"] = invest_df["Capacity [MW]"]/1000
 
-    #drop rows if the capacity is very small
-    invest_df = invest_df[invest_df["Capacity [MW]"] > lower_threshhold_before_dropping_invest_values]
+        #drop rows if the capacity is very small
+        invest_df = invest_df[invest_df["Capacity [MW]"] > lower_threshhold_before_dropping_invest_values]
 
-    #order the dataframe by node alphabetically
-    invest_df = invest_df.sort_values(by="Region").reset_index(drop=True)
+        #order the dataframe by node alphabetically
+        invest_df = invest_df.sort_values(by="Region").reset_index(drop=True)
 
-    invest_df[invest_df["Technology"].str.contains("Electrolyzer")].sum()["Capacity [GW]"]
+        invest_df[invest_df["Technology"].str.contains("Electrolyzer")].sum()["Capacity [GW]"]
+    else:
+        invest_df = pd.DataFrame()
+        print("No investment data found for " + str(debug) + "\n")
     return invest_df
 
 def inv_df_prepro(results, scen):
     #the base scenario must contain 0_ to be identified as the base scenario       
     invest_df = results.r_invest_unitCapacity_gnu()
-    invest_df[["Technology","Region"]]= invest_df["unit"].str.rsplit("|",n=1, expand=True)
-    invest_df["Region"] = invest_df["Region"].str.replace("_add", "")
-    invest_df["Commodity"] = invest_df["Technology"].str.split("|").str[0]
-    invest_df = invest_df.rename(columns={"Val":"Capacity [MW]"})
+    if not invest_df.empty:
+        invest_df[["Technology","Region"]]= invest_df["unit"].str.rsplit("|",n=1, expand=True)
+        invest_df["Region"] = invest_df["Region"].str.replace("_add", "")
+        invest_df["Commodity"] = invest_df["Technology"].str.split("|").str[0]
+        invest_df = invest_df.rename(columns={"Val":"Capacity [MW]"})
 
-    invest_df["scenario"] = str(scen)
+        invest_df["scenario"] = str(scen)
 
-    invest_df = invest_df.query("grid!='storage'")
-    is_discharge = invest_df["unit"].str.contains("Discharge" or "Charge" or "H2")
-    invest_df = invest_df[~is_discharge]
-    #rename Wind commodities Onshore or Offshore if the Technology strings contains Onshore or Offshore
-    invest_df.loc[invest_df["Technology"].str.contains("Wind_Onshore"), "Commodity"] = "Wind Onshore"
-    invest_df.loc[invest_df["Technology"].str.contains("Wind_Offshore"), "Commodity"] = "Wind Offshore"
+        invest_df = invest_df.query("grid!='storage'")
+        is_discharge = invest_df["unit"].str.contains("Discharge" or "Charge" or "H2")
+        invest_df = invest_df[~is_discharge]
+        #rename Wind commodities Onshore or Offshore if the Technology strings contains Onshore or Offshore
+        invest_df.loc[invest_df["Technology"].str.contains("Wind_Onshore"), "Commodity"] = "Wind Onshore"
+        invest_df.loc[invest_df["Technology"].str.contains("Wind_Offshore"), "Commodity"] = "Wind Offshore"
 
-    invest_df["colors"] = invest_df["Commodity"].map(color_dict)
-    invest_df["Capacity [GW]"] = invest_df["Capacity [MW]"]/1000
+        invest_df["colors"] = invest_df["Commodity"].map(color_dict)
+        invest_df["Capacity [GW]"] = invest_df["Capacity [MW]"]/1000
 
-    #drop rows if the capacity is very small
-    invest_df = invest_df[invest_df["Capacity [MW]"] > 1]
+        #drop rows if the capacity is very small
+        invest_df = invest_df[invest_df["Capacity [MW]"] > 1]
 
-    #order the dataframe by node alphabetically
-    invest_df = invest_df.sort_values(by="Region").reset_index(drop=True)
+        #order the dataframe by node alphabetically
+        invest_df = invest_df.sort_values(by="Region").reset_index(drop=True)
 
-    invest_df["identifier"] = invest_df["node"] + "_" + invest_df["unit"]
+        invest_df["identifier"] = invest_df["node"] + "_" + invest_df["unit"]
 
-    invest_df["colors"] = invest_df["scenario"].map(scen_color_dict)
-
+        invest_df["colors"] = invest_df["scenario"].map(scen_color_dict)
+    else:
+        invest_df = pd.DataFrame()
+        print("No investment data found for " + str(scen) + "\n")
     return invest_df
 
 def cap_diff(invest_df_work, invest_df_bc, key):
-    base_scen = key
+    if not invest_df_work.empty:
+        base_scen = key
 
-    #merge innvest_df_bc["Capacity [MW]"] to invest_df_work on identifier
-    invest_df_work = invest_df_work.merge(invest_df_bc[["identifier", "Capacity [MW]_bc"]], on=["identifier"], how="left")
+        # merge invest_df_bc["Capacity [MW]_bc"] to invest_df_work on identifier
+        invest_df_work = invest_df_work.merge(invest_df_bc[["identifier", "Capacity [MW]_bc"]], on=["identifier"], how="left")
 
-    invest_df_work["cap_diff"] = invest_df_work["Capacity [MW]"] - invest_df_work["Capacity [MW]_bc"]
+        invest_df_work["cap_diff"] = invest_df_work["Capacity [MW]"] - invest_df_work["Capacity [MW]_bc"]
+    else:
+        invest_df_work = pd.DataFrame()
+        print("No investment data found for " + str(key) + "\n")
     return invest_df_work
 
 print("Define tool functions for visualization" + "\n")
@@ -651,14 +678,14 @@ def prod_trans_geoplot(key, world_regions, nodes_h2, transp_r, transm_r, term_r,
     #cmap_lav_grn = 1 #"matplotlib.colors.LinearSegmentedColormap.from_list("", ["red","violet","blue"])
 
     base = world.plot(color='#a8a8a8', linewidth=0.5, edgecolor='white', figsize=(100,80), alpha=0.5)
-    # con_el_grid.plot(ax=base, color='#ffe99e', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="Connected Electricity Grid")
-    # eu.plot(ax=base, color='#bce48b', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="EU")
+    con_el_grid.plot(ax=base, color='#ffe99e', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="Connected Electricity Grid")
+    eu.plot(ax=base, color='#bce48b', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="EU")
     world_regions.plot(ax=base, column=world_regions['marginals_h2'], cmap="viridis", edgecolor='white', linewidth=6, alpha=1, legend=False, legend_kwds={"label": "WACC", "orientation": "horizontal"}, # 'shrink': 0.3
                     missing_kwds={"color": "lightgrey", "edgecolor": "red","hatch": "///","label": "Missing values"}) #color='#a8a8a8' RdYlGn_r cmap1_r
     # nodes_h2.plot(ax=base, color='blue', markersize=nodes_h2["h2_demand"]/5000, alpha=0.6, label="H2 demand", zorder=4) ##E05252 #demand overlay '#cd7565'
     nodes_h2.plot(ax=base, color='black', markersize=500, linewidth=2, alpha=1, edgecolors='white', label="Regions nodes", zorder=3) ##E05252
     transp_r.plot(ax=base, color='#003399', linewidth=transp_r["value"]/transp_r["value"].max()*100, alpha=0.5, label="Pipelines", zorder=2, marker=".", markersize=100) #Linestringelemente #9e0027 #6cc287 
-    # transm_r.plot(ax=base, color='#FF6103', linewidth=transm_r["value"]/transm_r["value"].max()*100, alpha=0.5, label="Electricity Transmission", zorder=1, marker=".", markersize=100) #Linestringelemente #9e0027 #6cc287 
+    transm_r.plot(ax=base, color='#FF6103', linewidth=transm_r["value"]/transm_r["value"].max()*100, alpha=0.5, label="Electricity Transmission", zorder=1, marker=".", markersize=100) #Linestringelemente #9e0027 #6cc287 
 
     #terminal exeption
     if terminals.empty == False:
@@ -691,7 +718,8 @@ def prod_trans_geoplot(key, world_regions, nodes_h2, transp_r, transm_r, term_r,
 
     sm = plt.cm.ScalarMappable(cmap="viridis", norm=plt.Normalize(vmin=world_regions['marginals_h2'].min(), vmax=world_regions['marginals_h2'].max()))
     sm._A = []  # Dummy array for ScalarMappable
-    cbar = plt.colorbar(sm, orientation='horizontal', shrink=0.5, pad=0.05, aspect=30)
+    fig = plt.gcf()
+    cbar = fig.colorbar(sm, ax=base, orientation='horizontal', shrink=0.5, pad=0.05, aspect=30)
     cbar.set_label('H2 marginal costs [€/MWh]', fontsize=50)
     cbar.ax.xaxis.set_label_position('bottom')
     cbar.ax.tick_params(labelsize=50)
@@ -1544,7 +1572,7 @@ for key in results_dict.keys():
         agg_world_regions = pd.concat([agg_world_regions, world_regions])
 
         invest_df_work = inv_df_prepro(results, key)
-        if "bc" in key:
+        if str(basecase) in key:
             base_scen = key
             invest_df_bc = invest_df_work
             invest_df_bc = invest_df_bc.rename(columns={"Capacity [MW]":"Capacity [MW]_bc"})
@@ -1564,7 +1592,7 @@ for key in results_dict.keys():
         prod_trans_geoplot(scen_key, world_regions, nodes_h2, transp_r, transm_r, term_r, ship_r)
         marginals_geoplot(scen_key)
         invest_df_preprocessing(results, debug)
-        cost_duration_curve(debug, scen_key)
+        # cost_duration_curve(debug, scen_key)
         r_capacity(results, debug, key)
         r_generation(results, key)
         powerplant_scheduling_plot(debug, key)
@@ -1576,7 +1604,7 @@ WACC_geoplot(agg_world_regions)
 cap_diff_plot(agg_invest_df)
 cap_diff_rel_plot(agg_invest_df)
 total_system_costs_plot(agg_tsc_df)
-# installed_vre_capacities(agg_invest_df)
+installed_vre_capacities(agg_invest_df)
 
 STOP = time.perf_counter()
 print('Total execution time of script',round((STOP-START), 1), 's')  

@@ -51,6 +51,7 @@ try:
     outputfile                          = 'TEMP/transport_objects.xlsx'
     outputfile_BB                       = 'TEMP/transport_objects_BB.xlsx'
     visualisation_output                = '../Pythonscripts/TEMP/Visualisation/'
+    world                               = gpd.read_file(os.path.join("..", "Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
 except: 
     #use if run in Python environment
     if str(os.getcwd()).find('PythonScripts') > -1:
@@ -69,15 +70,17 @@ except:
     outputfile                          = 'Pythonscripts/TEMP/transport_objects.xlsx'
     outputfile_BB                       = 'Pythonscripts/TEMP/transport_objects_BB.xlsx'
     visualisation_output                = 'Pythonscripts/TEMP/Visualisation/'
+    world                               = gpd.read_file(os.path.join("Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
 
 subset_countries                    = pd.read_excel(path_Main_Input, sheet_name='subset_countries').rename(columns={'Countries':'name'})
 m_conf                              = pd.read_excel(path_Main_Input, sheet_name="model_config")
 
+#read capacityMargin
+capacityMargin              = m_conf.loc[m_conf['Parameter'] == "capacityMargin", "Value"].values[0] # capacityMargin read value
+
 print("Start reading GIS base information" + "\n")
 
 #import geopandas included shapefiles
-#import geopandas included shapefiles
-world = gpd.read_file(os.path.join("Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
 world = world[["POP_EST", "CONTINENT", "NAME", "ISO_A3", "GDP_MD", "geometry"]]
 world = world.rename(columns={"NAME":"name", "ISO_A3":"iso_a3", "POP_EST":"pop_est", "GDP_MD":"gdp_md_est", "CONTINENT":"continent"}) #renaming columns to match the ones in the nodeset
 
@@ -770,7 +773,6 @@ if q == 0:
     con_line        = con_line      .merge(loss_calc[['length','fix_ratio_out_in_log']].drop_duplicates())
 
 h2_pipelines    = h2_pipelines  .merge(loss_calc[['length','fix_ratio_out_in_log']].drop_duplicates())
-loss_calc
 ##
 # %%
 #Intialization of objects
@@ -787,7 +789,11 @@ else: bb_0D_concat = pd.concat([bb_grids_concat, bb_nodes_concat], ignore_index=
 #Defining 2D connections grid_node
 #h2_pipelines
 bb_grid_node_concat_bal_ty = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1":"h2", "Object names 2":new_nodes.h2_node, "Parameter names":"nodeBalance", "Alternative names":"Base", "Parameter values": new_nodes.balance_type.apply(lambda x: 0 if x == "balance_type_none" else 1)}) #h2 is fixed for now - may be later replaced by new_nodes.commodity
-bb_2D_grid_node_concat = pd.concat([bb_grid_node_concat_bal_ty], ignore_index=True)
+
+## 20250502 introduce capacityMargin for improved resiliency in (full year) schedule runs
+bb_dim_2_capacityMargin_h2 = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1": "h2", "Object names 2":new_nodes["h2_node"], "Parameter names":'capacityMargin', "Alternative names":"Base", "Parameter values": capacityMargin})
+
+bb_2D_grid_node_concat = pd.concat([bb_grid_node_concat_bal_ty, bb_dim_2_capacityMargin_h2], ignore_index=True)
 
 #h2_terminal connections
 if q == 0:
@@ -916,6 +922,20 @@ bb_1D_concat = pd.concat([bb_dim_1_maxUnitCount,
                           bb_dim_1_eff00, 
                           bb_dim_1_availability], ignore_index=True)
 bb_1Dmap_concat = pd.concat([bb_dim_1_map_utAvailabilityLimits], ignore_index=True)
+
+##### introduce unittype
+unittype                = pd.DataFrame({"unit": terminals["unit_name_trans"].drop_duplicates()})
+unittype = pd.concat([unittype,
+    pd.DataFrame({"unit": terminals["unit_name_retrans"].drop_duplicates()})
+], ignore_index=True).drop_duplicates().reset_index(drop=True).dropna()
+unittype["technology"] = unittype["unit"].str.split('|', expand=True)[0]
+bb_dim2_unitunittype = pd.DataFrame({"Relationship class names": "unit__unittype", 
+                                     "Object class names 1": "unit",
+                                     "Object class names 2": "unittype",
+                                     "Object names 1": unittype["unit"],
+                                     "Object names 2": unittype["technology"]})
+
+bb_2D_concat = pd.concat([bb_2D_concat, bb_dim2_unitunittype], ignore_index=True)
 
 bb_dim_3_effLevelGroupUnit = pd.DataFrame({'Relationship class names':'effLevel__effSelector__unit',
                                            'Object class names 1':'effLevel',

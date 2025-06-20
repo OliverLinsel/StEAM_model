@@ -78,10 +78,18 @@ if(card(tt)>0,
 loop(s_realized(s),
 
     // nodes
-    // q_balance marginal values
-    r_balance_marginalValue_gnft(gn_balance(grid, node), f_realization(f), t_startp(t))
-        $ { sft_realized(s, f, t) }  // if sft needed because s is not a part of result table dimensions
-        = q_balance.m(grid, node, s, f, t);
+    if (mSolve('invest'),
+        // q_balance marginal values
+        r_balance_marginalValue_gnft(gn_balance(grid, node), f_realization(f), t_startp(t))
+            $ { sft_realized(s, f, t) }  // if sft needed because s is not a part of result table dimensions
+            = q_balance.m(grid, node, s, f, t)/p_msWeight('invest', s);
+    if (mSolve('schedule'),
+        // q_balance marginal values
+        r_balance_marginalValue_gnft(gn_balance(grid, node), f_realization(f), t_startp(t))
+            $ { sft_realized(s, f, t) }
+            = q_balance.m(grid, node, s, f, t);
+        )   
+    );
     // Storage states
     r_state_gnft(gn_state(grid, node), f_realization(f), t_startp(t))
         $ { sft_realized(s, f, t) }

@@ -27,7 +27,7 @@ version_git
 *.par
 *.txt
 *.zip
-*.cmd
+# *.cmd
 *.bat
 
 # All folders except
@@ -47,3 +47,4 @@ version_git
 /*/*.~*
 /*/*.tmp
 /*/*.lic
+/*/*.gdx

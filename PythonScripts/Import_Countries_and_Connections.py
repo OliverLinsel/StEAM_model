@@ -72,6 +72,8 @@ new_nodes               = pd.read_excel(path_transport_nodes_and_parameters, she
 RFNBO_option                       = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", "Value"].values[0] # RFNBO read value
 default_lines_eff = 0.96
 
+#read capacityMargin
+capacityMargin              = m_conf.loc[m_conf['Parameter'] == "capacityMargin", "Value"].values[0] # capacityMargin read value
 #%%
 
 ##read Node list
@@ -191,10 +193,9 @@ template_gn = pd.DataFrame(dict(zip(columns_2d, values_gn)), index=range(len(dim
 bb_dim_2_nodeBalance = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'nodeBalance','Parameter values':1})
 
 ## 20250502 introduce capacityMargin for improved resiliency in (full year) schedule runs
-bb_dim_2_capacityMargin_el = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'capacityMargin','Parameter values':10000})
-bb_dim_2_capacityMargin_h2 = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"].str.strip('_el') + '_h2','Parameter names':'capacityMargin','Parameter values':10000})
+bb_dim_2_capacityMargin_el = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'capacityMargin','Parameter values':capacityMargin})
 ## 
-bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance, bb_dim_2_capacityMargin_h2],ignore_index=True)   # bb_dim_2_capacityMargin_el removed as h2 resiliency is much more critical atm
+bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance, bb_dim_2_capacityMargin_el],ignore_index=True)   # bb_dim_2_capacityMargin_el removed as h2 resiliency is much more critical atm
 
 
 #dim3

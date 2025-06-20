@@ -242,10 +242,10 @@ node_state_cap                              = pd.DataFrame({"Object class names"
 # initial_node_state                          = pd.DataFrame({"Object class names":"node", "Object names":df_cumulated_hydro_profiles.reservoir, "Parameter names":"initial_node_state", "Alternative names":"Base", "Parameter values":(df_cumulated_hydro_profiles.storage_capacity * 0.5).astype(str)}) #wird mit representative periods nicht korrekt beruecksichtigt
 demand                                      = pd.DataFrame({"Object class names":"node", "Object names":df_hydro_profiles.reservoir, "Parameter names":"demand", "Alternative names":"Base", "Parameter values":df_hydro_profiles.cumulated_timeseries_abs}) #negative demand defined as inflow to reservoir
 # dim_1_object_value_dtype_str                = pd.concat([node_state_cap, fix_node_state """oder initial_node_state""", demand], ignore_index=True)
-unit_inital_units_invested_available = pd.DataFrame({"Object class names":"unit", "Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"initial_units_invested_available", "Alternative names":"Base", "Parameter values":df_hydro_profiles.cumulated_capacity/float(m_conf.Value[m_conf["Parameter"] == "subunit_size"].values[0])})
-unit_candidate_units                = pd.DataFrame({"Object class names":"unit","Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"candidate_units", "Alternative names":"Base", "Parameter values":df_hydro_profiles.cumulated_capacity/float(m_conf.Value[m_conf["Parameter"] == "subunit_size"].values[0])})
-unit_unit_investment_cost           = pd.DataFrame({"Object class names":"unit","Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"unit_investment_cost", "Alternative names":"Base", "Parameter values":0})
-unit_unit_investment_lifetime       = pd.DataFrame({"Object class names":"unit","Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"unit_investment_lifetime", "Alternative names":"Base", "Parameter values":'{\"type\": \"duration\", \"data\": \"' + str(modeled_duration_in_days) + "D" + '\"}'})
+unit_inital_units_invested_available        = pd.DataFrame({"Object class names":"unit", "Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"initial_units_invested_available", "Alternative names":"Base", "Parameter values":df_hydro_profiles.cumulated_capacity/float(m_conf.Value[m_conf["Parameter"] == "subunit_size"].values[0])})
+unit_candidate_units                        = pd.DataFrame({"Object class names":"unit","Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"candidate_units", "Alternative names":"Base", "Parameter values":df_hydro_profiles.cumulated_capacity/float(m_conf.Value[m_conf["Parameter"] == "subunit_size"].values[0])})
+unit_unit_investment_cost                   = pd.DataFrame({"Object class names":"unit","Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"unit_investment_cost", "Alternative names":"Base", "Parameter values":0})
+unit_unit_investment_lifetime               = pd.DataFrame({"Object class names":"unit","Object names":df_hydro_profiles["unit_name_aggregation"], "Parameter names":"unit_investment_lifetime", "Alternative names":"Base", "Parameter values":'{\"type\": \"duration\", \"data\": \"' + str(modeled_duration_in_days) + "D" + '\"}'})
 dim_1_object_value_dtype_str                = pd.concat([node_state_cap, demand, unit_inital_units_invested_available, unit_candidate_units, unit_unit_investment_cost, unit_unit_investment_lifetime], ignore_index=True)
 
 node__temporal_block_cyclic_condition       = pd.DataFrame({"Relationship class names":"node__temporal_block", "Object class names 1":"node", "Object class names 2":"temporal_block", "Object names 1":df_hydro_profiles.reservoir, "Object names 2":"seasonal", "Parameter names":"cyclic_condition", "Alternative names":"Base", "Parameter values":"true"}) #watch carefully when working with TSAM
@@ -293,7 +293,18 @@ bb_dim_2_energyStored = bb_dim_2_nodeBalance.assign(**{'Parameter names':'energy
 bb_dim_2_usePrice = bb_dim_2_nodeBalance.assign(**{'Parameter names':'usePrice','Parameter values':0})
 bb_dim_2_boundEnd = bb_dim_2_nodeBalance.assign(**{'Parameter names':'boundEnd'})
 bb_dim_2_boundStart = bb_dim_2_nodeBalance.assign(**{'Parameter names':'boundStart'})
-bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance,bb_dim_2_energyStored,bb_dim_2_usePrice,bb_dim_2_boundEnd,bb_dim_2_boundStart],ignore_index=True)
+
+##### introduce unittype
+unittype                = pd.DataFrame({"unit": df_hydro_profiles["unit_discharge"].drop_duplicates()})
+unittype["technology"] = unittype["unit"].str.split('|', expand=True)[0]
+bb_dim2_unitunittype = pd.DataFrame({"Relationship class names": "unit__unittype", 
+                                     "Object class names 1": "unit",
+                                     "Object class names 2": "unittype",
+                                     "Object names 1": unittype["unit"],
+                                     "Object names 2": unittype["technology"]})
+
+bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance,bb_dim_2_energyStored,bb_dim_2_usePrice,bb_dim_2_boundEnd,bb_dim_2_boundStart, bb_dim2_unitunittype],ignore_index=True)
+
 #utAvailabilityLimits -> becomeAvailable
 bb_dim_1_map_utAvailabilityLimits = pd.DataFrame(dict(zip(columns_2d_map, ['unit','unitXXX','becomeAvailable','Base','t000001',1])), index=range(len(df_hydro_profiles))).assign(**{'Object names':df_hydro_profiles['unit_name_aggregation']})
 bb_dim_1_relationship_dtype_map = pd.concat([bb_dim_1_map_utAvailabilityLimits],ignore_index=True)
@@ -379,6 +390,7 @@ if m_conf.loc[m_conf['Parameter'] == 'hydro_noStorage','Value'].values[0] == 'ye
         'Alternative names':'',
         'Parameter values':'',
         })
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim2_unitunittype], ignore_index=True) # add unit unittype relationship
     bb_dim_1_relationship_dtype_map # passt
     # bb_dim_3_relationship_dtype_str = bb_dim_3_effLevelGroupUnit #flow units dont have effLevelGroup
     bb_dim_4_relationship_dtype_str = pd.concat([

@@ -716,7 +716,7 @@ loop(m,
              + r_balance_marginalValue_gnft(grid, node, f, t)
                 // * p_stepLengthNoReset(t)   // not including steplength due to division by number of timesteps
                 * p_msProbability(m, s)
-                * p_msWeight(m, s)
+                //* p_msWeight(m, s)$(not mSolve('invest')) //only for non-investment runs
             ) // END sum(sft_realizedNoReset)
             / sum(sft_realizedNoReset(s, f, t_startp(t))${abs(r_balance_marginalValue_gnft(grid, node, f, t))< PENALTY_BALANCE(grid, node)}, 1)
             ;

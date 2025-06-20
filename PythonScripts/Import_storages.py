@@ -34,11 +34,11 @@ try:        #use if run in spine-toolbox
     path_WACC_Update        = sys.argv[4]
     outputfile_BB           = ".\TEMP\Plexos_storage_BB.xlsx"
 except:
-    excel_path_GLOBIOM      = r"Data\Plexos\MESSAGEix-GLOBIOM\PLEXOS-World model MESSAGEix - GLOBIOM Soft-Link.xlsx"
-    excel_path_PLEXOS       = r"Data\Plexos\PLEXOS World\PLEXOS-World 2015 Gold V1.1.xlsx"
-    path_MainInput          = r"PythonScripts\TEMP\MainInput.xlsx"
-    path_WACC_Update        = r'PythonScripts/TEMP/weighted_WACC_final.csv'
-    outputfile_BB           = r"PythonScripts\TEMP\Plexos_storage_BB.xlsx"
+    excel_path_GLOBIOM      = r"..\Data\Plexos\MESSAGEix-GLOBIOM\PLEXOS-World model MESSAGEix - GLOBIOM Soft-Link.xlsx"
+    excel_path_PLEXOS       = r"..\Data\Plexos\PLEXOS World\PLEXOS-World 2015 Gold V1.1.xlsx"
+    path_MainInput          = r".\TEMP\MainInput.xlsx"
+    path_WACC_Update        = r'.\TEMP\weighted_WACC_final.csv'
+    outputfile_BB           = r".\TEMP\Plexos_storage_BB.xlsx"
 
 ################# Options End ############################################################
 
@@ -388,6 +388,20 @@ bb_dim_2_nodeBalance    = template_gn.assign(**{'Object names 2':df_type_plus_20
 bb_dim_2_energyStored   = bb_dim_2_nodeBalance.assign(**{'Parameter names':'energyStoredPerUnitOfState'})
 bb_dim_2_boundStart     = bb_dim_2_nodeBalance.assign(**{'Parameter names':'boundStart'})                       #should storages start with a fix value (of e.g. 0?)
 
+##### introduce unittype
+unittype                = pd.DataFrame({"unit": df_type_plus_2015["units"].drop_duplicates()})
+unittype = pd.concat([unittype,
+    pd.DataFrame({"unit": df_type_plus_2015["units_discharge"].drop_duplicates()}),
+    pd.DataFrame({"unit": df_type_plus_2015["cap_unit"].drop_duplicates()})
+], ignore_index=True).drop_duplicates().reset_index(drop=True).dropna()
+unittype["technology"] = unittype["unit"].str.split('|', expand=True)[1]
+h2_dim2_unitunittype = pd.DataFrame({"Relationship class names": "unit__unittype", 
+                                     "Object class names 1": "unit",
+                                     "Object class names 2": "unittype",
+                                     "Object names 1": unittype["unit"],
+                                     "Object names 2": unittype["technology"]})
+
+#%%
 #p_groundPolicyUnit -> constrainedCapMultiplier 
 # Hilfsrechnung: jedes constrainte Storagepowerplant (nur Batteries atm) bekommt 2 Gruppen fuer jeden Constraint (Invest in Discharge MW = Charge MW & Invest in Discharge MW = Energy MWh) zugewiesen und besteht aus einer Charging und einer Discharging Unit bzw. Energy Cap Unit. In beiden Gruppen jedes Powerplants sind Charging und Discharging Units zugeordnet allerdings bei der 1. Gruppe mit (1dis;-1cha) bei der 2. Gruppe mit (-1dis;1cha) -> sorgt dafuer dass immer in gleich viel Charging wie Discharging Kapazitaet investiert wird.
 df_only_w_constrained_groups_dis_cha = df_type_plus_2015[df_type_plus_2015['groups'].isna() == False].reset_index(drop=True)
@@ -430,6 +444,7 @@ bb_dim_2_relationship_dtype_str = pd.concat(
         bb_dim_2_energyStored,
         bb_dim_2_constrainedCapMultiplier_dis_cha,
         bb_dim_2_constrainedCapMultiplier_dis_cap,
+        h2_dim2_unitunittype
         # bb_dim_2_boundStart
     ],ignore_index=True)
 

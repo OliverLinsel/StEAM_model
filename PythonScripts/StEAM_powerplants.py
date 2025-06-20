@@ -87,7 +87,7 @@ print("Defining regex lists for commodities and technologies" + "\n")
 list_of_all_commodities = ['Coal', 'Oil', 'Gas', 'Nuclear', 'Wind', 'Solar', 'Geothermal', 'Biomass', 'GAS', "Hydro", "h2", "el"] #list of all commodities
 list_of_renewables      = ['Solar', 'Wind', 'Hydro', 'Geothermal', 'Biomass'] #list of renewable energy sources
 list_of_renewables_nbo  = ['Solar', 'Wind', 'Hydro', 'Geothermal'] #list of renewable energy sources
-list_of_h2_assets       = ['Electrolyzer', 'FuelCell', 'Liquifaction', 'Regasification', "h2|OCGT", "h2|FuelCell"] #list of hydrogen assets - needed for RFNBO option to feed into re_elec grid
+list_of_h2_assets       = ['Electrolyzer', 'FuelCell', 'Liquifaction', 'Regasification', "h2|OCGT", "Engine"] #list of hydrogen assets - needed for RFNBO option to feed into re_elec grid
 list_of_vre             = ['Solar', 'Wind', "Hydro"] #list of variable renewable energy sources (Hydro being run of river)
 list_of_fossils         = ['Coal', 'Oil', 'Gas'] #list of fossil energy sources
 list_of_endo_commodities= ['el', 'h2'] #list of system endogenous commodities
@@ -447,8 +447,9 @@ initial_dim0_values     = pd.DataFrame({'Object class names':['grid','group'],'O
 unit                    = pd.DataFrame({"Object class names":"unit", "Object names":df_pp_complete_agg.unit_name_aggregation})
 #node                    = pd.DataFrame({"Object class names":"node", "Object names":fuel_nodes.commodities_in.unique()})
 emission                = pd.DataFrame({"Object class names":"emission", "Object names":df_CO2_melt["Regional_emissions"].unique()})
+unittype                = pd.DataFrame({"Object class names":"unittype", "Object names":df_pp_complete_agg["technology"].unique()})
 
-bb_dim_0_initialization = pd.concat([initial_dim0_values, unit, emission], axis=0, ignore_index=True) #node,
+bb_dim_0_initialization = pd.concat([initial_dim0_values, unit, emission, unittype], axis=0, ignore_index=True) #node,
 bb_dim_0_initialization = bb_dim_0_initialization.drop_duplicates()
 
 #bb_dim_1_relationship_dtype_str - maxUnitCount, eff00, availability, 
@@ -476,11 +477,12 @@ bb_dim_1_relationship_map = bb_dim_1_relationship_map.drop_duplicates()
 columns_2d = ['Relationship class names', 'Object class names 1','Object class names 2','Object names 1','Object names 2','Parameter names','Alternative names','Parameter values']
 columns_2d_map = ['Object class names', 'Object names','Parameter names','Alternative names','Parameter indexes','Parameter values']
 
-nodeBalance            = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1":"fuel", "Object names 2":fuel_nodes["nodes"], "Parameter names":"nodeBalance", "Alternative names":fuel_nodes["Alternative"], "Parameter values":fuel_nodes["nodeBalance"]})
+nodeBalance             = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1":"fuel", "Object names 2":fuel_nodes["nodes"], "Parameter names":"nodeBalance", "Alternative names":fuel_nodes["Alternative"], "Parameter values":fuel_nodes["nodeBalance"]})
 energyStoredPerUnitOfState = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1":"fuel", "Object names 2":fuel_nodes["nodes"], "Parameter names":"energyStoredPerUnitOfState", "Alternative names":fuel_nodes["Alternative"], "Parameter values":0})
-usePrice               = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1":"fuel", "Object names 2":fuel_nodes["nodes"], "Parameter names":"usePrice", "Alternative names":fuel_nodes["Alternative"], "Parameter values":fuel_nodes["usePrice"]})
-emissionCap            = pd.DataFrame({"Relationship class names":"group__emission", "Object class names 1":"group", "Object class names 2":"emission", "Object names 1":"fuelGroup", "Object names 2":df_CO2_melt["Regional_emissions"], "Parameter names":"emissionCap", "Alternative names":df_CO2_melt.Alternative, "Parameter values":df_CO2_melt.Parameter_value})
-p_nEmission = pd.DataFrame({"Relationship class names":'node__emission', "Object class names 1":'node', "Object class names 2":'emission', "Object names 1":emission_factors["emission_node"], "Object names 2":emission_factors["regional_emissions"], "Parameter names":'emission_content', "Alternative names":emission_factors["Alternative"], "Parameter values":emission_factors["Value"]})
+usePrice                = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1":"fuel", "Object names 2":fuel_nodes["nodes"], "Parameter names":"usePrice", "Alternative names":fuel_nodes["Alternative"], "Parameter values":fuel_nodes["usePrice"]})
+emissionCap             = pd.DataFrame({"Relationship class names":"group__emission", "Object class names 1":"group", "Object class names 2":"emission", "Object names 1":"fuelGroup", "Object names 2":df_CO2_melt["Regional_emissions"], "Parameter names":"emissionCap", "Alternative names":df_CO2_melt.Alternative, "Parameter values":df_CO2_melt.Parameter_value})
+p_nEmission             = pd.DataFrame({"Relationship class names":'node__emission', "Object class names 1":'node', "Object class names 2":'emission', "Object names 1":emission_factors["emission_node"], "Object names 2":emission_factors["regional_emissions"], "Parameter names":'emission_content', "Alternative names":emission_factors["Alternative"], "Parameter values":emission_factors["Value"]})
+unitUnittype            = pd.DataFrame({"Relationship class names":"unit__unittype", "Object class names 1":"unit", "Object class names 2":"unittype", "Object names 1":df_pp_complete_agg["unit_name_aggregation"], "Object names 2":df_pp_complete_agg["technology"]}).drop_duplicates().dropna(subset=["Object names 2"])
 
 #flowunit
 values_fu = ['flow__unit','flow','unit','solarWindOnWindOff','unitXXX','','','']
@@ -493,7 +495,7 @@ df_zuordnung_flow["flow"] = df_zuordnung_flow["commodities_in"] + '|' + df_zuord
 
 bb_dim_2_flowUnit = template_fu.assign(**{'Object names 1':df_zuordnung_flow["flow"],'Object names 2':df_zuordnung_flow['unit_name_aggregation']})
 
-bb_dim_2_relationship = pd.concat([nodeBalance, energyStoredPerUnitOfState, usePrice, emissionCap, p_nEmission, bb_dim_2_flowUnit], axis=0, ignore_index=True)
+bb_dim_2_relationship = pd.concat([nodeBalance, energyStoredPerUnitOfState, usePrice, emissionCap, p_nEmission, unitUnittype, bb_dim_2_flowUnit], axis=0, ignore_index=True)
 bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
 
 #implement CO2 taxation
@@ -513,7 +515,8 @@ bb_dim_3_effLevelGroupUnit = pd.DataFrame(index=range(len(df_eff_non_vre_units)*
 bb_dim_3_effLevelGroupUnit = bb_dim_3_effLevelGroupUnit.assign(**{'Relationship class names':'effLevel__effSelector__unit', 'Object class names 1':'effLevel', 'Object class names 2':'effSelector', 'Object class names 3':'unit', 'Object names 1':['level1','level2','level3']*len(df_eff_non_vre_units), 'Object names 2':'directOff', 'Object names 3':(pd.concat([df_eff_non_vre_units['unit_name_aggregation']]*3,ignore_index=True)).sort_values(ignore_index=True)})
 bb_dim_3_gnGroup = pd.DataFrame(index=range(len(fuel_nodes["nodes"].unique())), columns=columns_3d).assign(**{'Relationship class names':'grid__node__group', 'Object class names 1':'grid', 'Object class names 2':'node', 'Object class names 3':'group', 'Object names 1':'fuel', 'Object names 2': fuel_nodes["nodes"].unique(), 'Object names 3':'fuelGroup'})
 
-bb_dim_3_relationship = pd.concat([bb_dim_3_effLevelGroupUnit,bb_dim_3_gnGroup],ignore_index=True)
+#bb_dim_3_effLevelGroupUnit is taken out since a recent Backbone update made assuming directOff as default effLevel of units
+bb_dim_3_relationship = pd.concat([bb_dim_3_gnGroup],ignore_index=True)
 bb_dim_3_relationship = bb_dim_3_relationship.drop_duplicates()
 
 #%%
@@ -576,7 +579,10 @@ if RFNBO_option == "No_reg":
     print("No regulation for RFNBOs applied" + "\n")
     #reassining renewable electricity units to the new renewable electricity node in p_gnu_io
     combined_regex = f"{regex_renewables}|{regex_h2_assets}"
-    mask = bb_dim_4_relationship['Object names 3'].str.contains(combined_regex, regex=True) #and bb_dim_4_relationship["Object names 4"] == "output"
+    mask = (
+        bb_dim_4_relationship['Object names 3'].str.contains(combined_regex, regex=True) &
+        ~bb_dim_4_relationship['Object names 3'].str.contains("Gas")
+    )
     bb_dim_4_relationship.loc[mask, 'Object names 2'] = bb_dim_4_relationship.loc[mask, 'Object names 2'].str.replace('_el', '_re_el')
     bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
 
