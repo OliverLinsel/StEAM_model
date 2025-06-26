@@ -73,8 +73,8 @@ RFNBO_option                       = m_conf.loc[m_conf['Parameter'] == "RFNBO_op
 default_lines_eff = 0.96
 
 #read capacityMargin
-capacityMargin              = m_conf.loc[m_conf['Parameter'] == "capacityMargin", "Value"].values[0] # capacityMargin read value
-#%%
+capacityMargin_el              = m_conf.loc[m_conf['Parameter'] == "capacityMargin_el", "Value"].values[0] # capacityMargin read value
+capacityMargin_h2              = m_conf.loc[m_conf['Parameter'] == "capacityMargin_h2", "Value"].values[0] # capacityMargin read value
 
 ##read Node list
 #Steam config
@@ -192,11 +192,13 @@ template_gn = pd.DataFrame(dict(zip(columns_2d, values_gn)), index=range(len(dim
 #parameters
 bb_dim_2_nodeBalance = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'nodeBalance','Parameter values':1})
 
+#%%
 ## 20250502 introduce capacityMargin for improved resiliency in (full year) schedule runs
-bb_dim_2_capacityMargin_el = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'capacityMargin','Parameter values':capacityMargin})
+bb_dim_2_capacityMargin_el = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"],'Parameter names':'capacityMargin','Parameter values':capacityMargin_el})
+#bb_dim_2_capacityMargin_h2 = template_gn.assign(**{'Object names 2':dim_0_initialization_dtype_str['Object names'][dim_0_initialization_dtype_str["Object class names"] == "node"].str.replace('_el', '_h2'),'Parameter names':'capacityMargin','Parameter values':capacityMargin_h2})
 ## 
-bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance, bb_dim_2_capacityMargin_el],ignore_index=True)   # bb_dim_2_capacityMargin_el removed as h2 resiliency is much more critical atm
-
+bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_nodeBalance, bb_dim_2_capacityMargin_el],ignore_index=True) #, bb_dim_2_capacityMargin_h2 included in h2 transport script
+#%%
 
 #dim3
 columns_3d = ['Relationship class names', 'Object class names 1','Object class names 2','Object class names 3','Object names 1','Object names 2','Object names 3','Parameter names','Alternative names','Parameter values'] #new df based on length of old 1dim df with new 3dim columns (Spine2BB)

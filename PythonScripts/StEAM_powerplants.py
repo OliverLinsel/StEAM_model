@@ -78,6 +78,8 @@ RFNBO_option                = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", 
 lim_fac_option              = m_conf.loc[m_conf['Parameter'] == "Cap_Lim_option", "Value"].values[0] # limiting factors read value
 #read system integration cost factor
 system_integration_factor    = float(m_conf.loc[m_conf['Parameter'] == "system_integration_factor", "Value"].values[0]) # system integration cost read value
+#read availabilityCapacityMargin
+availabilityCapacityMargin_config              = m_conf.loc[m_conf['Parameter'] == "availabilityCapacityMargin", "Value"].values[0] # capacityMargin read value
 
 print("System integration cost factor: " + str(system_integration_factor) + " not implemented yet" + "\n")
 
@@ -495,6 +497,7 @@ df_zuordnung_flow["flow"] = df_zuordnung_flow["commodities_in"] + '|' + df_zuord
 
 bb_dim_2_flowUnit = template_fu.assign(**{'Object names 1':df_zuordnung_flow["flow"],'Object names 2':df_zuordnung_flow['unit_name_aggregation']})
 
+#%%
 bb_dim_2_relationship = pd.concat([nodeBalance, energyStoredPerUnitOfState, usePrice, emissionCap, p_nEmission, unitUnittype, bb_dim_2_flowUnit], axis=0, ignore_index=True)
 bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
 
@@ -542,7 +545,10 @@ vomCosts = pd.DataFrame({"Relationship class names":"grid__node__unit__io", "Obj
 fomCosts = pd.DataFrame({"Relationship class names":"grid__node__unit__io", "Object class names 1":"grid", "Object class names 2":"node", "Object class names 3":"unit", "Object class names 4":"io", "Object names 1":df_pp_complete_agg["grid_out"], "Object names 2":df_pp_complete_agg["node_out"], "Object names 3":df_pp_complete_agg["unit_name_aggregation"], "Object names 4":"output", "Parameter names":"fomCosts", "Alternative names":df_pp_complete_agg["Alternative"], "Parameter values":df_pp_complete_agg["fomCosts"]})
 invCosts = pd.DataFrame({"Relationship class names":"grid__node__unit__io", "Object class names 1":"grid", "Object class names 2":"node", "Object class names 3":"unit", "Object class names 4":"io", "Object names 1":df_pp_complete_agg["grid_out"], "Object names 2":df_pp_complete_agg["node_out"], "Object names 3":df_pp_complete_agg["unit_name_aggregation"], "Object names 4":"output", "Parameter names":"invCosts", "Alternative names":df_pp_complete_agg["Alternative"], "Parameter values":df_pp_complete_agg["invCosts"]})
 
-bb_dim_4_relationship = pd.concat([annuityFactor, invCosts, capacity, unitSize, conversionCoeff, maxRampUp, maxRampDown, vomCosts, fomCosts], axis=0, ignore_index=True)
+#implementing availabilityCapacityMargin
+availabilityCapacityMargin = pd.DataFrame({"Relationship class names":"grid__node__unit__io", "Object class names 1":"grid", "Object class names 2":"node", "Object class names 3":"unit", "Object class names 4":"io", "Object names 1":df_pp_complete_agg["grid_out"], "Object names 2":df_pp_complete_agg["node_out"], "Object names 3":df_pp_complete_agg["unit_name_aggregation"], "Object names 4":"output", "Parameter names":"availabilityCapacityMargin", "Alternative names":"Base", "Parameter values":int(availabilityCapacityMargin_config)}).drop_duplicates()
+
+bb_dim_4_relationship = pd.concat([annuityFactor, invCosts, capacity, unitSize, conversionCoeff, maxRampUp, maxRampDown, vomCosts, fomCosts, availabilityCapacityMargin], axis=0, ignore_index=True)
 bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
 
 #%%
@@ -558,6 +564,7 @@ bb_dim_4_relationship.loc[
     (bb_dim_4_relationship['Object names 4'] == 'output'),
     'Parameter values'] = eps
 
+#%%
 ## Set small capacities to zero to prevent numerical problems
 bb_dim_4_relationship.loc[
     (bb_dim_4_relationship['Parameter names'] == 'capacity') &
@@ -688,6 +695,7 @@ if lim_fac_option == "Base_case":
     if len(subset_countries["Regions"]) != 0:
         print("Aggregation for lim_fac enabled" + "\n")
         #adding a column with the respective regions from subset_countries to new_nodes
+        subset_countries["Countries_short"] = subset_countries["Countries"].str.split("-").str[1]
         lim_fac["Regions"] = lim_fac["ISO3 code"].map(subset_countries.set_index("Countries_short")["Regions"])
         lim_fac_disag = lim_fac.copy()
         #aggregating the nodes by the regions and preparing lim fac for the parameter dataframe
@@ -760,6 +768,7 @@ if lim_fac_option == "Cap_lim":
     if len(subset_countries["Regions"]) != 0:
         print("Aggregation for lim_fac enabled" + "\n")
         #adding a column with the respective regions from subset_countries to new_nodes
+        subset_countries["Countries_short"] = subset_countries["Countries"].str.split("-").str[1]
         lim_fac["Regions"] = lim_fac["ISO3 code"].map(subset_countries.set_index("Countries_short")["Regions"])
         lim_fac_disag = lim_fac.copy()
         #aggregating the nodes by the regions and preparing lim fac for the parameter dataframe
@@ -832,6 +841,7 @@ if lim_fac_option == "Kickstart":
     if len(subset_countries["Regions"]) != 0:
         print("Aggregation for lim_fac enabled" + "\n")
         #adding a column with the respective regions from subset_countries to new_nodes
+        subset_countries["Countries_short"] = subset_countries["Countries"].str.split("-").str[1]
         lim_fac["Regions"] = lim_fac["ISO3 code"].map(subset_countries.set_index("Countries_short")["Regions"])
         lim_fac_disag = lim_fac.copy()
         #aggregating the nodes by the regions and preparing lim fac for the parameter dataframe

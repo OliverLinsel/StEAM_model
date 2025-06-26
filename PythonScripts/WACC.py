@@ -17,10 +17,10 @@ except:     #use if run in Python environment
     if str(os.getcwd()).find('PythonScripts') > -1:
         os.chdir('..')
     path_Main_Input = 'PythonScripts/TEMP/MainInput.xlsx'
-    path_damodaran  = 'Data/WACC/ctryprem_July24.xlsx'
+    path_damodaran  = 'Data/WACC/Archive/ctryprem_July24.xlsx'
     path_iso3166    = 'Data/WACC/alpha-3_countrycodes.csv'
     path_iso3166fix = 'Data/WACC/alpha-3_manual_fix.csv'
-    path_ind_WACC   = 'Data/WACC/waccGlobal_Jan24_StEAM_config.xlsx'
+    path_ind_WACC   = 'Data/WACC/Archive/waccGlobal_Jan24_StEAM_config.xlsx'
     path_output     = 'PythonScripts/TEMP/weighted_WACC_final.csv'
 
 ## read files

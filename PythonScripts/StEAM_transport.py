@@ -76,7 +76,7 @@ subset_countries                    = pd.read_excel(path_Main_Input, sheet_name=
 m_conf                              = pd.read_excel(path_Main_Input, sheet_name="model_config")
 
 #read capacityMargin
-capacityMargin              = m_conf.loc[m_conf['Parameter'] == "capacityMargin", "Value"].values[0] # capacityMargin read value
+capacityMargin_h2              = m_conf.loc[m_conf['Parameter'] == "capacityMargin_h2", "Value"].values[0] # capacityMargin read value
 
 print("Start reading GIS base information" + "\n")
 
@@ -791,7 +791,7 @@ else: bb_0D_concat = pd.concat([bb_grids_concat, bb_nodes_concat], ignore_index=
 bb_grid_node_concat_bal_ty = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1":"h2", "Object names 2":new_nodes.h2_node, "Parameter names":"nodeBalance", "Alternative names":"Base", "Parameter values": new_nodes.balance_type.apply(lambda x: 0 if x == "balance_type_none" else 1)}) #h2 is fixed for now - may be later replaced by new_nodes.commodity
 
 ## 20250502 introduce capacityMargin for improved resiliency in (full year) schedule runs
-bb_dim_2_capacityMargin_h2 = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1": "h2", "Object names 2":new_nodes["h2_node"], "Parameter names":'capacityMargin', "Alternative names":"Base", "Parameter values": capacityMargin})
+bb_dim_2_capacityMargin_h2 = pd.DataFrame({"Relationship class names":"grid__node", "Object class names 1":"grid", "Object class names 2":"node", "Object names 1": "h2", "Object names 2":new_nodes["h2_node"], "Parameter names":'capacityMargin', "Alternative names":"Base", "Parameter values": capacityMargin_h2})
 
 bb_2D_grid_node_concat = pd.concat([bb_grid_node_concat_bal_ty, bb_dim_2_capacityMargin_h2], ignore_index=True)
 

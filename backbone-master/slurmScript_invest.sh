@@ -2,7 +2,7 @@
 #test script for slurm for general "backbone-master"
 ###########################
 ## Set up submit to ...
-#SBATCH -J steam_ol_def_grid_pre
+#SBATCH -J steam_ol_bb_il_2030_VS
 #SBATCH -t 0
 #SBATCH --ntasks-per-node=48
 #SBATCH -N 1
@@ -21,17 +21,19 @@ PATH=$PATH:/opt/gams/gams42.1_linux_x64_64_sfx
 
 ##free -mh
 ##uname -a
-cd /mnt/speicher/.wissmit/oliver/Data/Backbone/backbone-master
+cd /mnt/speicher/.wissmit/oliver/Data/Backbone/bb_il_2030_VS
+
 ##echo "...................................check CPU Speed..................................."
 ##watch -n1 "grep Hz /proc/cpuinfo" 
 ##das stoppt leider das Fortschreiten im weiteren Code, und ist damit ein Endlosjob
 ##cat /proc/cpuinfo | grep Hz
 ##echo "...................................switching to GAMS..................................."
-gams Backbone.gms --input_dir=/mnt/speicher/.wissmit/oliver/Data/Backbone/backbone-master/input --output_dir=/mnt/speicher/.wissmit/oliver/Data/Backbone/backbone-master/output --debug=1 --penalty=100000
+# invest run
+gams Backbone.gms --input_dir=./input --input_file_gdx="inputData.gdx" --output_dir=./output --init_file=investInit.gms --debug=1 --penalty=100000
 ##echo "...................................job finished, return to conda..................................."
 ##free -mh
-cp Backbone.lst /mnt/speicher/.wissmit/oliver/Data/Backbone/backbone-master/output
+cp Backbone.lst /mnt/speicher/.wissmit/oliver/Data/Backbone/bb_il_2030_VS/output
 
-#SBATCH --mail-user=<user>
-#SBATCH --mail-type=<END>
+#SBATCH --mail-user=oliver.linsel@rub.de
+#SBATCH --mail-type=END,FAIL
 

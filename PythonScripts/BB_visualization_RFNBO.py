@@ -239,14 +239,14 @@ shipping                        = gpd.GeoDataFrame(shipping, geometry="geometry"
 
 #%%
 #Get subset_countries from newly established "steam_subset_countries" sheet in debug
-key = "0_testcase_2030_debug"
-basecase = "0_testcase_2030_debug"
+key = "0_tc-ncm-inv_bc_2030_debug"
+basecase = "0_tc-ncm-inv_bc_2030_debug"
 debug = results_dict[key]
 subset_countries = debug.param_as_df_gdxdump("steam_subset_countries")
 subset_countries = subset_countries.rename(columns={"s_countries":"name", "s_regions":"Regions"})
 
-t_start = 2185
-t_end = 2352
+t_start = 4211
+t_end = 3288
 
 print("Succesfully read all files" + "\n")
 
@@ -1189,7 +1189,7 @@ def powerplant_scheduling_plot(debug, key):
     else:
         node = r_gen_gn[(r_gen_gn['grid'] == 'h2') & (r_gen_gn['node'].str.startswith(str_XX_region))].sort_values(by='Val', ascending=False).reset_index(drop=True).loc[0,'node'].strip('_h2') + '_el' 
 
-    node = "EU-DEU_el"
+    node = "DE_el"
     # node = "EU-Benelux_el"
     # node = "EU-FRA_el"
     # node = "AF-MAR_el"
@@ -1229,8 +1229,8 @@ def powerplant_scheduling_plot(debug, key):
     color_dict = {                  # Color dictionary
     'Solar': 'yellow',
     'Solar old': 'yellow',
-    'Wind_Onshore': 'lightblue',
-    'Wind_Offshore': 'blue',
+    'Wind_Onshore': 'lightblue', 'Wind Onshore': 'lightblue',
+    'Wind_Offshore': 'blue', 'Wind Offshore': 'blue',
     'Hydro': 'darkblue',
     'Gas': 'red',
     'Coal': 'black',
@@ -1372,8 +1372,8 @@ def powerplant_scheduling_plot(debug, key):
     color_dict = {                  # Color dictionary
     'Solar': 'yellow',
     'Solar old': 'yellow',
-    'Wind_Onshore': 'lightblue',
-    'Wind_Offshore': 'blue',
+    'Wind_Onshore': 'lightblue', 'Wind Onshore': 'lightblue',
+    'Wind_Offshore': 'blue', 'Wind Offshore': 'blue',
     'Hydro': 'darkblue',
     'Gas': 'red',
     'Coal': 'black',
@@ -1596,8 +1596,8 @@ for key in results_dict.keys():
         r_capacity(results, debug, key)
         r_generation(results, key)
         powerplant_scheduling_plot(debug, key)
-        tree_plot_h2_production(debug, key)
-        tree_plot_h2_demand(debug, key)
+        # tree_plot_h2_production(debug, key)
+        # tree_plot_h2_demand(debug, key)
         print("Succesfully exported results for scenario " + str(key) + "\n")
 
 WACC_geoplot(agg_world_regions)

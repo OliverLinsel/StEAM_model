@@ -1,0 +1,29 @@
+* this file needs to be in the root folder (e.g. c:\backbone), not in the 
+* input folder (e.g. c:\backbone\input) 
+
+* accept small infeasibilties in the solve of the fixed problem
+relaxfixedinfeas = 1
+
+** These options switch solver to barrier algorithm, that might be particularly useful
+** with very large investment problems. 
+*lpmethod = 4
+baralg = 3
+
+** sometimes the model solve works fine for most of the year, but but remains infeasible for 
+** single days. Solver might provide error message "infeasibilities after unscaling".
+** Try scaind = -1 in these cases to not apply scaling. Will increase the solve time.
+*scaind = -1
+
+lpmethod = 4
+parallelmode = -1
+
+** Solutiontype 1: cross over Solutiontype 2: no crossover
+Solutiontype = 2
+
+*barstartalg = 3
+threads = -1
+**preInd = 0
+scaind = 1
+
+crossover = -1
+method = 2

@@ -1539,50 +1539,6 @@
                 }
             },
             {
-                "name": "from BB_sets_3 to Export_to_BB",
-                "from": [
-                    "BB_sets_3",
-                    "right"
-                ],
-                "to": [
-                    "Export_to_BB",
-                    "bottom"
-                ],
-                "filter_settings": {
-                    "known_filters": {
-                        "db_url@BB_sets_3": {
-                            "scenario_filter": {
-                                "RES_2050": true
-                            },
-                            "tool_filter": {}
-                        }
-                    },
-                    "auto_online": true
-                }
-            },
-            {
-                "name": "from BB_sets_4 to Export_to_BB",
-                "from": [
-                    "BB_sets_4",
-                    "right"
-                ],
-                "to": [
-                    "Export_to_BB",
-                    "bottom"
-                ],
-                "filter_settings": {
-                    "known_filters": {
-                        "db_url@BB_sets_4": {
-                            "scenario_filter": {
-                                "RES_2060": true
-                            },
-                            "tool_filter": {}
-                        }
-                    },
-                    "auto_online": true
-                }
-            },
-            {
                 "name": "from Data Connection MainOnly to WACC_Tool",
                 "from": [
                     "Data Connection MainOnly",
@@ -1970,14 +1926,6 @@
                 {
                     "in_label": "db_url@BB_sets_2",
                     "out_label": "inputData_2040.gdx"
-                },
-                {
-                    "in_label": "db_url@BB_sets_3",
-                    "out_label": "inputData_2050.gdx"
-                },
-                {
-                    "in_label": "db_url@BB_sets_4",
-                    "out_label": "inputData_2060.gdx"
                 }
             ],
             "specification": "ExportToBB"
@@ -2691,7 +2639,7 @@
             "type": "Data Store",
             "description": "",
             "x": 773.2756467831491,
-            "y": 427.96490665195654,
+            "y": 430.6025833073949,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

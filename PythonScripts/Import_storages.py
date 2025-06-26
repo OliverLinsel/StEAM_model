@@ -60,6 +60,8 @@ eps = float(m_conf.loc[m_conf['Parameter'] == "eps", "Value"].values[0]) # eps r
 
 #read RFNBO regulation option
 RFNBO_option                       = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", "Value"].values[0] # RFNBO read value
+#read availabilityCapacityMargin
+availabilityCapacityMargin_config              = m_conf.loc[m_conf['Parameter'] == "availabilityCapacityMargin", "Value"].values[0] # capacityMargin read value
 
 ##read Node list
 #Steam config
@@ -615,6 +617,9 @@ bb_dim_4_capacity_dis_o[bb_dim_4_capacity_dis_o['Parameter values'] == 0] = bb_d
 bb_dim_4_invCosts_dis_o[bb_dim_4_invCosts_dis_o['Parameter values'] == 1] = bb_dim_4_invCosts_dis_o[bb_dim_4_invCosts_dis_o['Parameter values'] == 1].assign(**{'Parameter values':eps})
 #setting the zero capacity entries to 0.001 cause Backbone seems to ignore zero values sometimes... ## to do ## have to check this later ('eps' should sometimes be used as 0 but causes problems for exporter (string!=float))
 
+#introduce availabilityCapacityMargin for the discharge units
+bb_dim_4_availabilityCapacityMargin_dis_o = bb_dim_4_invCosts_dis_o.assign(**{'Parameter names':'availabilityCapacityMargin','Parameter values':availabilityCapacityMargin_config})
+
 bb_dim_4_relationship_dtype_str = pd.concat([
     bb_dim_4_conversionCoeff_concat,
     # bb_dim_4_capacity_cha_i,
@@ -629,7 +634,8 @@ bb_dim_4_relationship_dtype_str = pd.concat([
     # bb_dim_4_annuityFactor_cha_i,
     bb_dim_4_annuityFactor_cha_o,
     bb_dim_4_annuityFactor_dis_o,
-    bb_dim_4_upperLimitCapacityRatio_cap_o
+    bb_dim_4_upperLimitCapacityRatio_cap_o,
+    bb_dim_4_availabilityCapacityMargin_dis_o
     ],ignore_index=True)
 bb_dim_4_relationship_dtype_str
 # constraintOnlineMultiplier koennte noch in p_groupPolicyUnit genutzt werden um gleichzeitiges Chargen und Dischargen zu verhindern... sollte aber aufgrund von efficiencies unter 1 kein Problem sein ## to do ## in Test-Results ueberpruefen

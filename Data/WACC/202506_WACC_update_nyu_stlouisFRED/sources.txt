@@ -1,0 +1,4 @@
+https://taxfoundation.org/data/all/global/corporate-tax-rates-by-country-2024/
+https://fred.stlouisfed.org/series/DGS10
+https://fred.stlouisfed.org/series/T10YIE
+https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html

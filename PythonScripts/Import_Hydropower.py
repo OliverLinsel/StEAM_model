@@ -79,6 +79,8 @@ eps = float(m_conf.loc[m_conf['Parameter'] == "eps", "Value"].values[0]) # eps r
 
 #read RFNBO regulation option
 RFNBO_option                       = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", "Value"].values[0] # RFNBO read value
+#read availabilityCapacityMargin
+availabilityCapacityMargin_config              = m_conf.loc[m_conf['Parameter'] == "availabilityCapacityMargin", "Value"].values[0] # capacityMargin read value
 
 #assign capacity profile data to country nodes
 monate                      = ["2015-01-01T00:00:00","2015-02-01T00:00:00","2015-03-01T00:00:00", "2015-04-01T00:00:00", "2015-05-01T00:00:00", "2015-06-01T00:00:00", "2015-07-01T00:00:00", "2015-08-01T00:00:00", "2015-09-01T00:00:00", "2015-10-01T00:00:00", "2015-11-01T00:00:00", "2015-12-01T00:00:00"]
@@ -347,6 +349,8 @@ bb_dim_4_invCosts_o = bb_dim_4_capacity_o.assign(**{'Parameter names':'invCosts'
 bb_dim_4_fomCosts_o = bb_dim_4_capacity_o.assign(**{'Parameter names':'fomCosts','Parameter values':(0/100)*float(m_conf.Value[m_conf["Parameter"] == "unit_investment_cost"].values[0])}) #Platzhalter ## to do ##
 bb_dim_4_vomCosts_o = bb_dim_4_capacity_o.assign(**{'Parameter names':'vomCosts','Parameter values':0*(1/5000)*float(m_conf.Value[m_conf["Parameter"] == "unit_investment_cost"].values[0])}) #Platzhalter ## to do ##
 bb_dim_4_annuityFactor_o = bb_dim_4_capacity_o.assign(**{'Parameter names':'annuityFactor','Parameter values':0.07}) #Platzhalter ## to do ##
+bb_dim_4_availabilityCapacityMargin = bb_dim_4_capacity_o.assign(**{'Parameter names':'availabilityCapacityMargin','Parameter values':availabilityCapacityMargin_config})
+
 ## bb_dim_4_upperLimitCapacityRatio ## kein Limit an die CapacityRatio, da Node festen Wert als maximale Speichermenge zugewiesen hat und Investitionen ausgeschlossen sind
 bb_dim_4_relationship_dtype_str = pd.concat([
     bb_dim_4_conversionCoeff_i,
@@ -354,6 +358,7 @@ bb_dim_4_relationship_dtype_str = pd.concat([
     bb_dim_4_capacity_o,
     bb_dim_4_unitSize_o,
     bb_dim_4_unitSize_i,
+    bb_dim_4_availabilityCapacityMargin,
     # bb_dim_4_invCosts_o,  # invest disabled through p_unit's maxUnitCount
     # bb_dim_4_fomCosts_o,
     # bb_dim_4_vomCosts_o,
@@ -420,6 +425,7 @@ if m_conf.loc[m_conf['Parameter'] == 'hydro_noStorage','Value'].values[0] == 'ye
 
 #### Adding the constraints for the Delegated Act for RFNBOs ####
 
+#%%
 #Error name 'bb_dim_2_relationship_dtype_map' is not defined
 
 if RFNBO_option == "Vanilla":

@@ -66,5 +66,5 @@ cp ./inc/invest2schedule_inc/cplex_invest.opt ./cplex.opt
 ##free -mh
 cp Backbone.lst ./output
 
-#SBATCH --mail-user=<user>
-#SBATCH --mail-type=<END>
+#SBATCH --mail-user=oliver.linsel@rub.de
+#SBATCH --mail-type=END,FAIL
