@@ -21,7 +21,7 @@ from shapely.ops import triangulate
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
-from itertools import combinations
+from itertools import combinations, groupby
 from scipy.spatial import Delaunay
 #from gams import GamsWorkspace, GamsException
 from backbonetools.io import BackboneResult
@@ -41,7 +41,8 @@ import math
 from plotly.subplots import make_subplots
 import re
 from string import digits
-import squarify 
+import squarify
+import matplotlib.font_manager as fm
 
 ############### Load Data ###############
 
@@ -51,7 +52,7 @@ print(os.getcwd() + "\n")
 print("Start reading input Data" + "\n")
 
 #Define Case Study
-case_study = "testing"
+case_study = "RFNBO"
 
 try:
     #use if run in spine-toolbox
@@ -90,10 +91,13 @@ START = time.perf_counter()
 
 res_dpi     = 25
 
-VRE_capacity_before_visualised_as_other = 20
-cap_diff_before_visualised_as_other = 3
-lower_threshhold_before_dropping_invest_values = 1
+VRE_capacity_before_visualised_as_other = 20 #GW
+cap_diff_before_visualised_as_other = 1 #GW
+lower_threshhold_before_dropping_invest_values = 1 #MW
 pie_scaling = 4
+default_font = "Times New Roman"
+vmin = 45 #minimum value for the color scale
+vmax = 140 #maximum value for the color scale
 
 #define plot limits
 # default_xlim = (40, 150) #Asia
@@ -107,7 +111,7 @@ legend_x = default_xlim[0] + (default_xlim[1] - default_xlim[0]) * 0.08
 legend_y = default_ylim[0] + (default_ylim[1] - default_ylim[0]) * 0.3
 
 do_you_want_to_plot_a_specific_node = False
-specific_node = "DEU"
+specific_node = "DE"
 str_XX_region = ""
 
 print("Read all scenario paths" + "\n")
@@ -130,7 +134,7 @@ filenames_df["filetype"] = filenamelist
 filenames_df["filetype"] = filenames_df["filetype"].str.replace(".gdx", "")
 filenames_df["filetype"] = filenames_df["filetype"].str.split("_").str[0]
 filenames_df["year"] = filenames_df["run_list"].str.split("_").str[-1]
-filenames_df["file_path"] = filenames_df["foldername"] + "\\" + filenames_df["filetype"] + "_" + filenames_df["year"] + ".gdx"
+filenames_df["file_path"] = filenames_df["foldername"] + "\\" + filenames_df["filetype"] + ".gdx" #+ "_" + filenames_df["year"]
 filenames_df["df_name"] = filenames_df["run_list"] + "_" + filenames_df["filetype"]
 #%%
 
@@ -195,6 +199,7 @@ for i in filenames_df.index:
         try:
             # Use df_name as the key and BackboneResult(file_path) as the value
             key = filenames_df["df_name"][i]
+            print(str(key))
             value = BackboneResult(filenames_df["file_path"][i])
             print(str(value))
             
@@ -217,7 +222,6 @@ world_eu_bz = gpd.read_file(os.path.join(path_world_eu_bz))
 world = world[["POP_EST", "CONTINENT", "NAME", "ISO_A3", "GDP_MD", "geometry"]]
 world = world.rename(columns={"NAME":"name", "ISO_A3":"iso_a3", "POP_EST":"pop_est", "GDP_MD":"gdp_md_est", "CONTINENT":"continent"}) #renaming columns to match the ones in the nodeset
 
-
 #%%
 print("Start initializing transport dataframes" + "\n")
 
@@ -230,23 +234,44 @@ terminals                       = gpd.GeoDataFrame(terminals, geometry="geometry
 pipelines                       = pd.read_excel(os.path.join(path_transport_visualisation), sheet_name="pipelines")
 pipelines["geometry"]           = gpd.GeoSeries.from_wkt(pipelines["geometry"])
 pipelines                       = gpd.GeoDataFrame(pipelines, geometry="geometry")
-terminal_connections            = pd.read_excel(os.path.join(path_transport_visualisation), sheet_name="terminal_connections")
-terminal_connections["geometry"]= gpd.GeoSeries.from_wkt(terminal_connections["geometry"])
-terminal_connections            = gpd.GeoDataFrame(terminal_connections, geometry="geometry")
-shipping                        = pd.read_excel(os.path.join(path_transport_visualisation), sheet_name="shipping")
-shipping["geometry"]            = gpd.GeoSeries.from_wkt(shipping["geometry"])
-shipping                        = gpd.GeoDataFrame(shipping, geometry="geometry")
+try:
+    terminal_connections = pd.read_excel(os.path.join(path_transport_visualisation), sheet_name="terminal_connections")
+    terminal_connections["geometry"] = gpd.GeoSeries.from_wkt(terminal_connections["geometry"])
+    terminal_connections = gpd.GeoDataFrame(terminal_connections, geometry="geometry")
+    q = 0
+except Exception as e:
+    print(f"No terminal_connections: {e}")
+    terminal_connections = gpd.GeoDataFrame()
+    q = 1
+
+try:
+    shipping = pd.read_excel(os.path.join(path_transport_visualisation), sheet_name="shipping")
+    shipping["geometry"] = gpd.GeoSeries.from_wkt(shipping["geometry"])
+    shipping = gpd.GeoDataFrame(shipping, geometry="geometry")
+    q = 0
+except Exception as e:
+    print(f"No shipping: {e}")
+    shipping = gpd.GeoDataFrame()
+    q = 1
 
 #%%
 #Get subset_countries from newly established "steam_subset_countries" sheet in debug
-key = "0_tc-ncm-inv_bc_2030_debug"
-basecase = "0_tc-ncm-inv_bc_2030_debug"
-debug = results_dict[key]
+key_bc = next(k for k in results_dict.keys() if k.startswith("0_"))
+debug = results_dict[key_bc]
 subset_countries = debug.param_as_df_gdxdump("steam_subset_countries")
 subset_countries = subset_countries.rename(columns={"s_countries":"name", "s_regions":"Regions"})
 
-t_start = 4211
-t_end = 3288
+#%%
+ts_cf_bc = debug.param_as_df_gdxdump("ts_cf_")
+# create lists of all continuous time sets in ts_cf_bs["t"]
+ts_list = ts_cf_bc["t"].unique().tolist()
+#break list where count is not contiuous
+t_start = 337
+t_end = 504
+t_start = 1
+t_end = 168
+t_start = 337
+t_end = 505
 
 print("Succesfully read all files" + "\n")
 
@@ -257,6 +282,11 @@ eu = world.loc[world['name'].isin(values)]
 values = ["Ukraine", "United Kingdom", "Norway", "Switzerland", "Iceland","Serbia", "Albania", "Montenegro", "Kosovo", "North Macedonia", "Bosnia and Herz.", "Turkey", "Moldova", "Morocco", "Tunisia", "Egypt", "Libya", "Algeria", "Georgia", "Armenia", "Azerbaijan", "Libanon", "Syria"]
 con_el_grid = world.loc[world['name'].isin(values)]
 # %%
+
+# Define the order of units roughly based on fully load hours
+unit_order = ['Bat', 'PHS', 'Solar', 'PV', 'Wind', 'Wind_Onshore', 'Wind Onshore', 'Wind_Offshore', 'Wind Offshore', 'Oil', 'Gas', 'Biomass', 'Waste', 'Coal', 'Nuclear', 'Hydro', 'Electrolyzer', 'Other']
+unit_order = ['Other', 'Electrolyzer', 'Hydro', 'Nuclear', 'Coal', 'Waste', 'Biomass', 'Gas', 'Oil', 'Wind Offshore', 'Wind_Offshore', 'Wind Onshore', 'Wind_Onshore', 'Wind', 'PV', 'Solar', 'PHS', 'Bat']
+
 #defining colors
 
 colors = ["#dccc3f", "#ffe99e", "#bce48b",  "#688e3b"]
@@ -264,11 +294,23 @@ cmap1 = LinearSegmentedColormap.from_list("mycmap", colors)
 colors = ["#688e3b", "#bce48b", "#ffe99e", "#dccc3f"]
 cmap1_r = LinearSegmentedColormap.from_list("mycmap", colors)
 
-color_dict={"Solar":'gold','Solar old':'lemonchiffon', "Wind_Onshore":"cornflowerblue", "Wind Onshore":"cornflowerblue", "Wind_Offshore":"blue", "Wind Offshore":"blue", "Hydro":"darkblue",
-            "Gas":"red", "Coal":"black", "Oil":"brown", "Biomass":"darkgreen", "Nuclear":"purple", "Waste":"orange", "H2":"aquamarine",
-            "Other":"grey", 'PHS':'grey', "HaberBosch":"darkgreen", "Liquefaction":"orange", "Cracker":"orange", "Electrolyzer":"turquoise"}
+color_dict = {"Solar": 'gold', 'Solar old': 'lemonchiffon', "Solar|PV": 'gold',
+    "Wind_Onshore": "cornflowerblue", "Wind Onshore": "cornflowerblue", "Wind|Wind_Onshore": "cornflowerblue",
+    "Wind_Offshore": "blue", "Wind Offshore": "blue", "Wind|Wind_Offshore": "blue",
+    "Hydro": "darkblue", "Hydro|Hydro": "darkblue",
+    "Gas": "red", "Gas|CCGT": "red", "Gas|OCGT": "red",
+    "Coal": "black", "Coal|Coal": "black", "Oil": "brown", "Oil|Oil": "brown",
+    "Nuclear": "purple", "Nuclear|Nuclear": "purple",
+    "Biomass": "darkgreen", "Biomass|Biomass": "darkgreen", "Waste": "orange",
+    "Electrolyzer": "turquoise", "el|Electrolyzer": "turquoise",
+    "FuelCell": "lightgreen", "Fuel Cell": "lightgreen",
+    "Liquefaction": "orange", "Cracker": "orange", "HaberBosch": "darkgreen", 
+    "Other": "grey", 'PHS': 'grey', 'PHS|Charge': 'grey', 'PHS|Discharge': 'darkgrey',
+    "Bat": "grey", "Bat|Charge": "grey", "Bat|Discharge": "darkgrey",
+    "h2": "yellow", "el": "turquoise"} #here it is the orher way around because of el|Ely and h2|OCGT
 
-scen_color_dict = {'0_No_reg_results': 'blue', '1_Island_Grid_results': 'orange',
+scen_color_dict = {'0_No_reg_bc_2030_results': 'blue', '1_Island_Grid_2030_results': 'orange',
+                    '2_Def_Grid_2030_results': 'green', '3_Add_Corr_2030_results': 'red', '4_All_reg_2030_results': 'purple',
                     "0_lim_fac_bc_2030_results": "#00429d", "Base case 2030": "#00429d",
                     "1_lim_fac_0_2030_results": "#8d99b8", "Limited case 2030": "#8d99b8",
                     "2_lim_fac_start_2030_results": "#457cb6", "Kickstart case 2030": "#457cb6",
@@ -280,6 +322,25 @@ scen_color_dict = {'0_No_reg_results': 'blue', '1_Island_Grid_results': 'orange'
                     "2_APS_noregbc_2030_results": "#457cb6", 'APS 2030 Green H2': "#457cb6",
                     "3_APS_noreg_2040_results": "#93003a", 'APS 2040 Green H2': "#93003a",
                     }
+
+color_dict_countries = {
+    "EU-ALB": "#b22222", "EU-AUT": "#d52b1e", "EU-BEL": "#c9b037", "EU-BGR": "#6ab150", "EU-BIH": "#1c3578", "EU-CHE": "#d52b1e",
+    "EU-CZE": "#11457e", "EU-DEU": "#282828", "EU-ESP": "#c60b1e", "EU-EST": "#4891d9", "EU-FIN": "#003580", "EU-FRA": "#0055a4", "EU-GBR": "#00247d",
+    "EU-GRC": "#0d5eaf", "EU-HRV": "#c60c30", "EU-HUN": "#436f4d","EU-IRL": "#169b62",  "EU-ISL": "#02529c", "EU-LTU": "#fdb913", "EU-LVA": "#9e3039",
+    "EU-MDA": "#0033a0","EU-MKD": "#d20000", "EU-MNE": "#c8102e", "EU-NLD": "#21468b", "EU-POL": "#dc143c", "EU-PRT": "#006600", "EU-ROU": "#002b7f",
+    "EU-SRB": "#c6363c", "EU-SVK": "#0b4ea2", "EU-SVN": "#005da4", "EU-UKR": "#ffd600", "EU-DNK": "#c60c30", "EU-ITA": "#008c45", "EU-NOR": "#ba0c2f", 
+    "EU-SWE": "#fecc00", "AF-DZA": "#006233", "AF-EGY": "#ce1126", "AF-LBY": "#239e46", "AF-MAR": "#c1272d", "AF-TUN": "#e70013", "AS-TUR": "#e30a17"
+    }
+
+color_dict_regions = {
+    "WBAL": "#7e2c3a", "AT": "#d52b1e", "BE": "#c9b037", "BG": "#6ab150", "CH": "#d52b1e",
+    "CZ": "#11457e", "DE": "#282828", "ES": "#c60b1e", "BALT": "#a07e77", "FI": "#003580",
+    "FR": "#0055a4", "GB": "#00247d", "GR": "#0d5eaf", "HR": "#c60c30", "HU": "#436f4d",
+    "IE": "#169b62", "ISL": "#02529c", "MDA": "#0033a0", "NL": "#21468b", "PL": "#dc143c",
+    "PT": "#006600", "RO": "#002b7f", "SK": "#0b4ea2", "SI": "#005da4", "UKR": "#ffd600",
+    "DK": "#c60c30", "ITA": "#008c45", "NO": "#ba0c2f", "SE": "#fecc00", "ALG": "#006233",
+    "EGY": "#ce1126", "LBY": "#239e46", "MAR": "#c1272d", "TUN": "#e70013", "TUR": "#e30a17"
+}
 
 #00429d,#457cb6,#8d99b8,#da808d,#cd4763,#93003a
 
@@ -294,7 +355,63 @@ scen_names_dict = {'0_lim_fac_bc_2030_results': 'Base case 2030',
                     '1_APS_Vanilla_2040_results': 'APS 2040 Mix H2',
                     "2_APS_noregbc_2030_results": 'APS 2030 Green H2',
                     "3_APS_noreg_2040_results": 'APS 2040 Green H2',
+                    '0_No_reg_bc_2030_results': 'No regulation RFNBO basecase',
+                    '1_Island_Grid_2030_results': 'Island Grid RFNBO',
+                    '2_Def_Grid_2030_results': 'Defossilized Grid RFNBO',
+                    '3_Add_Corr_2030_results': 'Additionality and Correlation RFNBO',
+                    '4_All_reg_2030_results': 'Complete Regulation RFNBO',
             }
+
+### Create a colormap and scale for reference ###
+def color_scale_plot(vmin, vmax):
+    # Create a colormap object with the viridis colormap
+    cmap = plt.cm.get_cmap('viridis')
+
+    # Create a ScalarMappable object to map values to colors
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+    sm._A = []  # Dummy array for ScalarMappable
+
+    # Create a figure and axis object for the horizontal colorbar
+    fig_h, ax_h = plt.subplots(figsize=(8, 1))
+    cbar_h = fig_h.colorbar(sm, cax=ax_h, orientation='horizontal')
+
+    # Set the font for the colorbar labels
+    font = fm.FontProperties(family='Times New Roman', size=12)
+    cbar_h.set_label('H2 marginal costs [€/MWh]', fontsize=12, fontproperties=font)
+    cbar_h.ax.xaxis.set_label_position('bottom')
+    cbar_h.ax.tick_params(labelsize=12)
+
+    # Set the scale labels
+    ticks = np.linspace(vmin, vmax, 7)
+    cbar_h.set_ticks(ticks)
+    cbar_h.set_ticklabels([f'{t:.0f}' for t in ticks])
+
+    # Add ticks to the horizontal colorbar
+    ax_h.set_xticks(ticks)
+    ax_h.set_xticklabels([f'{t:.0f}' for t in ticks])
+
+    # Create a figure and axis object for the vertical colorbar
+    fig_v, ax_v = plt.subplots(figsize=(1, 8))
+    cbar_v = fig_v.colorbar(sm, cax=ax_v, orientation='vertical')
+
+    # Set the font for the colorbar labels
+    cbar_v.set_label('H2 marginal costs [€/MWh]', fontsize=12, fontproperties=font)
+    cbar_v.ax.yaxis.set_label_position('left')
+    cbar_v.ax.tick_params(labelsize=12)
+
+    # Set the scale labels
+    cbar_v.set_ticks(ticks)
+    cbar_v.set_ticklabels([f'{t:.0f}' for t in ticks])
+
+    # Add ticks to the vertical colorbar
+    ax_v.set_yticks(ticks)
+    ax_v.set_yticklabels([f'{t:.0f}' for t in ticks])
+
+    # Save the horizontal colorbar figure
+    fig_h.savefig(os.path.join(path_RFNBO_paper_vis, "colorbar_horizontal.png"), dpi=300, bbox_inches='tight')
+    # Save the vertical colorbar figure
+    fig_v.savefig(os.path.join(path_RFNBO_paper_vis, "colorbar_vertical.png"), dpi=300, bbox_inches='tight')
+    return
 
 print("Succesfully defined regions and colormaps" + "\n")
 
@@ -332,32 +449,37 @@ def transport_df_preprocessing(scenario_results, key):
     transmission_results_m = gpd.GeoDataFrame(transmission_results_m, geometry="geometry")
     transmission_results_m["value"] = transmission_results_m["value"].astype(float).round(decimals=2).abs()
 
-    # #terminal connections results
-    terminal_connections_light = terminal_connections[["con_terminal_name", "Regions", "alternative", "geometry"]]
-    terminal_connections_light["connection"] = terminal_connections_light.con_terminal_name + "_" + terminal_connections_light.Regions
-    terminal_connections_light["connection_alt"] =  terminal_connections_light.Regions + "_" + terminal_connections_light.con_terminal_name
+    if q != 1:
+        # #terminal connections results
+        terminal_connections_light = terminal_connections[["con_terminal_name", "Regions", "alternative", "geometry"]]
+        terminal_connections_light["connection"] = terminal_connections_light.con_terminal_name + "_" + terminal_connections_light.Regions
+        terminal_connections_light["connection_alt"] =  terminal_connections_light.Regions + "_" + terminal_connections_light.con_terminal_name
 
-    terminal_connections_m = transport_results.merge(terminal_connections_light, on="connection", how="inner")
-    terminal_connections_m = terminal_connections_m.drop(columns=["connection_alt_y", "connection_alt_x"])
-    terminal_connections_m = gpd.GeoDataFrame(terminal_connections_m, geometry="geometry")
-    terminal_connections_m["value"] = terminal_connections_m["value"].astype(float).round(decimals=2).abs()
+        terminal_connections_m = transport_results.merge(terminal_connections_light, on="connection", how="inner")
+        terminal_connections_m = terminal_connections_m.drop(columns=["connection_alt_y", "connection_alt_x"])
+        terminal_connections_m = gpd.GeoDataFrame(terminal_connections_m, geometry="geometry")
+        terminal_connections_m["value"] = terminal_connections_m["value"].astype(float).round(decimals=2).abs()
 
-    terminal_connections_m_alt = transport_results.merge(terminal_connections_light, on="connection_alt", how="inner")
-    terminal_connections_m_alt = terminal_connections_m_alt.drop(columns=["connection_x"])
-    terminal_connections_m_alt = terminal_connections_m_alt.rename(columns={"connection_alt":"connection"})
-    terminal_connections_m_alt = gpd.GeoDataFrame(terminal_connections_m_alt, geometry="geometry")
-    terminal_connections_m_alt["value"] = terminal_connections_m_alt["value"].astype(float).round(decimals=2).abs()
+        terminal_connections_m_alt = transport_results.merge(terminal_connections_light, on="connection_alt", how="inner")
+        terminal_connections_m_alt = terminal_connections_m_alt.drop(columns=["connection_x"])
+        terminal_connections_m_alt = terminal_connections_m_alt.rename(columns={"connection_alt":"connection"})
+        terminal_connections_m_alt = gpd.GeoDataFrame(terminal_connections_m_alt, geometry="geometry")
+        terminal_connections_m_alt["value"] = terminal_connections_m_alt["value"].astype(float).round(decimals=2).abs()
 
-    # #shipping results
-    shipping_light = shipping[["name", "origin", "destination", "alternative", "commodity", "geometry"]]
-    shipping_light = shipping_light.rename(columns={"origin":"h2_node1", "destination":"h2_node2"})
-    shipping_light["connection"] = shipping_light.h2_node1 + "_" + shipping_light.h2_node2
+        # #shipping results
+        shipping_light = shipping[["name", "origin", "destination", "alternative", "commodity", "geometry"]]
+        shipping_light = shipping_light.rename(columns={"origin":"h2_node1", "destination":"h2_node2"})
+        shipping_light["connection"] = shipping_light.h2_node1 + "_" + shipping_light.h2_node2
 
-    shipping_m = transport_results.merge(shipping_light, on="connection", how="inner")
-    shipping_m = shipping_m.drop(columns=["h2_node1_y", "h2_node2_y", "commodity_y"])
-    shipping_m = shipping_m.rename(columns={"h2_node1_x":"h2_node1", "h2_node2_x":"h2_node2", "commodity_x":"commodity"})
-    shipping_m = gpd.GeoDataFrame(shipping_m, geometry="geometry")
-    shipping_m["value"] = shipping_m["value"].astype(float).round(decimals=2).abs()
+        shipping_m = transport_results.merge(shipping_light, on="connection", how="inner")
+        shipping_m = shipping_m.drop(columns=["h2_node1_y", "h2_node2_y", "commodity_y"])
+        shipping_m = shipping_m.rename(columns={"h2_node1_x":"h2_node1", "h2_node2_x":"h2_node2", "commodity_x":"commodity"})
+        shipping_m = gpd.GeoDataFrame(shipping_m, geometry="geometry")
+        shipping_m["value"] = shipping_m["value"].astype(float).round(decimals=2).abs()
+    else:
+        terminal_connections_m = gpd.GeoDataFrame()
+        terminal_connections_m_alt = gpd.GeoDataFrame()
+        shipping_m = gpd.GeoDataFrame()
 
     # Check if r_invest_transferCapacity_gnn() returns a non-empty DataFrame
     transfer_capacity_df = scenario_results.r_invest_transferCapacity_gnn()
@@ -509,12 +631,6 @@ def nodal_df_preprocessing(scenario_results, scenario_debug, key):
 
     return nodes_disag, nodes_h2, world_regions
 
-# def total_system_costs(scenario_results, key):
-#     if "results_df" in key:
-#         system_cost = scenario_results.r_cost_realizedCost()
-#         print("Total system costs " + str(key) + " " + str(system_cost) + "\n")
-#         return system_cost
-
 def invest_df_preprocessing(result, debug):
     invest_df = result.r_invest_unitCapacity_gnu()
     if not invest_df.empty:
@@ -585,9 +701,10 @@ def cap_diff(invest_df_work, invest_df_bc, key):
         base_scen = key
 
         # merge invest_df_bc["Capacity [MW]_bc"] to invest_df_work on identifier
-        invest_df_work = invest_df_work.merge(invest_df_bc[["identifier", "Capacity [MW]_bc"]], on=["identifier"], how="left")
+        invest_df_work_temp = invest_df_work.merge(invest_df_bc[["identifier", "Capacity [MW]_bc"]], on=["identifier"], how="left")
 
-        invest_df_work["cap_diff"] = invest_df_work["Capacity [MW]"] - invest_df_work["Capacity [MW]_bc"]
+        invest_df_work_temp["cap_diff"] = invest_df_work_temp["Capacity [MW]"] - invest_df_work_temp["Capacity [MW]_bc"]
+        invest_df_work = invest_df_work_temp.copy()
     else:
         invest_df_work = pd.DataFrame()
         print("No investment data found for " + str(key) + "\n")
@@ -608,22 +725,24 @@ def potential_hydrogen_transport_system():
                         Line2D([0], [0], marker='o', alpha=1, color='white', label='Terminal node',
                         markerfacecolor='white', markeredgecolor="black", markeredgewidth=5, markersize=40, lw=0),
                         # Patch(facecolor='#ffe99e', edgecolor='white', label='Connected Electricity Grid'),
-                        # Patch(facecolor='#bce48b', edgecolor='white', label='EU')
+                        # Patch(facecolor='#bce48b', edgecolor='white', label='EU'),
+                        #change font to default font
                         ]
 
     base = world.plot(color='#a8a8a8', linewidth=0.5, edgecolor='white', figsize=(100,80), alpha=0.2)
-    #world_eu_bz.plot(ax=base, color='#daefb0', markersize=5, edgecolor='white', alpha=0.8, label="European interconnected grid")
-    # con_el_grid.plot(ax=base, color='#ffe99e', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="Connected Electricity Grid")
-    # eu.plot(ax=base, color='#bce48b', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="EU")
-    world_regions.plot(ax=base, column='Regions', cmap='YlGn', markersize=0.5, edgecolor='black', linewidth=1, alpha=0.6, legend=True, label="Regions")
+    world_eu_bz.plot(ax=base, color='#daefb0', markersize=5, edgecolor='white', alpha=0.8, label="European interconnected grid")
+    con_el_grid.plot(ax=base, color='#ffe99e', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="Connected Electricity Grid")
+    eu.plot(ax=base, color='#bce48b', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="EU")
+    # world_regions.plot(ax=base, column='Regions', cmap='YlGn', markersize=0.5, edgecolor='black', linewidth=1, alpha=0.6, legend=True, label="Regions")
     nodes_h2.plot(ax=base, color="blue", markersize=nodes_h2["h2_demand"]/nodes_h2["h2_demand"].max()*4*10**5, alpha=0.2, edgecolors='white', label="Demand [MWh]", zorder=4) #demand overlay '#cd7565'
     nodes.plot(ax=base, color='black', markersize=1000, linewidth=6, alpha=1, edgecolors='white', label="Country nodes", zorder=3) ##E05252
     pipelines.plot(ax=base, color='blue', linewidth=8, alpha=1, label="Pipelines", zorder=1) #Linestringelemente #9e0027 #6cc287
     #terminal exeption
-    if terminals.empty == False:
-        terminals.plot(ax=base, color='white', markersize=1000, linewidth=6, alpha=1,edgecolors='black', label="H2 terminals", zorder=2) #fead64
-        terminal_connections.plot(ax=base, color='#52b0a9', linewidth=8, edgecolor='white', linestyle="--", alpha=1, label="Connection pipeline", zorder=1) #Linestringelemente #eba57c
-        shipping.plot(ax=base, color='#239dce', linewidth=8, edgecolor='white', linestyle=":", alpha=1, label="Shipping routes", zorder=1) #Linestringelemente #ff8c00
+    if q != 1:
+        if terminals.empty == False:
+            terminals.plot(ax=base, color='white', markersize=1000, linewidth=6, alpha=1, edgecolors='black', label="H2 terminals", zorder=2) #fead64
+            terminal_connections.plot(ax=base, color='#52b0a9', linewidth=8, edgecolor='white', linestyle="--", alpha=1, label="Connection pipeline", zorder=1) #Linestringelemente #eba57c
+            shipping.plot(ax=base, color='#239dce', linewidth=8, edgecolor='white', linestyle=":", alpha=1, label="Shipping routes", zorder=1) #Linestringelemente #ff8c00
 
     base.set_axis_off()
     plt.legend(handles=legend_elements1, fontsize=75, loc=3)
@@ -662,6 +781,7 @@ def prod_trans_geoplot(key, world_regions, nodes_h2, transp_r, transm_r, term_r,
                         Patch(facecolor='#dccc3f', edgecolor='white', label='H2 marginal costs [€/MWh]')
                         ]
 
+
     # function to create inset axes and plot bar chart on it
     # this is good for 3 items bar chart
     def build_pie(mapx, mapy, ax, width, xvals=['a','b'], yvals=[1,4], total=["5"], fcolors=['r','g']):
@@ -680,7 +800,7 @@ def prod_trans_geoplot(key, world_regions, nodes_h2, transp_r, transm_r, term_r,
     base = world.plot(color='#a8a8a8', linewidth=0.5, edgecolor='white', figsize=(100,80), alpha=0.5)
     con_el_grid.plot(ax=base, color='#ffe99e', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="Connected Electricity Grid")
     eu.plot(ax=base, color='#bce48b', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="EU")
-    world_regions.plot(ax=base, column=world_regions['marginals_h2'], cmap="viridis", edgecolor='white', linewidth=6, alpha=1, legend=False, legend_kwds={"label": "WACC", "orientation": "horizontal"}, # 'shrink': 0.3
+    world_regions.plot(ax=base, column=world_regions['marginals_h2'], cmap="viridis", vmin=vmin, vmax=vmax, edgecolor='white', linewidth=6, alpha=1, legend=False, legend_kwds={"label": "WACC", "orientation": "horizontal"}, # 'shrink': 0.3
                     missing_kwds={"color": "lightgrey", "edgecolor": "red","hatch": "///","label": "Missing values"}) #color='#a8a8a8' RdYlGn_r cmap1_r
     # nodes_h2.plot(ax=base, color='blue', markersize=nodes_h2["h2_demand"]/5000, alpha=0.6, label="H2 demand", zorder=4) ##E05252 #demand overlay '#cd7565'
     nodes_h2.plot(ax=base, color='black', markersize=500, linewidth=2, alpha=1, edgecolors='white', label="Regions nodes", zorder=3) ##E05252
@@ -688,13 +808,16 @@ def prod_trans_geoplot(key, world_regions, nodes_h2, transp_r, transm_r, term_r,
     transm_r.plot(ax=base, color='#FF6103', linewidth=transm_r["value"]/transm_r["value"].max()*100, alpha=0.5, label="Electricity Transmission", zorder=1, marker=".", markersize=100) #Linestringelemente #9e0027 #6cc287 
 
     #terminal exeption
-    if terminals.empty == False:
-        terminals.plot(ax=base, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
-        term_r.plot(ax=base, color='#52b0a9', linewidth=term_r["value"]/transp_r["value"].max()*100, edgecolor='white', alpha=1, label="Connection pipeline", zorder=1) #Linestringelemente #eba57c
-        ship_r.plot(ax=base, color='#239dce', linewidth=ship_r["value"]/transp_r["value"].max()*100, edgecolor='white', alpha=1, label="Shipping routes", zorder=1) #Linestringelemente #ff8c00
+    if q != 1:
+        if terminals.empty == False:
+            terminals.plot(ax=base, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
+            term_r.plot(ax=base, color='#52b0a9', linewidth=term_r["value"]/transp_r["value"].max()*100, edgecolor='white', alpha=1, label="Connection pipeline", zorder=1) #Linestringelemente #eba57c
+            ship_r.plot(ax=base, color='#239dce', linewidth=ship_r["value"]/transp_r["value"].max()*100, edgecolor='white', alpha=1, label="Shipping routes", zorder=1) #Linestringelemente #ff8c00
 
-    plt.legend(loc="upper center", ncol=3, fontsize=50, title="Legend", title_fontsize=100)
-    plt.legend(handles=legend_elements, fontsize=50, loc=3)
+    # plt.legend(ncol=3, title="Legend", title_fontsize=100, prop=dict(family=default_font))
+    # plt.legend(handles=legend_elements, fontsize=70, prop=dict(family=default_font), bbox_to_anchor=(1.05, 0.5), loc=3)
+    plt.legend(loc="upper center", ncol=3, fontsize=60, title="Legend", title_fontsize=100)
+    plt.legend(handles=legend_elements, fontsize=60, loc=3)
     # plt.ylim(28,70) #Europa
     # plt.xlim(-25,38) #Europa
     # plt.ylim(-90,90) #Welt
@@ -716,13 +839,13 @@ def prod_trans_geoplot(key, world_regions, nodes_h2, transp_r, transm_r, term_r,
     # cbar = plt.colorbar(ax=base, orientation='horizontal', shrink=0.5, pad=0.05)
     # cbar.set_label('H2 marginal costs [€/MWh]')
 
-    sm = plt.cm.ScalarMappable(cmap="viridis", norm=plt.Normalize(vmin=world_regions['marginals_h2'].min(), vmax=world_regions['marginals_h2'].max()))
-    sm._A = []  # Dummy array for ScalarMappable
-    fig = plt.gcf()
-    cbar = fig.colorbar(sm, ax=base, orientation='horizontal', shrink=0.5, pad=0.05, aspect=30)
-    cbar.set_label('H2 marginal costs [€/MWh]', fontsize=50)
-    cbar.ax.xaxis.set_label_position('bottom')
-    cbar.ax.tick_params(labelsize=50)
+    # sm = plt.cm.ScalarMappable(cmap="viridis", norm=plt.Normalize(vmin=world_regions['marginals_h2'].min(), vmax=world_regions['marginals_h2'].max()))
+    # sm._A = []  # Dummy array for ScalarMappable
+    # fig = plt.gcf()
+    # cbar = fig.colorbar(sm, ax=base, orientation='horizontal', shrink=0.5, pad=0.05, aspect=30)
+    # cbar.set_label('H2 marginal costs [€/MWh]', fontsize=50, fontdict={'fontname': default_font})
+    # cbar.ax.xaxis.set_label_position('bottom')
+    # cbar.ax.tick_params(labelsize=50)
 
     base.set_axis_off()
     ### export the plot to a png ###
@@ -733,19 +856,21 @@ def marginals_geoplot(key):
     #set world_regions marginals_el to None if it is >1000
     world_regions["marginals_el"][world_regions["marginals_el"] > 1000] = None
 
+    #create el marginals diagram
     base = world.plot(color='#a8a8a8', linewidth=0.5, edgecolor='white', figsize=(100,80), alpha=0.5)
-    world_regions.plot(ax=base, column=world_regions['marginals_el'], cmap="viridis", edgecolor='white', linewidth=6, alpha=1, legend=False, legend_kwds={"label": "WACC", "orientation": "horizontal"}, # 'shrink': 0.3
+    world_regions.plot(ax=base, column=world_regions['marginals_el'], cmap="viridis", vmin=vmin, vmax=vmax, edgecolor='white', linewidth=6, alpha=1, legend=False, legend_kwds={"label": "WACC", "orientation": "horizontal"}, # 'shrink': 0.3
                     missing_kwds={"color": "lightgrey", "label": ""}) #color='#a8a8a8' RdYlGn_r , "edgecolor": "red","hatch": "///",
     nodes.plot(ax=base, color='black', markersize=500, linewidth=2, alpha=1, edgecolors='white', label="Regions nodes", zorder=3) ##E05252
 
-    if terminals.empty == False:
-        terminals.plot(ax=base, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
+    if q != 1:
+        if terminals.empty == False:
+            terminals.plot(ax=base, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
 
     #plotting the values from world_regions["marginals_el"] onto the map as annotations
     for x, y, label in zip(world_regions["x"], world_regions["y"], world_regions["marginals_el"].round(2)):
-        base.annotate(label, xy=(x, -y), xytext=(5, 5), textcoords="offset points", fontsize=50, bbox=dict(facecolor='white', edgecolor='none', boxstyle='round,pad=0.5'))
+        base.annotate(label, xy=(x, -y), xytext=(5, 5), textcoords="offset points", fontsize=60, bbox=dict(facecolor='white', edgecolor='none', boxstyle='round,pad=0.5'))
 
-    plt.legend(loc="upper center", ncol=3, fontsize=50, title=("Long-term avg. marginal costs [€/MWh_el]_" + str(key)), title_fontsize=100)
+    plt.legend(loc="upper center", ncol=3, fontsize=50, title=("Long-term avg. marginal costs [€/MWh_el] " + str(key)), title_fontsize=100, prop=dict(family=default_font))
     plt.ylim(28,70) #Europa
     plt.xlim(-25,38) #Europa
     # plt.ylim(-90,90) #Welt
@@ -758,19 +883,21 @@ def marginals_geoplot(key):
     ### export the plot to a png ###
     plt.savefig(os.path.join(path_RFNBO_paper_vis, str("el_marginals_geoplot_" + str(key) + ".png")), dpi=res_dpi, bbox_inches='tight', pad_inches=0.1)
 
+    #create h2 marginals diagram
     base1 = world.plot(color='#a8a8a8', linewidth=0.5, edgecolor='white', figsize=(100,80), alpha=0.5)
-    world_regions.plot(ax=base1, column=world_regions['marginals_h2'], cmap="viridis", edgecolor='white', linewidth=6, legend=False, legend_kwds={"label": "H2 marginal costs", "orientation": "horizontal"}, # 'shrink': 0.3
+    world_regions.plot(ax=base1, column=world_regions['marginals_h2'], cmap="viridis", vmin=vmin, vmax=vmax, edgecolor='white', linewidth=6, legend=False, legend_kwds={"label": "H2 marginal costs", "orientation": "horizontal"}, # 'shrink': 0.3
                     missing_kwds={"color": "lightgrey", "edgecolor": "red","hatch": "///","label": "Missing values"}) #color='#a8a8a8' RdYlGn_r
     nodes.plot(ax=base1, color='black', markersize=500, linewidth=2, alpha=1, edgecolors='white', label="Regions nodes", zorder=3) ##E05252
 
-    if terminals.empty == False:
-        terminals.plot(ax=base1, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
+    if q != 1:
+        if terminals.empty == False:
+            terminals.plot(ax=base1, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
 
     #plotting the values from world_regions["h2_marginal"] onto the map as annotations
     for x, y, label in zip(world_regions["x"], world_regions["y"], world_regions["marginals_h2"].round(2)):
-        base1.annotate(label, xy=(x, -y), xytext=(5, 5), textcoords="offset points", fontsize=50, bbox=dict(facecolor='white', edgecolor='none', boxstyle='round,pad=0.5'))
+        base1.annotate(label, xy=(x, -y), xytext=(5, 5), textcoords="offset points", fontsize=60, bbox=dict(facecolor='white', edgecolor='none', boxstyle='round,pad=0.5'))
 
-    plt.legend(loc="upper center", ncol=3, fontsize=50, title=("Long-term avg. marginal costs [€/MWh_h2]_" + str(key)), title_fontsize=100)
+    plt.legend(loc="upper center", ncol=3, fontsize=50, title=("Long-term avg. marginal costs [€/MWh_h2] " + str(key)), title_fontsize=100)
     # plt.ylim(28,70) #Europa
     # plt.xlim(-25,38) #Europa
     # plt.ylim(-90,90) #Welt
@@ -790,8 +917,9 @@ def WACC_geoplot(world_regions):
                     missing_kwds={"color": "lightgrey", "edgecolor": "red","hatch": "///","label": "Missing values"}) #color='#a8a8a8' RdYlGn_r
     nodes.plot(ax=base2, color='black', markersize=500, linewidth=2, alpha=1, edgecolors='white', label="Regions nodes", zorder=3) ##E05252
 
-    if terminals.empty == False:
-        terminals.plot(ax=base2, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
+    if q != 1:
+        if terminals.empty == False:
+            terminals.plot(ax=base2, color='white', markersize=500, linewidth=2, alpha=1,edgecolors='black', label="Terminals", zorder=2) #fead64
 
     #plotting the values from world_regions["WACC"] onto the map as annotations
     for x, y, label in zip(world_regions["x"], world_regions["y"], world_regions["WACC"].round(3).abs()):
@@ -845,8 +973,8 @@ def cap_diff_plot(invest_df):
     # Update layout
     fig.update_layout(
         title='Installed Electrolyzer Capacities [GW]',
-        #change title font to Times New Roman
-        font=dict(family="Times New Roman", size=12, color="black"),
+        #change title font to default_font
+        font=dict(family=default_font, size=12, color="black"),
         xaxis_title='Node',
         yaxis_title='Capacity [GW]',
         barmode='group',
@@ -857,7 +985,7 @@ def cap_diff_plot(invest_df):
     fig.update_xaxes(linecolor='black', showline=True, gridcolor='lightgrey')
 
     # Show plot
-    # fig.show()
+    fig.show()
     fig.write_image(os.path.join(path_RFNBO_paper_vis, "cap_diff_plot.png"), scale=res_dpi/2, width=1200, height = 400)
     #fig.write_image(os.path.join(path_RFNBO_paper_vis, "cap_diff_plot.svg"), scale=res_dpi/2)
     return
@@ -883,12 +1011,12 @@ def cap_diff_rel_plot(invest_df):
     # Update layout
     fig.update_layout(
         title='Invested Electrolyzer Capacity compared to Base Case [MW]',
-        #change title font to Times New Roman
-        font=dict(family="Times New Roman", size=12, color="black"),
-        legend=dict(font=dict(size=12, family="Times New Roman", color="black")),
+        #change title font to default_font
+        font=dict(family=default_font, size=12, color="black"),
+        legend=dict(font=dict(size=12, family=default_font, color="black")),
         xaxis_title='Node',
         yaxis_title='Capacity Difference',
-        barmode='group',
+        barmode='relative',
         plot_bgcolor='white'
     )
 
@@ -978,7 +1106,7 @@ def cost_duration_curve(debug, scen_key):
                 axes[r,c].set_yticks(range(ymin,ymax,yd))
                 axes[r,c].axhline(y=0, color='black', linestyle='-', linewidth=1)
         for r in range(nrow):
-            axes[r,0].set_ylabel('EUR/MWh',fontname=font)
+            axes[r,0].set_ylabel('EUR/MWh',fontname=default_font)
             axes[r,0].set_ylim(ymin, ymax)
             axes[r,0].set_yticks(range(ymin,ymax,yd))
             axes[r,0].set_xlim(0, 8760)
@@ -987,7 +1115,7 @@ def cost_duration_curve(debug, scen_key):
             axes[r,2].set_yticklabels([])
             axes[r,3].set_yticklabels([])
         for c in range(ncol):
-            axes[6,c].set_xlabel('Hours (sorted)',fontname=font)
+            axes[6,c].set_xlabel('Hours (sorted)',fontname=default_font)
         axes[6,3].legend(loc='center left', bbox_to_anchor=(1.2, 0.5),prop={'family':font},frameon=False)
     fig.set_figwidth(15)
     fig.set_figheight(10)
@@ -1029,6 +1157,10 @@ def r_capacity(results, debug, key):
     #rename Wind commodities Onshore or Offshore if the Technology strings contains Onshore or Offshore
     invest_df.loc[invest_df["Technology"].str.contains("Wind_Onshore"), "Commodity"] = "Wind Onshore"
     invest_df.loc[invest_df["Technology"].str.contains("Wind_Offshore"), "Commodity"] = "Wind Offshore"
+    #remove all the Invest strings together with the number at the end from the VRE technologies
+    invest_df["Technology"] = invest_df["Technology"].str.replace("Invest", "")
+    #replace the number at the end of the VRE technologies with an empty string
+    invest_df["Technology"] = invest_df["Technology"].str.replace(r'\d+$', '', regex=True)
     invest_df["colors"] = invest_df["Commodity"].map(color_dict)
 
     #drop rows if the capacity is very small
@@ -1038,17 +1170,22 @@ def r_capacity(results, debug, key):
     #Combine additional regions by replacing the _add string
     invest_df["Region"] = invest_df["Region"].str.replace("_add", "")
 
+    #combine re_el and el again
+    invest_df.loc[invest_df["node"].str.contains("_re_el"), "node"] = invest_df.loc[invest_df["node"].str.contains("_re_el"), "node"].str.replace("_re_el", "_el")
+
     #order the dataframe by node alphabetically
     invest_df = invest_df.sort_values(by="Technology").reset_index(drop=True)
-    invest_df = invest_df.sort_values(by="Commodity").reset_index(drop=True)
+    # Sort Commodity by unit_order
+    invest_df["Commodity"] = pd.Categorical(invest_df["Commodity"], categories=unit_order, ordered=True)
+    # invest_df = invest_df.sort_values(by="Commodity").reset_index(drop=True)
     invest_df = invest_df.sort_values(by="Region").reset_index(drop=True)
     invest_df = invest_df.sort_values(by="grid").reset_index(drop=True)
 
     fig = px.bar(invest_df, x="Region", y="Capacity [GW]", title="Total Plant Capacity", color="Technology", facet_row="grid", hover_data=["Technology", "node"], color_discrete_map=color_dict)
     fig.update_yaxes(matches=None, mirror=True, ticks='outside', showline=True, linecolor='black', gridcolor='lightgrey') #, range = [0, invest_df["limit"]])
     fig.update_xaxes(linecolor='black')
-    fig.update_layout(plot_bgcolor='white', autosize=False, width=1300, height=800, font=dict(size=16))
-    #fig.show()
+    fig.update_layout(plot_bgcolor='white', autosize=False, width=1300, height=800, font=dict(size=16, family=default_font, color="black"), showlegend=False)
+    fig.show()
     fig.write_image(os.path.join(path_RFNBO_paper_vis, str("total_plant_capacity_" + str(key) + ".png")), scale=res_dpi/3, width=1000, height = 700)
     return invest_df
 
@@ -1068,8 +1205,12 @@ def r_generation(results, key):
     #rename Wind commodities Onshore or Offshore if the Technology strings contains Onshore or Offshore
     production.loc[production["Technology"].str.contains("Wind_Onshore"), "Commodity"] = "Wind Onshore"
     production.loc[production["Technology"].str.contains("Wind_Offshore"), "Commodity"] = "Wind Offshore"
+    #remove all the Invest strings together with the number at the end from the VRE technologies
+    production["Technology"] = production["Technology"].str.replace("Invest", "")
+    #replace the number at the end of the VRE technologies with an empty string
+    production["Technology"] = production["Technology"].str.replace(r'\d+$', '', regex=True)
 
-    production["colors"] = production["Commodity"].map(color_dict)
+    production["colors"] = production["Technology"].map(color_dict)
     production["Production [TWh]"] = production["Production [MWh]"]/10**6
 
     production["Production [TWh]"][production["Production [TWh]"] <= 0] = production["Production [TWh]"] #*0.74
@@ -1077,12 +1218,15 @@ def r_generation(results, key):
     #order the dataframe by node alphabetically
     production = production.sort_values(by="Region").reset_index(drop=True)
 
-    fig = px.bar(production, x="node", y="Production [TWh]", title="Electricity Generation and Consumption", color="Commodity", facet_row="grid", hover_data=["Technology"], color_discrete_map=color_dict,
-                 labels={"Production [TWh]":"Electricity Production [TWh]", "node":"Region"})
+    #combine re_el and el again
+    production.loc[production["node"].str.contains("_re_el"), "node"] = production.loc[production["node"].str.contains("_re_el"), "node"].str.replace("_re_el", "_el")
+
+    fig = px.bar(production, x="node", y="Production [TWh]", title="Electricity Generation and Consumption", color="Technology", facet_row="grid", hover_data=["Technology"],
+                 labels={"Production [TWh]":"Electricity Production [TWh]", "node":"Region"}, color_discrete_map=color_dict)
     fig.update_yaxes(matches=None, mirror=True, ticks='outside', showline=True, linecolor='black', gridcolor='lightgrey') #, range = [0, invest_df["limit"]])
     #fig.update_xaxes(linecolor='black')
     fig.add_hline(y=0, line_color="black", line_width=1)
-    fig.update_layout(plot_bgcolor='white', autosize=False, width=1300, height=600, font=dict(size=16))
+    fig.update_layout(plot_bgcolor='white', autosize=False, width=1300, height=600, font=dict(size=16, family=default_font, color="black"), showlegend=False)
     fig.write_image(os.path.join(path_RFNBO_paper_vis, "Electricity Generation and Consumption " + str(key) + ".png"), format="png", scale=res_dpi/3, width=1200, height = 700)
     #fig.show()
     return production
@@ -1128,7 +1272,7 @@ def total_system_costs_plot(agg_tsc_df_i):
 
     fig.update_yaxes(matches=None, mirror=True, ticks='outside', showline=True, linecolor='black', gridcolor='lightgrey')
     fig.update_xaxes(linecolor='black', title="Scenario", showline=True, gridcolor='lightgrey')
-    fig.update_layout(plot_bgcolor='white', autosize=False, width=1300, height=800, font=dict(size=20, family="Times New Roman", color="black"), showlegend=False)
+    fig.update_layout(plot_bgcolor='white', autosize=False, width=1300, height=800, font=dict(size=20, family=default_font, color="black"), showlegend=False)
 
     # Update text position
     fig.update_traces(textposition='outside')
@@ -1141,9 +1285,10 @@ def installed_vre_capacities(agg_invest_df):
     agg_invest_df_c = agg_invest_df.copy()
     # Split scenario column into scenario and year
     agg_invest_df_c["Year"] = agg_invest_df_c["scenario"].str.split("_").str[-2]
+    agg_invest_df_c["Region"] = agg_invest_df_c["Region"].str.replace("_isl", "")  # Remove _isl from Region names
     # Aggregate for each set of scenario, node, and commodity
     agg_invest_df_c = agg_invest_df_c.groupby(["scenario", "Region", "Commodity"]).agg({"Capacity [GW]": "sum", "colors": "first", "Year": "first"}).reset_index()
-    agg_invest_df_c["scenario_abrv"] = agg_invest_df_c["scenario"].str.split("_").str[-3]
+    # agg_invest_df_c["scenario_abrv"] = agg_invest_df_c["scenario"].str.split("_").str[-3]
     agg_invest_df_c["scenario_name"] = agg_invest_df_c["scenario"].map(scen_names_dict)
 
     #use only VRE
@@ -1151,17 +1296,18 @@ def installed_vre_capacities(agg_invest_df):
 
     #aggregate regions with cumulated installed Capacity [GW] for all VRE smaller then VRE_capacity_before_visualised_as_other to "Others" if this applies for both 2030 and 2040
     agg_invest_df_c["Region"] = agg_invest_df_c.apply(
-        lambda row: "Others" if agg_invest_df_c[(agg_invest_df_c["scenario_abrv"] == row["scenario_abrv"]) & (agg_invest_df_c["Region"] == row["Region"])]["Capacity [GW]"].sum() <= VRE_capacity_before_visualised_as_other else row["Region"],
+        lambda row: "Others" if agg_invest_df_c[(agg_invest_df_c["scenario"] == row["scenario"]) & (agg_invest_df_c["Region"] == row["Region"])]["Capacity [GW]"].sum() <= VRE_capacity_before_visualised_as_other else row["Region"],
         axis=1)
     
     he_wi = 400
     font_size = 22
 
+    #Building bar chart for total system costs from agg_tsc_df
     fig = px.bar(agg_invest_df_c,
                 x="Region",
                 y="Capacity [GW]",               
                 title="Total installed VRE capacity",
-                color="scenario_name", color_discrete_map=scen_color_dict,
+                color="scenario", color_discrete_map=scen_color_dict,
                 facet_row="Year",
                 facet_row_spacing = 0,
                 hover_data=["Commodity", "Capacity [GW]", "scenario_name"],
@@ -1169,8 +1315,8 @@ def installed_vre_capacities(agg_invest_df):
 
     fig.update_yaxes(mirror=True, showline=True, linecolor='black', gridcolor='lightgrey')
     fig.update_xaxes(linecolor='lightgrey', showline=False, gridcolor='lightgrey', showgrid=True)
-    fig.update_layout(height=he_wi * 2, width=he_wi * 5, plot_bgcolor='white', autosize=False, font=dict(size=20, family="Times New Roman", color="black"), showlegend=True,
-                    legend=dict(title="Scenario:", title_font=dict(size=font_size), font=dict(size=font_size), orientation="h", yanchor="top", y=6, xanchor="right", x=1),
+    fig.update_layout(height=he_wi * 2, width=he_wi * 5, plot_bgcolor='white', autosize=False, font=dict(size=20, family=default_font, color="black"), showlegend=True,
+                    legend=dict(title="Scenario:", title_font=dict(size=font_size, family=default_font), font=dict(size=font_size, family=default_font), orientation="h", yanchor="top", y=6, xanchor="right", x=1),
                     barmode='group')
     
     fig.write_image(os.path.join(path_RFNBO_paper_vis, "Installed VRE capacities compared.png"), scale=res_dpi/3)
@@ -1190,6 +1336,7 @@ def powerplant_scheduling_plot(debug, key):
         node = r_gen_gn[(r_gen_gn['grid'] == 'h2') & (r_gen_gn['node'].str.startswith(str_XX_region))].sort_values(by='Val', ascending=False).reset_index(drop=True).loc[0,'node'].strip('_h2') + '_el' 
 
     node = "DE_el"
+    # node = "PT_el"
     # node = "EU-Benelux_el"
     # node = "EU-FRA_el"
     # node = "AF-MAR_el"
@@ -1276,19 +1423,24 @@ def powerplant_scheduling_plot(debug, key):
     df_r_genByFuel_gnft_filtered = pd.merge(df_r_genByFuel_gnft, total_production, on='unit')
 
     # concat with Shipping and Pipeline
-    df_r_genByFuel_gnft_filtered = pd.concat([df_r_genByFuel_gnft_filtered, trans_concat_filtered], ignore_index=True)
+    df_r_genByFuel_gnft_filtered = pd.concat([trans_concat_filtered, df_r_genByFuel_gnft_filtered], ignore_index=True)
 
     # Convert DataFrame columns to dictionary
     df_r_genByFuel_gnft_filtered['Val'] = df_r_genByFuel_gnft_filtered['Val']/1000
+
+    df_r_genByFuel_gnft_filtered["Commodity"] = df_r_genByFuel_gnft_filtered['unit'].str.split("|").str[0]  # Extract commodity from unit
 
     # #filter df_r_balance_marginalValue_gnft to t_start and t_end
     # df_r_genByFuel_gnft_filtered = df_r_genByFuel_gnft_filtered[(df_r_genByFuel_gnft_filtered['t'] >= t_start) & (df_r_genByFuel_gnft_filtered['t'] <= t_end)]
     # df_r_balance_marginalValue_gnft = df_r_balance_marginalValue_gnft[(df_r_balance_marginalValue_gnft['t'] >= t_start) & (df_r_balance_marginalValue_gnft['t'] <= t_end)]
     # df_i_ts_influx = df_i_ts_influx[(df_i_ts_influx['t'] >= t_start) & (df_i_ts_influx['t'] <= t_end)]
 
+    # Sort df_r_genByFuel_gnft_filtered by column Commodity to order unit_order
+    df_r_genByFuel_gnft_filtered = df_r_genByFuel_gnft_filtered.sort_values(by='Commodity', key=lambda x: x.map(lambda y: unit_order.index(y) if y in unit_order else len(unit_order)))
+
     # Plot the area plot
     fig = px.bar(
-        df_r_genByFuel_gnft_filtered, x='t', y='Val', color='unit', category_orders={'unit': variance_df['unit']}, color_discrete_map =color_dict_unit#, facet_row="grid"
+        df_r_genByFuel_gnft_filtered, x='t', y='Val', color='unit', color_discrete_map =color_dict_unit#, facet_row="grid" category_orders={'unit': variance_df['unit']}, 
         # line_shape='linear', line_group='unit', hover_data=[' XXX '], title=" XXX ",
         )
 
@@ -1315,7 +1467,7 @@ def powerplant_scheduling_plot(debug, key):
         yaxis2=dict(title='Marginal Price [€/MWh]', overlaying='y', side='right'), 
         legend=dict(x=1.05, y=1.), 
         font=dict(
-            family="Arial, sans-serif",
+            family=default_font,
             size=16,  # Set the font size
             color="black"  # Set font color
         ),
@@ -1458,7 +1610,7 @@ def powerplant_scheduling_plot(debug, key):
         yaxis2=dict(title='Marginal Price [€/MWh]', overlaying='y', side='right'),
         legend=dict(x=1.05, y=1.),
         font=dict(
-            family="Arial, sans-serif",
+            family=default_font,
             size=16,  # Set the font size
             color="black"  # Set font color
         ),
@@ -1499,7 +1651,7 @@ def tree_plot_h2_production(debug, key):
     # colors = plt.cm.viridis(np.linspace(0, 1, len(r_gen_gn_df['Continent'])))
 
     plt.figure(figsize=(140, 140))
-    plt.title("Total Hydrogen Production " + str(round(r_gen_gn_df['Val'].sum()/10**6)) + " TWh " + str(key), fontsize=150)
+    plt.title("Total Hydrogen Production " + str(round(r_gen_gn_df['Val'].sum()/10**6)) + " TWh " + str(key), fontsize=150, fontdict={'fontname': default_font})
     squarify.plot(sizes=r_gen_gn_df['Val'], label=r_gen_gn_df['Countries'], color=colors, alpha=0.7, linewidth=3, edgecolor="white",
                 text_kwargs={'fontsize': 100, 'color': 'black', 'fontweight': 'bold',
                 'bbox': dict(boxstyle="round,pad=0.3", edgecolor="none", facecolor="white", alpha=1)})
@@ -1538,13 +1690,84 @@ def tree_plot_h2_demand(debug, key):
     # colors = plt.cm.viridis(np.linspace(0, 1, len(r_gen_gn_df['Continent'])))
 
     plt.figure(figsize=(140, 140))
-    plt.title("Total Hydrogen Demand " + str(round(r_gen_gn_df['Val'].sum()/10**6)) + " TWh " + str(key), fontsize=150)
+    plt.title("Total Hydrogen Demand " + str(round(r_gen_gn_df['Val'].sum()/10**6)) + " TWh " + str(key), fontsize=150, fontdict={'fontname': default_font})
     squarify.plot(sizes=r_gen_gn_df['Val'], label=r_gen_gn_df['Countries'], color=colors, alpha=0.7, linewidth=3, edgecolor="white",
                 text_kwargs={'fontsize': 100, 'color': 'black', 'fontweight': 'bold',
                 'bbox': dict(boxstyle="round,pad=0.3", edgecolor="none", facecolor="white", alpha=1)})
     plt.axis('off')
     #save figure
     plt.savefig(os.path.join(path_RFNBO_paper_vis, str("Total Hydrogen Demand " + str(key) + ".png")), dpi=res_dpi*0.75, bbox_inches='tight')
+    return
+
+def marginal_system_costs_plot(agg_world_regions):
+    # marginal plot ## not finished ##
+    agg_world_regions_c = agg_world_regions[['Regions','h2_demand','marginals_el','marginals_h2','scenario']]
+    for scenario in agg_world_regions_c['scenario'].unique():
+        agg_world_regions_c.loc[agg_world_regions_c['scenario'] == scenario,'h2_demand_weight'] = agg_world_regions_c[agg_world_regions_c['scenario'] == scenario]['h2_demand'] / agg_world_regions_c[agg_world_regions_c['scenario'] == scenario]['h2_demand'].sum()
+    agg_world_regions_c['marginals_el_weighted'] = agg_world_regions_c['marginals_el'] * agg_world_regions_c['h2_demand_weight']
+    agg_world_regions_c['marginals_h2_weighted'] = agg_world_regions_c['marginals_h2'] * agg_world_regions_c['h2_demand_weight']
+    agg_agg_world_regions_c = agg_world_regions_c.groupby('scenario').agg({'marginals_el_weighted':'sum','marginals_h2_weighted':'sum'}).reset_index()
+
+    base_value_h2 = agg_agg_world_regions_c[agg_agg_world_regions_c["scenario"].str.startswith('0_')]["marginals_h2_weighted"].values
+    base_value_el = agg_agg_world_regions_c[agg_agg_world_regions_c["scenario"].str.startswith('0_')]["marginals_el_weighted"].values
+    agg_agg_world_regions_c["H2 Costs relative to base case"] = (agg_agg_world_regions_c["marginals_h2_weighted"]/base_value_h2)
+    agg_agg_world_regions_c["Elec Costs relative to base case"] = (agg_agg_world_regions_c["marginals_el_weighted"]/base_value_el)
+    #merge with agg_tsc_df on scenario
+    for cost_rel_to_baseCase in ['H2 Costs relative to base case','Elec Costs relative to base case']:
+        agg_agg_world_regions_c[cost_rel_to_baseCase] = agg_agg_world_regions_c[cost_rel_to_baseCase] * 100 - 100
+        agg_agg_world_regions_c[cost_rel_to_baseCase] = agg_agg_world_regions_c[cost_rel_to_baseCase].round(2)
+        # Convert the values to string with '%' symbol
+        agg_agg_world_regions_c[cost_rel_to_baseCase] = agg_agg_world_regions_c[cost_rel_to_baseCase].astype(str) + '%'
+        # delete zeros
+        agg_agg_world_regions_c[cost_rel_to_baseCase] = agg_agg_world_regions_c[cost_rel_to_baseCase].replace("0.0%", "")
+    ## change this to long format and facet_row ## to do ##
+    #Building bar chart for total system costs from agg_agg_world_regions_c
+    agg_agg_world_regions_c_long = pd.concat([
+        agg_agg_world_regions_c[['scenario','marginals_el_weighted','Elec Costs relative to base case']].rename(columns={'marginals_el_weighted':'marginals','Elec Costs relative to base case':'Costs relative to base case'}).assign(**{'grid':'elec'}),
+        agg_agg_world_regions_c[['scenario','marginals_h2_weighted','H2 Costs relative to base case']].rename(columns={'marginals_h2_weighted':'marginals','H2 Costs relative to base case':'Costs relative to base case'}).assign(**{'grid':'h2'})
+        ])
+    
+    #apply scen_name_dict
+    agg_agg_world_regions_c_long["scenario_name"] = agg_agg_world_regions_c_long["scenario"].map(scen_names_dict)
+
+    fig = px.bar(agg_agg_world_regions_c_long,
+                x="scenario_name", 
+                y="marginals", 
+                title="Marginal System Costs: " + str_XX_region, 
+                color="scenario", 
+                hover_data=["scenario"], 
+                color_discrete_map=scen_color_dict,
+                text="Costs relative to base case",
+                facet_row='grid',
+                )
+    
+    # Add subplot titles
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[1].replace("elec", "Electricity").replace("h2", "Hydrogen")))
+
+    # Increase the size of the label
+    fig.update_layout(
+        font=dict(
+            size=16,  # Set the font size here
+            family=default_font,
+            color="black"
+        )
+    )
+
+    fig.update_yaxes(
+        mirror=True,
+        ticks='outside',
+        showline=True,
+        linecolor='black',
+        gridcolor='lightgrey',
+        range=[0, agg_agg_world_regions_c_long['marginals'].max() * 1.1],
+        title_text="Marginal Costs [€/MWh]"
+    )
+    
+    fig.update_xaxes(linecolor='black', title="Scenario", showline=True, gridcolor='lightgrey')
+    fig.update_layout(plot_bgcolor='white', autosize=False, width=1300, height=800, showlegend=False) #font=dict(size=12, family=default_font, color="black")
+    # Update text position
+    fig.update_traces(textposition='outside')
+    fig.write_image(os.path.join(path_RFNBO_paper_vis, "demand weighted average marginals.png"), scale=res_dpi/3, width=700, height = 700)
     return
 
 print("Main working loop + export visualizations to figure folder" + "\n")
@@ -1572,39 +1795,36 @@ for key in results_dict.keys():
         agg_world_regions = pd.concat([agg_world_regions, world_regions])
 
         invest_df_work = inv_df_prepro(results, key)
-        if str(basecase) in key:
-            base_scen = key
-            invest_df_bc = invest_df_work
+        print("key_bc: " + str(key_bc))
+        print("scen_key: " + str(scen_key))
+        if str("bc") in scen_key:
+            base_scen = scen_key
+            invest_df_bc = invest_df_work.copy()
             invest_df_bc = invest_df_bc.rename(columns={"Capacity [MW]":"Capacity [MW]_bc"})
-        for scen in scenario_set:
-            if scen in key:
-                base_scen = key
-                invest_df_bc = invest_df_work.copy()
-                invest_df_bc = invest_df_bc.rename(columns={
-                "Capacity [MW]": f"Capacity [MW]_bc"
-            })
         invest_df = cap_diff(invest_df_work, invest_df_bc, key)
         agg_invest_df = pd.concat([agg_invest_df, invest_df])
         tsc_df = total_system_costs(results, scen_key)
         agg_tsc_df = pd.concat([agg_tsc_df, tsc_df])
 
-        potential_hydrogen_transport_system()
         prod_trans_geoplot(scen_key, world_regions, nodes_h2, transp_r, transm_r, term_r, ship_r)
-        marginals_geoplot(scen_key)
-        invest_df_preprocessing(results, debug)
-        # cost_duration_curve(debug, scen_key)
-        r_capacity(results, debug, key)
-        r_generation(results, key)
-        powerplant_scheduling_plot(debug, key)
+        # marginals_geoplot(scen_key)
+        # invest_df_preprocessing(results, debug)
+        # r_capacity(results, debug, key)
+        # r_generation(results, key)
+        # powerplant_scheduling_plot(debug, key)
         # tree_plot_h2_production(debug, key)
         # tree_plot_h2_demand(debug, key)
+        # cost_duration_curve(debug, scen_key)
         print("Succesfully exported results for scenario " + str(key) + "\n")
 
-WACC_geoplot(agg_world_regions)
-cap_diff_plot(agg_invest_df)
-cap_diff_rel_plot(agg_invest_df)
-total_system_costs_plot(agg_tsc_df)
-installed_vre_capacities(agg_invest_df)
+# potential_hydrogen_transport_system()
+# WACC_geoplot(agg_world_regions)
+# cap_diff_plot(agg_invest_df)
+# cap_diff_rel_plot(agg_invest_df)
+# total_system_costs_plot(agg_tsc_df)
+# installed_vre_capacities(agg_invest_df)
+# marginal_system_costs_plot(agg_world_regions)
+# color_scale_plot(vmin, vmax)
 
 STOP = time.perf_counter()
 print('Total execution time of script',round((STOP-START), 1), 's')  

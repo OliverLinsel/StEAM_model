@@ -1074,7 +1074,7 @@ if RFNBO_option == "Defossilized_Grid_prerun":
     bb_4D_concat = bb_4D_concat[~bb_4D_concat['Object names 2'].str.contains(reg_ex_hydrogen)].reset_index(drop=True)
     bb_4D_concat = bb_4D_concat[~bb_4D_concat['Object names 3'].str.contains(reg_ex_hydrogen)].reset_index(drop=True)
 
-if RFNBO_option == "Defossilized_Grids":
+if RFNBO_option == "Defossilized_Grid":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
@@ -1088,6 +1088,10 @@ if RFNBO_option == "All_at_once":
     print("Applying all regulations for RFNBOs" + "\n")
     ### All at once ###
     alt_rfnbo = "All_at_once"
+
+####### User constraints #######
+
+#Implementing user constraints for 90% renewable electricity share in the system or marginals <20€/kWh
 
 #create a excel writer object and export the preprocessed transport model data
 with pd.ExcelWriter(os.path.join(outputfile)) as writer:

@@ -122,7 +122,7 @@ os.remove(path_excel_path_tmp)
 df_length = len(ts_complete)
 
 # Create a datetime vector with hourly resolution starting from 2015
-datetime_vector = pd.date_range(start='2015-01-01', periods=df_length, freq='H')
+datetime_vector = pd.date_range(start='2015-01-01', periods=df_length, freq='h')
 
 # Update the DataFrame index with the datetime vector
 ts_complete.index = datetime_vector

@@ -35,6 +35,7 @@ try:        #use if run in spine-toolbox
     path_transport_nodes_and_parameters = sys.argv[4]
     outputfile              = 'TEMP\Countries_Connections.xlsx'
     outputfile_BB           = 'TEMP\Countries_Connections_BB.xlsx'
+    RFNBO_assessment_path   = r".\Data\HPC_results\RFNBO\2_Def_Grid_2030\2_Def_Grid_prerun"
 except:     #use if run in Python environment
     if str(os.getcwd()).find('PythonScripts') > -1:
         os.chdir('..')
@@ -45,6 +46,7 @@ except:     #use if run in Python environment
     path_transport_nodes_and_parameters = r'./Data/Transport/data_input/nodes/nodes_and_parameters.xlsx'
     outputfile              = '.\PythonScripts\TEMP\Countries_Connections.xlsx'
     outputfile_BB           = '.\PythonScripts\TEMP\Countries_Connections_BB.xlsx'
+    RFNBO_assessment_path   = r".\Data\HPC_results\RFNBO\2_Def_Grid_2030\2_Def_Grid_prerun"
 
 ################# Options End ############################################################
 
@@ -365,17 +367,20 @@ bb_dim_3_relationship_dtype_str = pd.concat([
     # bb_dim_3_node_slack_useConstant
     ],ignore_index=True)
 
-#%%
-#### Adding the constraints for the Delegated Act for RFNBOs ####
+###### Adding the constraints for the Delegated Act for RFNBOs ######
+unique_nodes_complete = bb_dim_0_initialization_dtype_str["Object names"].unique()
 
 print("Applying RFNBO settings for " + str(RFNBO_option) + "\n")
 
+#%%
 if RFNBO_option == "No_reg":
     ### None ###
     alt_rfnbo = "No_reg"
     print("No regulation for RFNBOs applied" + "\n")
+    #Portugal hat keine Connections - das heißt es gibt auch keinen Stromtransport von re_el zu el!
     
     #copying nodes and adding suffix "re_el" to the node names to identify them as renewable nodes
+    #list of unique nodes in bb_dim_0_initialization_dtype_str Object names
     bb_dim_0_initialization_dtype_str_re = bb_dim_0_initialization_dtype_str.copy()
     bb_dim_0_initialization_dtype_str_re["Object names"] = bb_dim_0_initialization_dtype_str_re["Object names"].str.replace('_el','_re_el')
 
@@ -396,71 +401,325 @@ if RFNBO_option == "No_reg":
     #renaming and adding the suffix "re_el" to the origin node names to define a one way connection between nodes
     bb_dim_3_relationship_dtype_str_re["Object names 3"] = bb_dim_3_relationship_dtype_str_re["Object names 2"]
     bb_dim_3_relationship_dtype_str_re["Object names 2"] = bb_dim_3_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+    #drop all rows where Parameter names are annuity Factor, invCost
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"].isin(["annuityFactor", "invCost", "transferCapInvLimit"]) == False]
+    #set transferCap and transferLoss to 1000000 and 0 respectively to enable free flow of energy in one direction
     bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferCap", "Parameter values"] = 1000000
     bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferLoss", "Parameter values"] = 0
+
+    # adding a re_el to el connection for all non connected countries
+    bb_dim_3_helper = bb_dim_3_relationship_dtype_str_re.copy()
+    #list of unique nodes in bb_dim_3_helper
+    unique_nodes = bb_dim_3_helper["Object names 3"].unique()
+    #compare unique nodes complete and unique nodes and give list of nodes that are missing
+    missing_nodes = list(set(unique_nodes_complete) - set(unique_nodes))
+    print("Missing nodes:", missing_nodes)
+    
+    #drop Object names 3 and 2
+    bb_dim_3_helper = bb_dim_3_helper.drop(["Object names 2", "Object names 3"], axis=1)
+    bb_dim_3_helper = bb_dim_3_helper.drop_duplicates()
+
+    for n in missing_nodes:
+        new_row = bb_dim_3_helper.copy()
+        new_row["Object names 3"] = n
+        new_row["Object names 2"] = new_row["Object names 3"].str.replace("el", "re_el")
+        #concat to bb_dim_3_relationship_dtype_str_re
+        bb_dim_3_relationship_dtype_str_re = pd.concat([bb_dim_3_relationship_dtype_str_re, new_row])
 
     #adding the new 3dim node relations to the existing 3dim node relations
     bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re], ignore_index=True)
 
 #%%
-
 if RFNBO_option == "Island_Grids":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     
     ### Island Grids ###
     alt_rfnbo = "Island_Grid"
-    #copying nodes and adding suffix "re_el" to the node names to identify them as renewable nodes
-    bb_dim_0_initialization_dtype_str_re = bb_dim_0_initialization_dtype_str.copy()
-    bb_dim_0_initialization_dtype_str_re["Object names"] = bb_dim_0_initialization_dtype_str_re["Object names"].str.replace('_el','_re_el')
+    #copying nodes and adding suffix "_isl_re_el" to the node names to identify them as renewable island nodes
+    bb_dim_0_initialization_dtype_str_isl_re = bb_dim_0_initialization_dtype_str.copy()
+    bb_dim_0_initialization_dtype_str_isl_re["Object names"] = bb_dim_0_initialization_dtype_str_isl_re["Object names"].str.replace('_el','_isl_re_el')
 
     #adding the new nodes to the existing nodes
-    bb_dim_0_initialization_dtype_str = pd.concat([bb_dim_0_initialization_dtype_str, bb_dim_0_initialization_dtype_str_re], ignore_index=True)
+    bb_dim_0_initialization_dtype_str = pd.concat([bb_dim_0_initialization_dtype_str, bb_dim_0_initialization_dtype_str_isl_re], ignore_index=True)
 
     #copying the 2 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
-    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.copy()
-    bb_dim_2_relationship_dtype_str_re["Object names 2"] = bb_dim_2_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+    bb_dim_2_relationship_dtype_str_isl_re = bb_dim_2_relationship_dtype_str.copy()
+    bb_dim_2_relationship_dtype_str_isl_re["Object names 2"] = bb_dim_2_relationship_dtype_str_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
 
     #adding the new 2dim node relations to the existing 2dim node relations
-    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_isl_re], ignore_index=True)
 
-    #copying the 3 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
-    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str[bb_dim_3_relationship_dtype_str["Relationship class names"] != 'grid__node__boundary'].copy()
-    #reducing the rows to only one row per node and parameter
-    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.groupby(["Object names 2", "Parameter names"]).agg({"Relationship class names":"first", "Object class names 1":"first", "Object class names 2":"first", "Object class names 3":"first", "Object names 1":"first", "Object names 2":"first", "Object names 3":"first", "Parameter names":"first", "Alternative names":"first", "Parameter values":"first"}).reset_index(drop=True)
-    #renaming and adding the suffix "re_el" to the origin node names to define a one way connection between nodes
-    bb_dim_3_relationship_dtype_str_re["Object names 3"] = bb_dim_3_relationship_dtype_str_re["Object names 2"]
-    bb_dim_3_relationship_dtype_str_re["Object names 2"] = bb_dim_3_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
-    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferCap", "Parameter values"] = 1000000
-    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferLoss", "Parameter values"] = 0
-
-    #adding the new 3dim node relations to the existing 3dim node relations
-    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re], ignore_index=True)
+    #no dim3 fpr isl_re_el required, since there is no grid between the islands
 
 #The Defossilized Grid option conducts a pre-solve without any hydrogen demand to determine the CO2 intensity of the system to then asses, whether the RFNBO production may use the grid electricity.
 if RFNBO_option == "Defossilized_Grid_prerun":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid_prerun"
-    #nothing to do here
+    
+    #copying nodes and adding suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_0_initialization_dtype_str_re = bb_dim_0_initialization_dtype_str.copy()
+    bb_dim_0_initialization_dtype_str_re["Object names"] = bb_dim_0_initialization_dtype_str_re["Object names"].str.replace('_el','_re_el')
 
-if RFNBO_option == "Defossilized_Grids":
+    #adding the new nodes to the existing nodes
+    bb_dim_0_initialization_dtype_str = pd.concat([bb_dim_0_initialization_dtype_str, bb_dim_0_initialization_dtype_str_re], ignore_index=True)
+
+    #copying the 2 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.copy()
+    bb_dim_2_relationship_dtype_str_re["Object names 2"] = bb_dim_2_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+
+    #adding the new 2dim node relations to the existing 2dim node relations
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re], ignore_index=True)
+
+    #copying the 3 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str[bb_dim_3_relationship_dtype_str["Relationship class names"] != 'grid__node__boundary'].copy()
+    #reducing the rows to only one row per node and parameter
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.groupby(["Object names 2", "Parameter names"]).agg({"Relationship class names":"first", "Object class names 1":"first", "Object class names 2":"first", "Object class names 3":"first", "Object names 1":"first", "Object names 2":"first", "Object names 3":"first", "Parameter names":"first", "Alternative names":"first", "Parameter values":"first"}).reset_index(drop=True)
+    #renaming and adding the suffix "re_el" to the origin node names to define a one way connection between nodes
+    bb_dim_3_relationship_dtype_str_re["Object names 3"] = bb_dim_3_relationship_dtype_str_re["Object names 2"]
+    bb_dim_3_relationship_dtype_str_re["Object names 2"] = bb_dim_3_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+    #drop all rows where Parameter names are annuity Factor, invCost
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"].isin(["annuityFactor", "invCost", "transferCapInvLimit"]) == False]
+    #drop all rows where Parameter names are annuity Factor, invCost
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"].isin(["annuityFactor", "invCost", "transferCapInvLimit"]) == False]
+    #set transferCap and transferLoss to 1000000 and 0 respectively to enable free flow of energy in one direction
+    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferCap", "Parameter values"] = 1000000
+    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferLoss", "Parameter values"] = 0
+
+    # adding a re_el to el connection for all non connected countries
+    bb_dim_3_helper = bb_dim_3_relationship_dtype_str_re.copy()
+    #list of unique nodes in bb_dim_3_helper
+    unique_nodes = bb_dim_3_helper["Object names 3"].unique()
+    #compare unique nodes complete and unique nodes and give list of nodes that are missing
+    missing_nodes = list(set(unique_nodes_complete) - set(unique_nodes))
+    print("Missing nodes:", missing_nodes)
+    
+    #drop Object names 3 and 2
+    bb_dim_3_helper = bb_dim_3_helper.drop(["Object names 2", "Object names 3"], axis=1)
+    bb_dim_3_helper = bb_dim_3_helper.drop_duplicates()
+
+    for n in missing_nodes:
+        new_row = bb_dim_3_helper.copy()
+        new_row["Object names 3"] = n
+        new_row["Object names 2"] = new_row["Object names 3"].str.replace("el", "re_el")
+        #concat to bb_dim_3_relationship_dtype_str_re
+        bb_dim_3_relationship_dtype_str_re = pd.concat([bb_dim_3_relationship_dtype_str_re, new_row])
+
+    #adding the new 3dim node relations to the existing 3dim node relations
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re], ignore_index=True)
+
+if RFNBO_option == "Defossilized_Grid":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
-    #nothing to do here
 
+    #read assessment_df from prerun path
+    prerun_path = os.path.join(RFNBO_assessment_path)
+    assessment_df = pd.read_csv(os.path.join(prerun_path, "assessment_df.csv"), sep=";")
+
+    #get the countries from the assessment_df that may use grid electricity. The rest is configured as in the no_reg scenario
+    non_def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May_not", "region"].to_list()
+    non_def_regions_list = '|'.join(non_def_regions_list)
+    def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May", "region"].to_list()
+    def_regions_list = '|'.join(def_regions_list)
+
+    print("Regions that may not use grid electricity: " + str(non_def_regions_list) + "\n")
+    print("Regions that may use grid electricity: " + str(def_regions_list) + "\n")
+
+    #copying nodes and adding suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_0_initialization_dtype_str_re = bb_dim_0_initialization_dtype_str.copy()
+    bb_dim_0_initialization_dtype_str_re["Object names"] = bb_dim_0_initialization_dtype_str_re["Object names"].str.replace('_el','_re_el')
+
+    #adding the new nodes to the existing nodes
+    bb_dim_0_initialization_dtype_str = pd.concat([bb_dim_0_initialization_dtype_str, bb_dim_0_initialization_dtype_str_re], ignore_index=True)
+
+    #copying the 2 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.copy()
+    bb_dim_2_relationship_dtype_str_re["Object names 2"] = bb_dim_2_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+
+    #adding the new 2dim node relations to the existing 2dim node relations
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re], ignore_index=True)
+
+    #copying the 3 dim node relations and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str[bb_dim_3_relationship_dtype_str["Relationship class names"] != 'grid__node__boundary'].copy()
+    #reducing the rows to only one row per node and parameter
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.groupby(["Object names 2", "Parameter names"]).agg({"Relationship class names":"first", "Object class names 1":"first", "Object class names 2":"first", "Object class names 3":"first", "Object names 1":"first", "Object names 2":"first", "Object names 3":"first", "Parameter names":"first", "Alternative names":"first", "Parameter values":"first"}).reset_index(drop=True)
+    #renaming and adding the suffix "re_el" to the origin node names to define a one way connection between nodes
+    bb_dim_3_relationship_dtype_str_re["Object names 3"] = bb_dim_3_relationship_dtype_str_re["Object names 2"]
+    bb_dim_3_relationship_dtype_str_re["Object names 2"] = bb_dim_3_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+    #drop all rows where Parameter names are annuity Factor, invCost
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"].isin(["annuityFactor", "invCost", "transferCapInvLimit"]) == False]
+    #set transferCap and transferLoss to 1000000 and 0 respectively to enable free flow of energy in one direction
+    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferCap", "Parameter values"] = 1000000
+    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferLoss", "Parameter values"] = 0
+
+    # adding a re_el to el connection for all non connected countries
+    bb_dim_3_helper = bb_dim_3_relationship_dtype_str_re.copy()
+    #list of unique nodes in bb_dim_3_helper
+    unique_nodes = bb_dim_3_helper["Object names 3"].unique()
+    #compare unique nodes complete and unique nodes and give list of nodes that are missing
+    missing_nodes = list(set(unique_nodes_complete) - set(unique_nodes))
+    print("Missing nodes:", missing_nodes)
+    
+    #drop Object names 3 and 2
+    bb_dim_3_helper = bb_dim_3_helper.drop(["Object names 2", "Object names 3"], axis=1)
+    bb_dim_3_helper = bb_dim_3_helper.drop_duplicates()
+
+    for n in missing_nodes:
+        new_row = bb_dim_3_helper.copy()
+        new_row["Object names 3"] = n
+        new_row["Object names 2"] = new_row["Object names 3"].str.replace("el", "re_el")
+        #concat to bb_dim_3_relationship_dtype_str_re
+        bb_dim_3_relationship_dtype_str_re = pd.concat([bb_dim_3_relationship_dtype_str_re, new_row])
+
+    #adding biderectional connections between renewable nodes and mixed nodes for regions in def_regions_list
+    # Filter only rows where "Object names 2" contains regions from def_regions_list (regex)
+    bb_dim_3_relationship_dtype_str_re_def = bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Object names 2"].str.contains(def_regions_list, regex=True)].copy()
+    bb_dim_3_relationship_dtype_str_re_def["Object names 2"] = bb_dim_3_relationship_dtype_str_re_def["Object names 2"].str.replace('_re_el','_el')
+    bb_dim_3_relationship_dtype_str_re_def["Object names 3"] = bb_dim_3_relationship_dtype_str_re_def["Object names 2"].str.replace('el','re_el')
+
+    #adding the new 3dim node relations to the existing 3dim node relations
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re, bb_dim_3_relationship_dtype_str_re_def], ignore_index=True)
+
+#%%
 if RFNBO_option == "Add_and_Corr":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     
     ### Additionality and Correlation ###
     alt_rfnbo = "Additionality_and_Correlation"
 
+    #copying nodes and adding suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_0_initialization_dtype_str_re_add = bb_dim_0_initialization_dtype_str.copy()
+    bb_dim_0_initialization_dtype_str_re_add["Object names"] = bb_dim_0_initialization_dtype_str_re_add["Object names"].str.replace('_el','_re_el')
+
+    #adding the new nodes to the existing nodes
+    bb_dim_0_initialization_dtype_str = pd.concat([bb_dim_0_initialization_dtype_str, bb_dim_0_initialization_dtype_str_re_add], ignore_index=True)
+
+    #copying the 2 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_2_relationship_dtype_str_re_add = bb_dim_2_relationship_dtype_str.copy()
+    bb_dim_2_relationship_dtype_str_re_add["Object names 2"] = bb_dim_2_relationship_dtype_str_re_add["Object names 2"].str.replace('_el','_re_el')
+
+    #adding the new 2dim node relations to the existing 2dim node relations
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re_add], ignore_index=True)
+
+    #copying the 3 dim node relations and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_3_relationship_dtype_str_re_add = bb_dim_3_relationship_dtype_str[bb_dim_3_relationship_dtype_str["Relationship class names"] != 'grid__node__boundary'].copy()
+    #reducing the rows to only one row per node and parameter
+    bb_dim_3_relationship_dtype_str_re_add = bb_dim_3_relationship_dtype_str_re_add.groupby(["Object names 2", "Parameter names"]).agg({"Relationship class names":"first", "Object class names 1":"first", "Object class names 2":"first", "Object class names 3":"first", "Object names 1":"first", "Object names 2":"first", "Object names 3":"first", "Parameter names":"first", "Alternative names":"first", "Parameter values":"first"}).reset_index(drop=True)
+    #renaming and adding the suffix "re_el" to the origin node names to define a one way connection between nodes
+    bb_dim_3_relationship_dtype_str_re_add["Object names 3"] = bb_dim_3_relationship_dtype_str_re_add["Object names 2"]
+    bb_dim_3_relationship_dtype_str_re_add["Object names 2"] = bb_dim_3_relationship_dtype_str_re_add["Object names 2"].str.replace('_el','_re_el')
+    #drop all rows where Parameter names are annuity Factor, invCost
+    bb_dim_3_relationship_dtype_str_re_add = bb_dim_3_relationship_dtype_str_re_add.loc[bb_dim_3_relationship_dtype_str_re_add["Parameter names"].isin(["annuityFactor", "invCost", "transferCapInvLimit"]) == False]
+    #set transferCap and transferLoss to 1000000 and 0 respectively to enable free flow of energy in one direction
+    bb_dim_3_relationship_dtype_str_re_add.loc[bb_dim_3_relationship_dtype_str_re_add["Parameter names"] == "transferCap", "Parameter values"] = 1000000
+    bb_dim_3_relationship_dtype_str_re_add.loc[bb_dim_3_relationship_dtype_str_re_add["Parameter names"] == "transferLoss", "Parameter values"] = 0
+
+    # adding a re_el to el connection for all non connected countries
+    bb_dim_3_helper = bb_dim_3_relationship_dtype_str_re_add.copy()
+    #list of unique nodes in bb_dim_3_helper
+    unique_nodes = bb_dim_3_helper["Object names 3"].unique()
+    #compare unique nodes complete and unique nodes and give list of nodes that are missing
+    missing_nodes = list(set(unique_nodes_complete) - set(unique_nodes))
+    print("Missing nodes:", missing_nodes)
+    
+    #drop Object names 3 and 2
+    bb_dim_3_helper = bb_dim_3_helper.drop(["Object names 2", "Object names 3"], axis=1)
+    bb_dim_3_helper = bb_dim_3_helper.drop_duplicates()
+
+    for n in missing_nodes:
+        new_row = bb_dim_3_helper.copy()
+        new_row["Object names 3"] = n
+        new_row["Object names 2"] = new_row["Object names 3"].str.replace("el", "re_el")
+        #concat to bb_dim_3_relationship_dtype_str_re
+        bb_dim_3_relationship_dtype_str_re_add = pd.concat([bb_dim_3_relationship_dtype_str_re_add, new_row])
+
+    #adding the new 3dim node relations to the existing 3dim node relations
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re_add], ignore_index=True)
+
 if RFNBO_option == "All_at_once":
     print("Applying all regulations for RFNBOs" + "\n")
     
     ### All at once ###
     alt_rfnbo = "All_at_once"
+
+    #copying nodes and adding suffix "_isl_re_el" to the node names to identify them as renewable island nodes
+    bb_dim_0_initialization_dtype_str_isl_re = bb_dim_0_initialization_dtype_str.copy()
+    bb_dim_0_initialization_dtype_str_isl_re["Object names"] = bb_dim_0_initialization_dtype_str_isl_re["Object names"].str.replace('_el','_isl_re_el')
+
+    #copying the 2 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_2_relationship_dtype_str_isl_re = bb_dim_2_relationship_dtype_str.copy()
+    bb_dim_2_relationship_dtype_str_isl_re["Object names 2"] = bb_dim_2_relationship_dtype_str_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
+
+    #read assessment_df from prerun path
+    prerun_path = os.path.join(RFNBO_assessment_path)
+    assessment_df = pd.read_csv(os.path.join(prerun_path, "assessment_df.csv"), sep=";")
+
+    #get the countries from the assessment_df that may use grid electricity. The rest is configured as in the no_reg scenario
+    non_def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May_not", "region"].to_list()
+    non_def_regions_list = '|'.join(non_def_regions_list)
+    def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May", "region"].to_list()
+    def_regions_list = '|'.join(def_regions_list)
+
+    print("Regions that may not use grid electricity: " + str(non_def_regions_list) + "\n")
+    print("Regions that may use grid electricity: " + str(def_regions_list) + "\n")
+
+    #copying nodes and adding suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_0_initialization_dtype_str_re = bb_dim_0_initialization_dtype_str.copy()
+    bb_dim_0_initialization_dtype_str_re["Object names"] = bb_dim_0_initialization_dtype_str_re["Object names"].str.replace('_el','_re_el')
+
+    #adding the new nodes to the existing nodes
+    bb_dim_0_initialization_dtype_str = pd.concat([bb_dim_0_initialization_dtype_str, bb_dim_0_initialization_dtype_str_re, bb_dim_0_initialization_dtype_str_isl_re], ignore_index=True)
+
+    #copying the 2 dim node realtions and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.copy()
+    bb_dim_2_relationship_dtype_str_re["Object names 2"] = bb_dim_2_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+
+    #adding the new 2dim node relations to the existing 2dim node relations
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re, bb_dim_2_relationship_dtype_str_isl_re], ignore_index=True)
+
+    #copying the 3 dim node relations and adding the suffix "re_el" to the node names to identify them as renewable nodes
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str[bb_dim_3_relationship_dtype_str["Relationship class names"] != 'grid__node__boundary'].copy()
+    #reducing the rows to only one row per node and parameter
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.groupby(["Object names 2", "Parameter names"]).agg({"Relationship class names":"first", "Object class names 1":"first", "Object class names 2":"first", "Object class names 3":"first", "Object names 1":"first", "Object names 2":"first", "Object names 3":"first", "Parameter names":"first", "Alternative names":"first", "Parameter values":"first"}).reset_index(drop=True)
+    #renaming and adding the suffix "re_el" to the origin node names to define a one way connection between nodes
+    bb_dim_3_relationship_dtype_str_re["Object names 3"] = bb_dim_3_relationship_dtype_str_re["Object names 2"]
+    bb_dim_3_relationship_dtype_str_re["Object names 2"] = bb_dim_3_relationship_dtype_str_re["Object names 2"].str.replace('_el','_re_el')
+    #drop all rows where Parameter names are annuity Factor, invCost
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"].isin(["annuityFactor", "invCost", "transferCapInvLimit"]) == False]
+    #set transferCap and transferLoss to 1000000 and 0 respectively to enable free flow of energy in one direction
+    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferCap", "Parameter values"] = 1000000
+    bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Parameter names"] == "transferLoss", "Parameter values"] = 0
+
+    # adding a re_el to el connection for all non connected countries
+    bb_dim_3_helper = bb_dim_3_relationship_dtype_str_re.copy()
+    #list of unique nodes in bb_dim_3_helper
+    unique_nodes = bb_dim_3_helper["Object names 3"].unique()
+    #compare unique nodes complete and unique nodes and give list of nodes that are missing
+    missing_nodes = list(set(unique_nodes_complete) - set(unique_nodes))
+    print("Missing nodes:", missing_nodes)
+    
+    #drop Object names 3 and 2
+    bb_dim_3_helper = bb_dim_3_helper.drop(["Object names 2", "Object names 3"], axis=1)
+    bb_dim_3_helper = bb_dim_3_helper.drop_duplicates()
+
+    for n in missing_nodes:
+        new_row = bb_dim_3_helper.copy()
+        new_row["Object names 3"] = n
+        new_row["Object names 2"] = new_row["Object names 3"].str.replace("el", "re_el")
+        #concat to bb_dim_3_relationship_dtype_str_re
+        bb_dim_3_relationship_dtype_str_re = pd.concat([bb_dim_3_relationship_dtype_str_re, new_row])
+
+    #adding biderectional connections between renewable nodes and mixed nodes for regions in def_regions_list
+    # Filter only rows where "Object names 2" contains regions from def_regions_list (regex)
+    bb_dim_3_relationship_dtype_str_re_def = bb_dim_3_relationship_dtype_str_re.loc[bb_dim_3_relationship_dtype_str_re["Object names 2"].str.contains(def_regions_list, regex=True)].copy()
+    bb_dim_3_relationship_dtype_str_re_def["Object names 2"] = bb_dim_3_relationship_dtype_str_re_def["Object names 2"].str.replace('_re_el','_el')
+    bb_dim_3_relationship_dtype_str_re_def["Object names 3"] = bb_dim_3_relationship_dtype_str_re_def["Object names 2"].str.replace('el','re_el')
+
+    #adding the new 3dim node relations to the existing 3dim node relations
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re, bb_dim_3_relationship_dtype_str_re_def], ignore_index=True)
+
 
 print("Applied RFNBO settings" + "\n")
 

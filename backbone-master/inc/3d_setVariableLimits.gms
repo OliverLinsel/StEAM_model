@@ -380,8 +380,11 @@ v_gen.up(gnusft(gnu_output(grid, node, unit), s, f, t))${p_gnu(grid, node, unit,
     = 0
 ;
 
+* --- v_marginal_cost ------------------------------------------------------------
 
-* --- v_genRampUp, v_genRampDown ----------------------------------------------
+* --- v_emission_intensity -------------------------------------------------------
+
+* --- v_genRampUp, v_genRampDown -------------------------------------------------
 
 // for the first solve, filtering st_start away from ramp equations
 option clear = sft_tmp;

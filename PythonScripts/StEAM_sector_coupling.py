@@ -110,6 +110,11 @@ water_price =0 #EUR/kg
 
 desalination_var = 0 #if desalination shall be included in the model, set to 1, else 0 - currently not working
 
+reelec = ["OCGT", "FuelCell", "Engine"]
+regex_reelec = '|'.join(reelec) #regular expression for energy sources that should be invested in
+dont_invest             = ["dummy"] #list of energy sources that should not be invested in 'FuelCell', "Engine", "H2|OCGT"
+regex_dont_invest = '|'.join(dont_invest) #regular expression for energy sources that should not be invested in
+
 print("Succesfully defined default model parameters" + "\n")
 
 m_conf                      = pd.read_excel(path_Main_Input, sheet_name="model_config")
@@ -626,6 +631,18 @@ h2_dim2_unitunittype = pd.DataFrame({"Relationship class names": "unit__unittype
 
 h2_units_concat_2D_BB   = pd.concat([h2_units_concat_2D_BB, h2_dim2_unitunittype], ignore_index=True, axis=0)
 
+##### delete investment info for powerplants that shall not be invested in #####
+print("Disable investment for powerplants that shall not be invested in :" + str(regex_dont_invest) + "\n")
+
+h2_units_concat_1D_BB.loc[((h2_units_concat_1D_BB['Object names'].str.contains(regex_dont_invest)) & (h2_units_concat_1D_BB['Parameter names'] == 'maxUnitCount')), 'Parameter values'] = eps
+h2_units_concat_4D_BB = h2_units_concat_4D_BB[~((h2_units_concat_4D_BB['Object names 3'].str.contains(regex_dont_invest)) & (h2_units_concat_4D_BB['Parameter names'].isin(['annuityFactor','invCosts'])))].reset_index(drop=True)
+h2_units_concat_4D_BB.loc[
+    (h2_units_concat_4D_BB['Parameter names'] == 'capacity') &
+    (h2_units_concat_4D_BB['Parameter values'] == eps) &
+    (h2_units_concat_4D_BB['Object names 3'].str.contains(regex_dont_invest)) &
+    (h2_units_concat_4D_BB['Object names 4'] == 'output'),
+    'Parameter values'] = eps
+
 #%%
 #######################################################################
 
@@ -653,13 +670,38 @@ if RFNBO_option == "Island_Grids":
     alt_rfnbo = "Island_Grid"
 
     #reassining electricity nodes to the renewable electricity nodes in 2D
-    h2_units_concat_2D_BB["Object names 2"] = h2_units_concat_2D_BB["Object names 2"].str.replace('_el','_re_el')
+    # h2_units_concat_2D_BB_isl_re = h2_units_concat_2D_BB[h2_units_concat_2D_BB['Object names 2'].str.contains(regex_reelec)].copy()
+    # h2_units_concat_2D_BB_isl_re["Object names 2"] = h2_units_concat_2D_BB_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
+    # h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 1"] = h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 1"] + "_isl_add"
+    # h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 2"] = h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 2"] + "_isl_add"
 
-    #reassining electricity nodes to the renewable electricity nodes in 3D
-    h2_units_concat_3D_BB["Object names 3"] = h2_units_concat_3D_BB["Object names 3"].str.replace('_el','_re_el')
+    # h2_units_concat_2D_BB = pd.concat([h2_units_concat_2D_BB, h2_units_concat_2D_BB_isl_re], ignore_index=True)
+
+    # bb_dim_2_relationship_dtype_map_isl_re = bb_dim_2_relationship_dtype_map[bb_dim_2_relationship_dtype_map['Object names'].str.contains(regex_reelec)].copy()
+    # bb_dim_2_relationship_dtype_map_isl_re["Object names"] = bb_dim_2_relationship_dtype_map_isl_re["Object names"] + "_isl_add"
+
+    # bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_relationship_dtype_map, bb_dim_2_relationship_dtype_map_isl_re], ignore_index=True)
+
+    # #reassining electricity nodes to the renewable electricity nodes in 3D
+    # h2_units_concat_3D_BB_isl_re = h2_units_concat_3D_BB[h2_units_concat_3D_BB['Object names 3'].str.contains(regex_reelec)].copy()
+    # h2_units_concat_3D_BB_isl_re["Object names 3"] = h2_units_concat_3D_BB_isl_re["Object names 3"] + "_isl_add"
+
+    # h2_units_concat_3D_BB = pd.concat([h2_units_concat_3D_BB, h2_units_concat_3D_BB_isl_re], ignore_index=True)
 
     #reassining electricity nodes to the renewable electricity nodes in 4D
-    h2_units_concat_4D_BB["Object names 2"] = h2_units_concat_4D_BB["Object names 2"].str.replace('_el','_re_el')
+    # h2_units_concat_4D_BB.loc[h2_units_concat_4D_BB["Object names 3"].str.contains("Electrolyzer"), "Object names 2"] = h2_units_concat_4D_BB.loc[h2_units_concat_4D_BB["Object names 3"].str.contains("Electrolyzer"),"Object names 2"].str.replace('_el','_isl_re_el')
+
+    h2_units_concat_2D_BB["Object names 2"] = h2_units_concat_2D_BB["Object names 2"].str.replace('_el','_isl_re_el')
+    h2_units_concat_4D_BB["Object names 2"] = h2_units_concat_4D_BB["Object names 2"].str.replace('_el','_isl_re_el')
+
+    # h2_units_concat_4D_BB_isl_re = h2_units_concat_4D_BB[h2_units_concat_4D_BB['Object names 3'].str.contains(reg_ex_hydrogen)].copy()
+    # h2_units_concat_4D_BB_isl_re["Object names 3"] = h2_units_concat_4D_BB_isl_re["Object names 3"] + "_isl_add"
+    # h2_units_concat_4D_BB_isl_re["Object names 2"] = h2_units_concat_4D_BB_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
+
+    # h2_units_concat_4D_BB_isl_re_ely = h2_units_concat_4D_BB_isl_re[~h2_units_concat_4D_BB_isl_re['Object names 3'].str.contains(regex_reelec)].copy()
+    # h2_units_concat_4D_BB_isl_re_ely["Object names 2"] = h2_units_concat_4D_BB_isl_re_ely["Object names 2"].str.replace('_el','_isl_re_el')
+
+    # h2_units_concat_4D_BB = pd.concat([h2_units_concat_4D_BB, h2_units_concat_4D_BB_isl_re, h2_units_concat_4D_BB_isl_re_ely], ignore_index=True)    
 
 #The Defossilized Grid option conducts a pre-solve without any hydrogen demand to determine the CO2 intensity of the system to then asses, whether the RFNBO production may use the grid electricity.
 if RFNBO_option == "Defossilized_Grid_prerun":
@@ -674,20 +716,89 @@ if RFNBO_option == "Defossilized_Grid_prerun":
     h2_units_concat_3D_BB = h2_units_concat_3D_BB[~h2_units_concat_3D_BB['Object names 3'].str.contains(reg_ex_hydrogen)].reset_index(drop=True)
     h2_units_concat_4D_BB = h2_units_concat_4D_BB[~h2_units_concat_4D_BB['Object names 3'].str.contains(reg_ex_hydrogen)].reset_index(drop=True)
 
-if RFNBO_option == "Defossilized_Grids":
+if RFNBO_option == "Defossilized_Grid":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
+
+    #reassining electricity nodes to the renewable electricity nodes in 2D
+    h2_units_concat_2D_BB["Object names 2"] = h2_units_concat_2D_BB["Object names 2"].str.replace('_el','_re_el')
+
+    #reassining electricity nodes to the renewable electricity nodes in 3D
+    h2_units_concat_3D_BB["Object names 3"] = h2_units_concat_3D_BB["Object names 3"].str.replace('_el','_re_el')
+
+    #reassining electricity nodes to the renewable electricity nodes in 4D
+    h2_units_concat_4D_BB["Object names 2"] = h2_units_concat_4D_BB["Object names 2"].str.replace('_el','_re_el')
 
 if RFNBO_option == "Add_and_Corr":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Additionality and Correlation ###
     alt_rfnbo = "Additionality_and_Correlation"
 
+    #reassining electricity nodes to the renewable electricity nodes in 2D
+    h2_units_concat_2D_BB["Object names 2"] = h2_units_concat_2D_BB["Object names 2"].str.replace('_el','_re_el')
+
+    #reassining electricity nodes to the renewable electricity nodes in 3D
+    h2_units_concat_3D_BB["Object names 3"] = h2_units_concat_3D_BB["Object names 3"].str.replace('_el','_re_el')
+
+    #reassining electricity nodes to the renewable electricity nodes in 4D
+    h2_units_concat_4D_BB["Object names 2"] = h2_units_concat_4D_BB["Object names 2"].str.replace('_el','_re_el')
+
 if RFNBO_option == "All_at_once":
     print("Applying all regulations for RFNBOs" + "\n")
     ### All at once ###
     alt_rfnbo = "All_at_once"
+
+    # Filter for regex_reelec
+    h2_units_concat_1D_BB_isl_re = h2_units_concat_1D_BB.copy()
+    h2_units_concat_1D_BB_isl_re["Object names"] = h2_units_concat_1D_BB_isl_re["Object names"] + "_isl_add"
+
+    h2_units_concat_1D_BB = pd.concat([h2_units_concat_1D_BB, h2_units_concat_1D_BB_isl_re], ignore_index=True)
+    h2_units_concat_1D_BB = h2_units_concat_1D_BB.reset_index(drop=True)
+
+    #reassining electricity nodes to the renewable electricity nodes in 2D
+    h2_units_concat_2D_BB_isl_re = h2_units_concat_2D_BB.copy()
+    h2_units_concat_2D_BB_isl_re["Object names 2"] = h2_units_concat_2D_BB_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
+    h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 1"] = h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 1"] + "_isl_add"
+    h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 2"] = h2_units_concat_2D_BB_isl_re.loc[h2_units_concat_2D_BB_isl_re["Relationship class names"] == "unit__unittype", "Object names 2"] + "_isl_add"
+
+    #(re)creating grid__node connections in 2D
+    h2_units_concat_2D_BB_isl_re_el = h2_units_concat_2D_BB.loc[h2_units_concat_2D_BB["Relationship class names"] == "grid__node"]
+    h2_units_concat_2D_BB_isl_re_el["Object names 2"] = h2_units_concat_2D_BB_isl_re_el["Object names 2"].str.replace('_el','_isl_re_el')
+    h2_units_concat_2D_BB["Object names 2"] = h2_units_concat_2D_BB["Object names 2"].str.replace('_el','_re_el')
+
+    h2_units_concat_2D_BB = pd.concat([h2_units_concat_2D_BB, h2_units_concat_2D_BB_isl_re, h2_units_concat_2D_BB_isl_re_el], ignore_index=True)
+    h2_units_concat_2D_BB = h2_units_concat_2D_BB.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_map_isl_re = bb_dim_2_relationship_dtype_map.copy()
+    bb_dim_2_relationship_dtype_map_isl_re["Object names"] = bb_dim_2_relationship_dtype_map_isl_re["Object names"] + "_isl_add"
+
+    bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_relationship_dtype_map, bb_dim_2_relationship_dtype_map_isl_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_map = bb_dim_2_relationship_dtype_map.reset_index(drop=True)
+
+    #reassining electricity nodes to the renewable electricity nodes in 3D
+    h2_units_concat_3D_BB_isl_re = h2_units_concat_3D_BB.copy()
+    h2_units_concat_3D_BB_isl_re["Object names 3"] = h2_units_concat_3D_BB_isl_re["Object names 3"] + "_isl_add"
+
+    #reassining electricity nodes to the renewable electricity nodes in 3D
+    h2_units_concat_3D_BB["Object names 3"] = h2_units_concat_3D_BB["Object names 3"].str.replace('_el','_re_el')
+
+    h2_units_concat_3D_BB = pd.concat([h2_units_concat_3D_BB, h2_units_concat_3D_BB_isl_re], ignore_index=True)
+    h2_units_concat_3D_BB = h2_units_concat_3D_BB.reset_index(drop=True)
+
+    #reassining electricity nodes to the renewable electricity nodes in 4D
+    h2_units_concat_4D_BB_isl_re = h2_units_concat_4D_BB.copy()
+    h2_units_concat_4D_BB_isl_re["Object names 3"] = h2_units_concat_4D_BB_isl_re["Object names 3"] + "_isl_add"
+    h2_units_concat_4D_BB_isl_re["Object names 2"] = h2_units_concat_4D_BB_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
+
+    # h2_units_concat_4D_BB_isl_re_ely = h2_units_concat_4D_BB_isl_re[~h2_units_concat_4D_BB_isl_re['Object names 3'].str.contains(regex_reelec)].copy()
+    # h2_units_concat_4D_BB_isl_re_ely["Object names 2"] = h2_units_concat_4D_BB_isl_re_ely["Object names 2"].str.replace('_el','_isl_re_el')
+
+    #reassining electricity nodes to the renewable electricity nodes in 4D
+    h2_units_concat_4D_BB["Object names 2"] = h2_units_concat_4D_BB["Object names 2"].str.replace('_el','_re_el')
+
+    h2_units_concat_4D_BB = pd.concat([h2_units_concat_4D_BB, h2_units_concat_4D_BB_isl_re], ignore_index=True)
+    h2_units_concat_4D_BB = h2_units_concat_4D_BB.drop_duplicates().reset_index(drop=True)  
 
 #######################################################################
 

@@ -641,6 +641,7 @@ bb_dim_4_relationship_dtype_str
 # constraintOnlineMultiplier koennte noch in p_groupPolicyUnit genutzt werden um gleichzeitiges Chargen und Dischargen zu verhindern... sollte aber aufgrund von efficiencies unter 1 kein Problem sein ## to do ## in Test-Results ueberpruefen
 # alternativ zu boundStart koennte auch gnss_bound (Anfangsfuellstand = Endfuellstand) schon ausreichend sein
 
+# %%
 #### Adding the constraints for the Delegated Act for RFNBOs ####
 
 if RFNBO_option == "Vanilla":
@@ -657,17 +658,59 @@ if RFNBO_option == "Island_Grids":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Island Grids ###
     alt_rfnbo = "Island_Grid"
-    #reassining all old storages to the mixed electricity nodes and the new storages to the renewable electricity nodes
-    bb_dim_4_relationship_dtype_str_re = bb_dim_4_relationship_dtype_str[bb_dim_4_relationship_dtype_str['Object names 3'].str.contains("Bat|H2")].reset_index(drop=True)
-    bb_dim_4_relationship_dtype_str_re['Object names 2'] = bb_dim_4_relationship_dtype_str_re['Object names 2'].str.replace('_el','_re_el')
-    bb_dim_4_relationship_dtype_str = bb_dim_4_relationship_dtype_str.drop(bb_dim_4_relationship_dtype_str[bb_dim_4_relationship_dtype_str['Object names 3'].str.contains("Bat|H2")].index)
-    
-    bb_dim_4_relationship_dtype_str = pd.concat([bb_dim_4_relationship_dtype_str, bb_dim_4_relationship_dtype_str_re], ignore_index=True)
+    #reassining all old storages to the renewable electricity nodes - temporarily disabled
+    # bb_dim_4_relationship_dtype_str['Object names 2'] = bb_dim_4_relationship_dtype_str['Object names 2'].str.replace('_el','_re_el')
+
+    #copying and assining the new additional island storages to the island renewable electricity nodes
+    bb_dim_1_relationship_dtype_str_isl_re = bb_dim_1_relationship_dtype_str.loc[bb_dim_1_relationship_dtype_str["Object names"].str.contains("Bat")]
+    bb_dim_1_relationship_dtype_str_isl_re['Object names'] = bb_dim_1_relationship_dtype_str_isl_re['Object names'] + "_isl_add"
+
+    bb_dim_1_relationship_dtype_str = pd.concat([bb_dim_1_relationship_dtype_str, bb_dim_1_relationship_dtype_str_isl_re], ignore_index=True)
+    bb_dim_1_relationship_dtype_str = bb_dim_1_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_str_isl_re = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Object names 2"].str.contains("Bat")].copy()
+    mask = bb_dim_2_relationship_dtype_str_isl_re["Object names 1"] != "storage"
+    bb_dim_2_relationship_dtype_str_isl_re.loc[mask, 'Object names 1'] = bb_dim_2_relationship_dtype_str_isl_re.loc[mask, 'Object names 1'] + "_isl_add"
+    bb_dim_2_relationship_dtype_str_isl_re["Object names 2"] = bb_dim_2_relationship_dtype_str_isl_re["Object names 2"] + "_isl_add"
+
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_isl_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_str = bb_dim_2_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_map_isl_re = bb_dim_2_relationship_dtype_map.loc[bb_dim_2_relationship_dtype_map["Object names"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_map_isl_re['Object names'] = bb_dim_2_relationship_dtype_map_isl_re['Object names'] + "_isl_add"
+
+    bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_relationship_dtype_map, bb_dim_2_relationship_dtype_map_isl_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_map = bb_dim_2_relationship_dtype_map.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_3_relationship_dtype_str_isl_re = bb_dim_3_relationship_dtype_str.loc[bb_dim_3_relationship_dtype_str["Object names 3"].str.contains("Bat") | bb_dim_3_relationship_dtype_str["Object names 2"].str.contains("Bat")]
+
+    mask_effLevel = bb_dim_3_relationship_dtype_str_isl_re["Relationship class names"] == "effLevel__effSelector__unit"
+    bb_dim_3_relationship_dtype_str_isl_re.loc[mask_effLevel, 'Object names 3'] = bb_dim_3_relationship_dtype_str_isl_re.loc[mask_effLevel, 'Object names 3'] + "_isl_add"
+
+    mask_boundary = bb_dim_3_relationship_dtype_str_isl_re["Relationship class names"] == "grid__node__boundary"
+    bb_dim_3_relationship_dtype_str_isl_re.loc[mask_boundary, 'Object names 2'] = bb_dim_3_relationship_dtype_str_isl_re.loc[mask_boundary, 'Object names 2'] + "_isl_add"
+
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_isl_re], ignore_index=True)
+    bb_dim_3_relationship_dtype_str = bb_dim_3_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_4_relationship_dtype_str_isl_re = bb_dim_4_relationship_dtype_str.loc[bb_dim_4_relationship_dtype_str["Object names 3"].str.contains("Bat")]
+    bb_dim_4_relationship_dtype_str_isl_re['Object names 3'] = bb_dim_4_relationship_dtype_str_isl_re['Object names 3'] + "_isl_add"
+    bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Object names 1"] == "storage", 'Object names 2'] = bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Object names 1"] == "storage", 'Object names 2'] + "_isl_add"
+    bb_dim_4_relationship_dtype_str_isl_re['Object names 2'] = bb_dim_4_relationship_dtype_str_isl_re['Object names 2'].str.replace('_el','_isl_re_el')
+    #increasing costs slightly to increase determination of the island storages
+    bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Parameter names"] == "invCosts", 'Parameter values'] = bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Parameter names"] == "invCosts", 'Parameter values'] + 100
+
+    bb_dim_4_relationship_dtype_str = pd.concat([bb_dim_4_relationship_dtype_str, bb_dim_4_relationship_dtype_str_isl_re], ignore_index=True)
+    bb_dim_4_relationship_dtype_str = bb_dim_4_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
 
 if RFNBO_option == "Defossilized_Grid_prerun":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
+    
+    #reassining all storages to the renewable electricity nodes
+    bb_dim_4_relationship_dtype_str['Object names 2'] = bb_dim_4_relationship_dtype_str['Object names 2'].str.replace('_el','_re_el')
+
     #Deleting all H2 Storages
     reg_ex_hydrogen = 'H2'
     bb_dim_0_initialization_dtype_str = bb_dim_0_initialization_dtype_str[~bb_dim_0_initialization_dtype_str['Object names'].str.contains(reg_ex_hydrogen)]
@@ -682,15 +725,192 @@ if RFNBO_option == "Defossilized_Grid":
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
 
+    #keeping all old storages at the mixed nodes
+
+    #copying and assining the new additional island storages to the island renewable electricity nodes
+    bb_dim_1_relationship_dtype_str_re = bb_dim_1_relationship_dtype_str.loc[bb_dim_1_relationship_dtype_str["Object names"].str.contains("Bat")]
+    bb_dim_1_relationship_dtype_str_re['Object names'] = bb_dim_1_relationship_dtype_str_re['Object names'] + "_add"
+
+    bb_dim_1_relationship_dtype_str = pd.concat([bb_dim_1_relationship_dtype_str, bb_dim_1_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_1_relationship_dtype_str = bb_dim_1_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Object names 2"].str.contains("Bat")].copy()
+    mask = bb_dim_2_relationship_dtype_str_re["Object names 1"] != "storage"
+    bb_dim_2_relationship_dtype_str_re.loc[mask, 'Object names 1'] = bb_dim_2_relationship_dtype_str_re.loc[mask, 'Object names 1'] + "_add"
+    bb_dim_2_relationship_dtype_str_re["Object names 2"] = bb_dim_2_relationship_dtype_str_re["Object names 2"] + "_add"
+
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_str = bb_dim_2_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_map_re = bb_dim_2_relationship_dtype_map.loc[bb_dim_2_relationship_dtype_map["Object names"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_map_re['Object names'] = bb_dim_2_relationship_dtype_map_re['Object names'] + "_add"
+
+    bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_relationship_dtype_map, bb_dim_2_relationship_dtype_map_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_map = bb_dim_2_relationship_dtype_map.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str.loc[bb_dim_3_relationship_dtype_str["Object names 3"].str.contains("Bat") | bb_dim_3_relationship_dtype_str["Object names 2"].str.contains("Bat")]
+
+    mask_effLevel = bb_dim_3_relationship_dtype_str_re["Relationship class names"] == "effLevel__effSelector__unit"
+    bb_dim_3_relationship_dtype_str_re.loc[mask_effLevel, 'Object names 3'] = bb_dim_3_relationship_dtype_str_re.loc[mask_effLevel, 'Object names 3'] + "_add"
+
+    mask_boundary = bb_dim_3_relationship_dtype_str_re["Relationship class names"] == "grid__node__boundary"
+    bb_dim_3_relationship_dtype_str_re.loc[mask_boundary, 'Object names 2'] = bb_dim_3_relationship_dtype_str_re.loc[mask_boundary, 'Object names 2'] + "_add"
+
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_3_relationship_dtype_str = bb_dim_3_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_4_relationship_dtype_str_re = bb_dim_4_relationship_dtype_str.loc[bb_dim_4_relationship_dtype_str["Object names 3"].str.contains("Bat")]
+    bb_dim_4_relationship_dtype_str_re['Object names 3'] = bb_dim_4_relationship_dtype_str_re['Object names 3'] + "_add"
+    bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Object names 1"] == "storage", 'Object names 2'] = bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Object names 1"] == "storage", 'Object names 2'] + "_add"
+    bb_dim_4_relationship_dtype_str_re['Object names 2'] = bb_dim_4_relationship_dtype_str_re['Object names 2'].str.replace('_el','_re_el')
+    #increasing costs slightly to increase determination of the island storages
+    bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Parameter names"] == "invCosts", 'Parameter values'] = bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Parameter names"] == "invCosts", 'Parameter values'] + 100
+
+    bb_dim_4_relationship_dtype_str = pd.concat([bb_dim_4_relationship_dtype_str, bb_dim_4_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_4_relationship_dtype_str = bb_dim_4_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
 if RFNBO_option == "Add_and_Corr":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Additionality and Correlation ###
     alt_rfnbo = "Additionality_and_Correlation"
 
+    #keeping all old storages at the mixed nodes
+
+    #copying and assining the new additional island storages to the island renewable electricity nodes
+    bb_dim_1_relationship_dtype_str_re = bb_dim_1_relationship_dtype_str.loc[bb_dim_1_relationship_dtype_str["Object names"].str.contains("Bat")]
+    bb_dim_1_relationship_dtype_str_re['Object names'] = bb_dim_1_relationship_dtype_str_re['Object names'] + "_add"
+
+    bb_dim_1_relationship_dtype_str = pd.concat([bb_dim_1_relationship_dtype_str, bb_dim_1_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_1_relationship_dtype_str = bb_dim_1_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Object names 2"].str.contains("Bat")].copy()
+    mask = bb_dim_2_relationship_dtype_str_re["Object names 1"] != "storage"
+    bb_dim_2_relationship_dtype_str_re.loc[mask, 'Object names 1'] = bb_dim_2_relationship_dtype_str_re.loc[mask, 'Object names 1'] + "_add"
+    bb_dim_2_relationship_dtype_str_re["Object names 2"] = bb_dim_2_relationship_dtype_str_re["Object names 2"] + "_add"
+
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_str = bb_dim_2_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_map_re = bb_dim_2_relationship_dtype_map.loc[bb_dim_2_relationship_dtype_map["Object names"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_map_re['Object names'] = bb_dim_2_relationship_dtype_map_re['Object names'] + "_add"
+
+    bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_relationship_dtype_map, bb_dim_2_relationship_dtype_map_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_map = bb_dim_2_relationship_dtype_map.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str.loc[bb_dim_3_relationship_dtype_str["Object names 3"].str.contains("Bat") | bb_dim_3_relationship_dtype_str["Object names 2"].str.contains("Bat")]
+
+    mask_effLevel = bb_dim_3_relationship_dtype_str_re["Relationship class names"] == "effLevel__effSelector__unit"
+    bb_dim_3_relationship_dtype_str_re.loc[mask_effLevel, 'Object names 3'] = bb_dim_3_relationship_dtype_str_re.loc[mask_effLevel, 'Object names 3'] + "_add"
+
+    mask_boundary = bb_dim_3_relationship_dtype_str_re["Relationship class names"] == "grid__node__boundary"
+    bb_dim_3_relationship_dtype_str_re.loc[mask_boundary, 'Object names 2'] = bb_dim_3_relationship_dtype_str_re.loc[mask_boundary, 'Object names 2'] + "_add"
+
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_3_relationship_dtype_str = bb_dim_3_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_4_relationship_dtype_str_re = bb_dim_4_relationship_dtype_str.loc[bb_dim_4_relationship_dtype_str["Object names 3"].str.contains("Bat")]
+    bb_dim_4_relationship_dtype_str_re['Object names 3'] = bb_dim_4_relationship_dtype_str_re['Object names 3'] + "_add"
+    bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Object names 1"] == "storage", 'Object names 2'] = bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Object names 1"] == "storage", 'Object names 2'] + "_add"
+    bb_dim_4_relationship_dtype_str_re['Object names 2'] = bb_dim_4_relationship_dtype_str_re['Object names 2'].str.replace('_el','_re_el')
+    #increasing costs slightly to increase determination of the island storages
+    bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Parameter names"] == "invCosts", 'Parameter values'] = bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Parameter names"] == "invCosts", 'Parameter values'] + 100
+
+    bb_dim_4_relationship_dtype_str = pd.concat([bb_dim_4_relationship_dtype_str, bb_dim_4_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_4_relationship_dtype_str = bb_dim_4_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
 if RFNBO_option == "All_at_once":
     print("Applying all regulations for RFNBOs" + "\n")
     ### All at once ###
     alt_rfnbo = "All_at_once"
+
+    #keeping all old storages at the mixed nodes
+
+    #copying and assining the new additional island storages to the island renewable electricity nodes
+    bb_dim_1_relationship_dtype_str_re = bb_dim_1_relationship_dtype_str.loc[bb_dim_1_relationship_dtype_str["Object names"].str.contains("Bat")]
+    bb_dim_1_relationship_dtype_str_re['Object names'] = bb_dim_1_relationship_dtype_str_re['Object names'] + "_add"
+
+    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Object names 2"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_str_re.loc[bb_dim_2_relationship_dtype_str_re["Object names 1"] != "storage", 'Object names 1'] = bb_dim_2_relationship_dtype_str_re['Object names 1'] + "_add" 
+    bb_dim_2_relationship_dtype_str_re.loc["Object names 2"] = bb_dim_2_relationship_dtype_str_re['Object names 2'] + "_add"
+
+    bb_dim_2_relationship_dtype_str_unittype_add = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Relationship class names"] == "unit__unittype"].copy()
+    bb_dim_2_relationship_dtype_str_unittype_add['Object names 1'] = bb_dim_2_relationship_dtype_str_unittype_add['Object names 1'] + "_add"
+
+    bb_dim_2_relationship_dtype_map_re = bb_dim_2_relationship_dtype_map.loc[bb_dim_2_relationship_dtype_map["Object names"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_map_re['Object names'] = bb_dim_2_relationship_dtype_map_re['Object names'] + "_add"
+
+    bb_dim_3_relationship_dtype_str_re = bb_dim_3_relationship_dtype_str.loc[bb_dim_3_relationship_dtype_str["Object names 3"].str.contains("Bat") | bb_dim_3_relationship_dtype_str["Object names 2"].str.contains("Bat")]
+
+    mask_effLevel = bb_dim_3_relationship_dtype_str_re["Relationship class names"] == "effLevel__effSelector__unit"
+    bb_dim_3_relationship_dtype_str_re.loc[mask_effLevel, 'Object names 3'] = bb_dim_3_relationship_dtype_str_re.loc[mask_effLevel, 'Object names 3'] + "_add"
+
+    mask_boundary = bb_dim_3_relationship_dtype_str_re["Relationship class names"] == "grid__node__boundary"
+    bb_dim_3_relationship_dtype_str_re.loc[mask_boundary, 'Object names 2'] = bb_dim_3_relationship_dtype_str_re.loc[mask_boundary, 'Object names 2'] + "_add"
+
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re], ignore_index=True)
+    bb_dim_3_relationship_dtype_str = bb_dim_3_relationship_dtype_str.drop_duplicates().reset_index(drop=True)    
+
+    bb_dim_2_relationship_dtype_str_re = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Object names 2"].str.contains("Bat")].copy()
+    mask = bb_dim_2_relationship_dtype_str_re["Object names 1"] != "storage"
+    bb_dim_2_relationship_dtype_str_re.loc[mask, 'Object names 1'] = bb_dim_2_relationship_dtype_str_re.loc[mask, 'Object names 1'] + "_add"
+    bb_dim_2_relationship_dtype_str_re["Object names 2"] = bb_dim_2_relationship_dtype_str_re["Object names 2"] + "_add"
+   
+    bb_dim_4_relationship_dtype_str_re = bb_dim_4_relationship_dtype_str.loc[bb_dim_4_relationship_dtype_str["Object names 3"].str.contains("Bat")]
+    bb_dim_4_relationship_dtype_str_re['Object names 3'] = bb_dim_4_relationship_dtype_str_re['Object names 3'] + "_add"
+    bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Object names 1"] == "storage", 'Object names 2'] = bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Object names 1"] == "storage", 'Object names 2'] + "_add"
+    bb_dim_4_relationship_dtype_str_re['Object names 2'] = bb_dim_4_relationship_dtype_str_re['Object names 2'].str.replace('_el','_re_el')
+    #increasing costs slightly to increase determination of the island storages
+    bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Parameter names"] == "invCosts", 'Parameter values'] = bb_dim_4_relationship_dtype_str_re.loc[bb_dim_4_relationship_dtype_str_re["Parameter names"] == "invCosts", 'Parameter values'] + 100
+
+    #copying and assining the new additional island storages to the island renewable electricity nodes
+    bb_dim_1_relationship_dtype_str_isl_re = bb_dim_1_relationship_dtype_str.loc[bb_dim_1_relationship_dtype_str["Object names"].str.contains("Bat")]
+    bb_dim_1_relationship_dtype_str_isl_re['Object names'] = bb_dim_1_relationship_dtype_str_isl_re['Object names'] + "_isl_add"
+
+    bb_dim_1_relationship_dtype_str = bb_dim_1_relationship_dtype_str.loc[~bb_dim_1_relationship_dtype_str["Object names"].str.contains("Bat")]
+    bb_dim_1_relationship_dtype_str = pd.concat([bb_dim_1_relationship_dtype_str, bb_dim_1_relationship_dtype_str_re, bb_dim_1_relationship_dtype_str_isl_re], ignore_index=True)
+    bb_dim_1_relationship_dtype_str = bb_dim_1_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_str_isl_re = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Object names 2"].str.contains("Bat")].copy()
+    mask = bb_dim_2_relationship_dtype_str_isl_re["Object names 1"] != "storage"
+    bb_dim_2_relationship_dtype_str_isl_re.loc[mask, 'Object names 1'] = bb_dim_2_relationship_dtype_str_isl_re.loc[mask, 'Object names 1'] + "_isl_add"
+    bb_dim_2_relationship_dtype_str_isl_re["Object names 2"] = bb_dim_2_relationship_dtype_str_isl_re["Object names 2"] + "_isl_add"
+
+    bb_dim_2_relationship_dtype_str_unittype_isl_add = bb_dim_2_relationship_dtype_str.loc[bb_dim_2_relationship_dtype_str["Relationship class names"] == "unit__unittype"].copy()
+    bb_dim_2_relationship_dtype_str_unittype_isl_add['Object names 1'] = bb_dim_2_relationship_dtype_str_unittype_isl_add['Object names 1'] + "_isl_add"
+
+    bb_dim_2_relationship_dtype_str = bb_dim_2_relationship_dtype_str.loc[~bb_dim_2_relationship_dtype_str["Object names 2"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_str = pd.concat([bb_dim_2_relationship_dtype_str, bb_dim_2_relationship_dtype_str_re, bb_dim_2_relationship_dtype_str_isl_re, bb_dim_2_relationship_dtype_str_unittype_add, bb_dim_2_relationship_dtype_str_unittype_isl_add], ignore_index=True)
+    bb_dim_2_relationship_dtype_str = bb_dim_2_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_2_relationship_dtype_map_isl_re = bb_dim_2_relationship_dtype_map.loc[bb_dim_2_relationship_dtype_map["Object names"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_map_isl_re['Object names'] = bb_dim_2_relationship_dtype_map_isl_re['Object names'] + "_isl_add"
+
+    bb_dim_2_relationship_dtype_map = bb_dim_2_relationship_dtype_map.loc[~bb_dim_2_relationship_dtype_map["Object names"].str.contains("Bat")]
+    bb_dim_2_relationship_dtype_map = pd.concat([bb_dim_2_relationship_dtype_map, bb_dim_2_relationship_dtype_map_re, bb_dim_2_relationship_dtype_map_isl_re], ignore_index=True)
+    bb_dim_2_relationship_dtype_map = bb_dim_2_relationship_dtype_map.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_3_relationship_dtype_str_isl_re = bb_dim_3_relationship_dtype_str.loc[bb_dim_3_relationship_dtype_str["Object names 3"].str.contains("Bat") | bb_dim_3_relationship_dtype_str["Object names 2"].str.contains("Bat")]
+
+    mask_effLevel = bb_dim_3_relationship_dtype_str_isl_re["Relationship class names"] == "effLevel__effSelector__unit"
+    bb_dim_3_relationship_dtype_str_isl_re.loc[mask_effLevel, 'Object names 3'] = bb_dim_3_relationship_dtype_str_isl_re.loc[mask_effLevel, 'Object names 3'] + "_isl_add"
+
+    mask_boundary = bb_dim_3_relationship_dtype_str_isl_re["Relationship class names"] == "grid__node__boundary"
+    bb_dim_3_relationship_dtype_str_isl_re.loc[mask_boundary, 'Object names 2'] = bb_dim_3_relationship_dtype_str_isl_re.loc[mask_boundary, 'Object names 2'] + "_isl_add"
+
+    bb_dim_3_relationship_dtype_str = bb_dim_3_relationship_dtype_str.loc[~bb_dim_3_relationship_dtype_str["Object names 3"].str.contains("Bat")]
+    bb_dim_3_relationship_dtype_str = pd.concat([bb_dim_3_relationship_dtype_str, bb_dim_3_relationship_dtype_str_re, bb_dim_3_relationship_dtype_str_isl_re], ignore_index=True)
+    bb_dim_3_relationship_dtype_str = bb_dim_3_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
+
+    bb_dim_4_relationship_dtype_str_isl_re = bb_dim_4_relationship_dtype_str.loc[bb_dim_4_relationship_dtype_str["Object names 3"].str.contains("Bat")]
+    bb_dim_4_relationship_dtype_str_isl_re['Object names 3'] = bb_dim_4_relationship_dtype_str_isl_re['Object names 3'] + "_isl_add"
+    bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Object names 1"] == "storage", 'Object names 2'] = bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Object names 1"] == "storage", 'Object names 2'] + "_isl_add"
+    bb_dim_4_relationship_dtype_str_isl_re['Object names 2'] = bb_dim_4_relationship_dtype_str_isl_re['Object names 2'].str.replace('_el','_isl_re_el')
+    #increasing costs slightly to increase determination of the island storages
+    bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Parameter names"] == "invCosts", 'Parameter values'] = bb_dim_4_relationship_dtype_str_isl_re.loc[bb_dim_4_relationship_dtype_str_isl_re["Parameter names"] == "invCosts", 'Parameter values'] + 100
+
+    bb_dim_4_relationship_dtype_str = bb_dim_4_relationship_dtype_str.loc[~bb_dim_4_relationship_dtype_str["Object names 3"].str.contains("Bat")]
+    bb_dim_4_relationship_dtype_str = pd.concat([bb_dim_4_relationship_dtype_str, bb_dim_4_relationship_dtype_str_re, bb_dim_4_relationship_dtype_str_isl_re], ignore_index=True)
+    bb_dim_4_relationship_dtype_str = bb_dim_4_relationship_dtype_str.drop_duplicates().reset_index(drop=True)
 
 #%%
 ################# Write File #############################################################

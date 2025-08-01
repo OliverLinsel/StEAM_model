@@ -87,27 +87,29 @@ print("Defining regex lists for commodities and technologies" + "\n")
 
 #centrally define relevant lists of energy sources
 list_of_all_commodities = ['Coal', 'Oil', 'Gas', 'Nuclear', 'Wind', 'Solar', 'Geothermal', 'Biomass', 'GAS', "Hydro", "h2", "el"] #list of all commodities
-list_of_renewables      = ['Solar', 'Wind', 'Hydro', 'Geothermal', 'Biomass'] #list of renewable energy sources
-list_of_renewables_nbo  = ['Solar', 'Wind', 'Hydro', 'Geothermal'] #list of renewable energy sources
-list_of_h2_assets       = ['Electrolyzer', 'FuelCell', 'Liquifaction', 'Regasification', "h2|OCGT", "Engine"] #list of hydrogen assets - needed for RFNBO option to feed into re_elec grid
-list_of_vre             = ['Solar', 'Wind', "Hydro"] #list of variable renewable energy sources (Hydro being run of river)
+list_of_renewables      = ['Solar', 'PV', 'Wind', 'Hydro', 'Geothermal', 'Biomass'] #list of renewable energy sources
+list_of_renewables_nbo  = ['Solar', 'PV', 'Wind', 'Hydro', 'Geothermal'] #list of renewable energy sources
+list_of_h2_assets       = ['Electrolyzer', 'FuelCell', 'Liquifaction', 'Regasification', r"h2|OCGT", "Engine"] #list of hydrogen assets - needed for RFNBO option to feed into re_elec grid
+list_of_vre             = ['Solar', 'PV', 'Wind', "Hydro"] #list of variable renewable energy sources (Hydro being run of river)
 list_of_fossils         = ['Coal', 'Oil', 'Gas'] #list of fossil energy sources
 list_of_endo_commodities= ['el', 'h2'] #list of system endogenous commodities
 list_of_fuels           = ["Biomass", "Nuclear", "Coal", "Gas", "Oil"] #list of fuels
-dont_invest             = ['Nuclear', "Coal", "Oil", 'Other'] #list of energy sources that should not be invested in
+dont_invest             = ['Nuclear', "Coal", "Oil", 'Other'] #list of energy sources that should not be invested in 'FuelCell', "Engine", "H2|OCGT", 
 dont_consider           = ["CSP", "Hydro", "Desalination", "Geothermal", "Other", "Liquifaction", "Regasification", "h2_Liquification"] #list of all technologies that should not be considered in the model
+list_reelec             = [r"h2|OCGT", "FuelCell", "Engine"]
 
 # define regex for filtering
 regex_all_commodities = '|'.join(list_of_all_commodities) #regular expression for all powerplant commodities
 regex_renewables = '|'.join(list_of_renewables) #regular expression for renewable energy sources
 regex_renewables_nbo = '|'.join(list_of_renewables_nbo) #regular expression for renewable energy sources
 regex_vre = '|'.join(list_of_vre) #regular expression for variable renewable energy sources
-regex_h2_assets = '|'.join(list_of_h2_assets) #regular expression for hydrogen assets needed for RFNBO option to feed into re_elec grid
+regex_h2_assets = '|'.join([re.escape(x) for x in list_of_h2_assets]) #regular expression for hydrogen assets needed for RFNBO option to feed into re_elec grid
 regex_fossils = '|'.join(list_of_fossils) #regular expression for fossil energy sources
 regex_dont_invest = '|'.join(dont_invest) #regular expression for energy sources that should not be invested in
 regex_dont_consider = '|'.join(dont_consider) #regular expression for all technologies that should not be considered in the model
 regex_endo_commodities = '|'.join(list_of_endo_commodities) #regular expression for endogenous commodities
 regex_fuels = '|'.join(list_of_fuels) #regular expression for fuels
+regex_reelec = '|'.join([re.escape(x) for x in list_reelec]) #regular expression for energy sources that should be invested in
 
 ##### Read powerplant base data #####
 print("Reading powerplants base datast from : " + str(df_pp_base_path) + "\n")
@@ -254,6 +256,8 @@ df_CO2_melt = df_CO2_melt.merge(subset_countries, on='Countries', how='left')
 df_CO2_melt = df_CO2_melt.groupby(['Regions','Alternative']).agg({'Parameter_value':'sum'}).reset_index()
 df_CO2_melt["Regional_emissions"] = df_CO2_melt["Regions"] + "_CO2" #add CO2 to Regions
 df_CO2_melt['Parameter_value'] = df_CO2_melt['Parameter_value'] * 10**6 * modeled_duration_in_years #scale scenario data (Mt) to Backbone (t) and to modeling horizon
+#replace values that are below 1 with eps
+df_CO2_melt.loc[df_CO2_melt['Parameter_value'] < 1, 'Parameter_value'] = 1 #hier einfach nur ein kleiner Wert, weil irgendwie das Ersetzen mit eps nicht passiert
 
 ##### prepare invest data for concatenation #####
 print("Perform string magic to unify nomenclature and prepare datasets for concatenation" + "\n")
@@ -449,7 +453,7 @@ initial_dim0_values     = pd.DataFrame({'Object class names':['grid','group'],'O
 unit                    = pd.DataFrame({"Object class names":"unit", "Object names":df_pp_complete_agg.unit_name_aggregation})
 #node                    = pd.DataFrame({"Object class names":"node", "Object names":fuel_nodes.commodities_in.unique()})
 emission                = pd.DataFrame({"Object class names":"emission", "Object names":df_CO2_melt["Regional_emissions"].unique()})
-unittype                = pd.DataFrame({"Object class names":"unittype", "Object names":df_pp_complete_agg["technology"].unique()})
+unittype                = pd.DataFrame({"Object class names": "unittype", "Object names": pd.Series(df_pp_complete_agg["technology"].unique()).dropna()})
 
 bb_dim_0_initialization = pd.concat([initial_dim0_values, unit, emission, unittype], axis=0, ignore_index=True) #node,
 bb_dim_0_initialization = bb_dim_0_initialization.drop_duplicates()
@@ -497,7 +501,6 @@ df_zuordnung_flow["flow"] = df_zuordnung_flow["commodities_in"] + '|' + df_zuord
 
 bb_dim_2_flowUnit = template_fu.assign(**{'Object names 1':df_zuordnung_flow["flow"],'Object names 2':df_zuordnung_flow['unit_name_aggregation']})
 
-#%%
 bb_dim_2_relationship = pd.concat([nodeBalance, energyStoredPerUnitOfState, usePrice, emissionCap, p_nEmission, unitUnittype, bb_dim_2_flowUnit], axis=0, ignore_index=True)
 bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
 
@@ -509,7 +512,6 @@ bb_dim_2_relationship_map = bb_dim_2_relationship_map.drop_duplicates()
 #bb_dim_3 eff_Level, fuelGroup
 columns_3d = ['Relationship class names', 'Object class names 1','Object class names 2','Object class names 3','Object names 1','Object names 2','Object names 3','Parameter names','Alternative names','Parameter values']
 
-#%%
 #effLevelGroupUnit
 ##flow units dont have eff_group
 df_eff_non_vre_units = df_pp_complete_agg[~df_pp_complete_agg['commodities_in'].str.contains(regex_vre)][["unit_name_aggregation", "Regions", "commodities_in"]].reset_index(drop = True)
@@ -551,7 +553,6 @@ availabilityCapacityMargin = pd.DataFrame({"Relationship class names":"grid__nod
 bb_dim_4_relationship = pd.concat([annuityFactor, invCosts, capacity, unitSize, conversionCoeff, maxRampUp, maxRampDown, vomCosts, fomCosts, availabilityCapacityMargin], axis=0, ignore_index=True)
 bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
 
-#%%
 ##### delete investment info for powerplants that shall not be invested in #####
 print("Disable investment for powerplants that shall not be invested in :" + str(regex_dont_invest) + "\n")
 
@@ -564,7 +565,6 @@ bb_dim_4_relationship.loc[
     (bb_dim_4_relationship['Object names 4'] == 'output'),
     'Parameter values'] = eps
 
-#%%
 ## Set small capacities to zero to prevent numerical problems
 bb_dim_4_relationship.loc[
     (bb_dim_4_relationship['Parameter names'] == 'capacity') &
@@ -581,7 +581,6 @@ if RFNBO_option == "Vanilla":
 
 #No_reg scenario is the base scenario that only applies the definition for renewable electricity from RED for the production of green hydrogen
 if RFNBO_option == "No_reg":
-    ### None ###
     alt_rfnbo = "No_reg"
     print("No regulation for RFNBOs applied" + "\n")
     #reassining renewable electricity units to the new renewable electricity node in p_gnu_io
@@ -600,55 +599,66 @@ if RFNBO_option == "Island_Grids":
     ### Island Grids ###
     alt_rfnbo = "Island_Grid"
     #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
-    bb_dim_0_initialization_re = bb_dim_0_initialization[bb_dim_0_initialization['Object names'].str.contains(regex_renewables_nbo or regex_h2_assets)].reset_index(drop=True)
-    bb_dim_0_initialization_re["Object names"] = bb_dim_0_initialization_re["Object names"] + "_add"
+    bb_dim_0_initialization_isl_re = bb_dim_0_initialization[bb_dim_0_initialization['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_0_initialization_isl_re["Object names"] = bb_dim_0_initialization_isl_re["Object names"] + "_isl_add"
 
     #adding the additional renewable powerplant units to the normal units in unit
-    bb_dim_0_initialization = pd.concat([bb_dim_0_initialization, bb_dim_0_initialization_re], ignore_index=True)
+    bb_dim_0_initialization = pd.concat([bb_dim_0_initialization, bb_dim_0_initialization_isl_re], ignore_index=True)
 
     #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
-    bb_dim_1_relationship_re = bb_dim_1_relationship[bb_dim_1_relationship['Object names'].str.contains(regex_renewables_nbo or regex_h2_assets)].reset_index(drop=True)
-    bb_dim_1_relationship_re["Object names"] = bb_dim_1_relationship_re["Object names"] + "_add"
+    bb_dim_1_relationship_isl_re = bb_dim_1_relationship[bb_dim_1_relationship['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_isl_re["Object names"] = bb_dim_1_relationship_isl_re["Object names"] + "_isl_add"
 
-    #setting maxUnitCount to 0 for the original renewable powerplants so that only the additional ones can be invested in
-    bb_dim_1_relationship.loc[bb_dim_1_relationship['Object names'].str.contains(regex_renewables_nbo or regex_h2_assets), 'Parameter values'] = eps
+    # #setting maxUnitCount to 0 for the original renewable powerplants so that only the additional ones can be invested in
+    # bb_dim_1_relationship.loc[bb_dim_1_relationship['Object names'].str.contains(regex_vre or regex_h2_assets), 'Parameter values'] = eps
 
     #adding the additional renewable powerplant units to the normal units in p_unit
-    bb_dim_1_relationship = pd.concat([bb_dim_1_relationship, bb_dim_1_relationship_re], ignore_index=True)
+    bb_dim_1_relationship = pd.concat([bb_dim_1_relationship, bb_dim_1_relationship_isl_re], ignore_index=True)
+    bb_dim_1_relationship = bb_dim_1_relationship.drop_duplicates()
 
-    #copying the renewable powerplants and adding the suffix "_add" to the Object names 3 to identify them as additional renewable powerplants
-    bb_dim_1_relationship_dtype_map_re = bb_dim_1_relationship_map[bb_dim_1_relationship_map['Object names'].str.contains(regex_renewables_nbo or regex_h2_assets)].reset_index(drop=True)
-    bb_dim_1_relationship_dtype_map_re_units = bb_dim_1_relationship_dtype_map_re[bb_dim_1_relationship_dtype_map_re["Object class names"] == "unit"].reset_index(drop=True)
-    bb_dim_1_relationship_dtype_map_re_nodes = bb_dim_1_relationship_dtype_map_re[bb_dim_1_relationship_dtype_map_re["Object class names"] == "node"].reset_index(drop=True)
-    bb_dim_1_relationship_dtype_map_re_units["Object names"] = bb_dim_1_relationship_dtype_map_re["Object names"] + "_add"
-    bb_dim_1_relationship_dtype_map_re_nodes["Object names"] = bb_dim_1_relationship_dtype_map_re["Object names"].str.replace('_el','_re_el')
+    #copying the renewable powerplants and adding the suffix "_isl_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_map_isl_re = bb_dim_1_relationship_map[bb_dim_1_relationship_map['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_map_isl_re["Object names"] = bb_dim_1_relationship_map_isl_re["Object names"] + "_isl_add"
 
     #adding the additional renewable powerplant units to the normal units in p_fuelmap
-    bb_dim_1_relationship_dtype_map = pd.concat([bb_dim_1_relationship_map, bb_dim_1_relationship_dtype_map_re_units, bb_dim_1_relationship_dtype_map_re_nodes], ignore_index=True)
+    bb_dim_1_relationship_map = pd.concat([bb_dim_1_relationship_map, bb_dim_1_relationship_map_isl_re], ignore_index=True)
+    bb_dim_1_relationship_map = bb_dim_1_relationship_map.drop_duplicates()
 
-    #copying the flow units and adding the suffix "_add" to the Object names 2 to identify them as additional flow units
-    bb_dim_2_relationship_re = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "flow__unit"].reset_index(drop=True)
-    bb_dim_2_relationship_re["Object names 2"] = bb_dim_2_relationship_re["Object names 2"] + "_add"
+    #copying the flow units and adding the suffix "_isl_add" to the Object names 2 to identify them as additional flow units
+    bb_dim_2_relationship_isl_re_flow = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "flow__unit"].reset_index(drop=True)
+    bb_dim_2_relationship_isl_re_flow["Object names 2"] = bb_dim_2_relationship_isl_re_flow["Object names 2"] + "_isl_add"
 
-    #adding the island units to the normal units in p_flowUnit
-    bb_dim_2_relationship = pd.concat([bb_dim_2_relationship, bb_dim_2_relationship_re], ignore_index=True)
+    bb_dim_2_relationship_isl_re_unittype = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "unit__unittype"].reset_index(drop=True)
+    bb_dim_2_relationship_isl_re_unittype = bb_dim_2_relationship_isl_re_unittype.loc[bb_dim_2_relationship_isl_re_unittype["Object names 1"].str.contains(f"{regex_vre}", regex=True)]
+    bb_dim_2_relationship_isl_re_unittype["Object names 1"] = bb_dim_2_relationship_isl_re_unittype["Object names 1"] + "_isl_add"
+    bb_dim_2_relationship_isl_re_unittype["Object names 2"] = bb_dim_2_relationship_isl_re_unittype["Object names 2"] + "_isl_add"
 
-    #copying the renewable powerplants and adding the suffix "_add" to the Object names 3 to identify them as additional renewable powerplants
-    bb_dim_3_relationship_re = bb_dim_3_relationship[bb_dim_3_relationship['Object names 3'].str.contains(regex_renewables_nbo or regex_h2_assets)].reset_index(drop=True)
-    bb_dim_3_relationship_re["Object names 3"] = bb_dim_3_relationship_re["Object names 3"] + "_add"
+    #adding the island units to the normal units in p_flowUnit and unittype
+    bb_dim_2_relationship = pd.concat([bb_dim_2_relationship, bb_dim_2_relationship_isl_re_flow, bb_dim_2_relationship_isl_re_unittype], ignore_index=True)
+    bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
 
-    #adding the island units to the normal units in eff_Level
-    bb_dim_3_relationship = pd.concat([bb_dim_3_relationship, bb_dim_3_relationship_re], ignore_index=True)
+    # #copying the renewable powerplants and adding the suffix "_isl_add" to the Object names 3 to identify them as additional renewable powerplants
+    # bb_dim_3_relationship_isl_re = bb_dim_3_relationship[bb_dim_3_relationship['Object names 3'].str.contains(f"{regex_vre}|{regex_reelec}", regex=True)].reset_index(drop=True)
+    # bb_dim_3_relationship_isl_re["Object names 3"] = bb_dim_3_relationship_isl_re["Object names 3"] + "_isl_add"
+
+    # #adding the island units to the normal units in eff_Level
+    # bb_dim_3_relationship = pd.concat([bb_dim_3_relationship, bb_dim_3_relationship_isl_re], ignore_index=True)
+    # bb_dim_3_relationship = bb_dim_3_relationship.drop_duplicates()
+    
+    #reconnecting reelec units to re_el
+    bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_h2_assets}", regex=True), "Object names 2"] = bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_h2_assets}", regex=True),"Object names 2"].str.replace('_el','_isl_re_el')
 
     #Copying the renewable powerplants to the island nodes and adding the suffix "_re_el" to the Object names 2 to identifiy the renewable electricity node
-    bb_dim_4_relationship_re = bb_dim_4_relationship[bb_dim_4_relationship['Object names 3'].str.contains(regex_renewables_nbo or regex_h2_assets)].reset_index(drop=True)
-    bb_dim_4_relationship_re["Object names 2"] = bb_dim_4_relationship_re["Object names 2"].str.replace('_el','_re_el')
-    #Renaming the renewable powerplants to identify them as additional renewable powerplants
-    mask = bb_dim_4_relationship_re["Object names 4"] == "output"
-    bb_dim_4_relationship_re.loc[mask, "Object names 3"] = (bb_dim_4_relationship_re.loc[mask, "Object names 3"] + "_add")
+    bb_dim_4_relationship_isl_re = bb_dim_4_relationship[bb_dim_4_relationship['Object names 3'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_4_relationship_isl_re["Object names 2"] = bb_dim_4_relationship_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
+    bb_dim_4_relationship_isl_re["Object names 3"] = bb_dim_4_relationship_isl_re["Object names 3"] + "_isl_add"
+
+    #adding 100 to the invCosts Parameter for the additional island plants to increase determination of the model
+    bb_dim_4_relationship_isl_re.loc[bb_dim_4_relationship_isl_re['Parameter names'] == 'invCosts', 'Parameter values'] = bb_dim_4_relationship_isl_re.loc[bb_dim_4_relationship_isl_re['Parameter names'] == 'invCosts', 'Parameter values'] + 50
+    bb_dim_4_relationship_isl_re.loc[bb_dim_4_relationship_isl_re['Parameter names'] == 'capacity', 'Parameter values'] = eps
 
     #adding the island units to the normal units in p_gnu_io
-    bb_dim_4_relationship = pd.concat([bb_dim_4_relationship, bb_dim_4_relationship_re], ignore_index=True)
+    bb_dim_4_relationship = pd.concat([bb_dim_4_relationship, bb_dim_4_relationship_isl_re], ignore_index=True)
     bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
 
 #The Defossilized Grid option conducts a pre-solve without any hydrogen demand to determine the CO2 intensity of the system to then asses, whether the RFNBO production may use the grid electricity.
@@ -658,29 +668,307 @@ if RFNBO_option == "Defossilized_Grid_prerun":
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid_prerun"
     #deleting all hydrogen related units and elements
-    regex_hydrogen = 'H2|h2|hydrogen|Hydrogen|Desalination|Electrolyzer'
-    bb_dim_0_initialization = bb_dim_0_initialization[~bb_dim_0_initialization['Object names'].str.contains(regex_hydrogen)].reset_index(drop=True)
-    bb_dim_1_relationship = bb_dim_1_relationship[~bb_dim_1_relationship['Object names'].str.contains(regex_hydrogen)].reset_index(drop=True)
+    regex_hydrogen = 'H2|h2|hydrogen|Hydrogen|Desalination|Electrolyzer|FuelCell'
+    bb_dim_0_initialization = bb_dim_0_initialization[~bb_dim_0_initialization['Object names'].str.contains(regex_hydrogen, regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship = bb_dim_1_relationship[~bb_dim_1_relationship['Object names'].str.contains(regex_hydrogen, regex=True)].reset_index(drop=True)
     bb_dim_1_relationship_map = bb_dim_1_relationship_map[~bb_dim_1_relationship_map['Object names'].str.contains(regex_hydrogen)].reset_index(drop=True)
+    bb_dim_2_relationship = bb_dim_2_relationship[~bb_dim_2_relationship['Object names 1'].str.contains(regex_hydrogen)].reset_index(drop=True)
     bb_dim_3_relationship = bb_dim_3_relationship[~bb_dim_3_relationship['Object names 3'].str.contains(regex_hydrogen)].reset_index(drop=True)
     bb_dim_4_relationship = bb_dim_4_relationship[~bb_dim_4_relationship['Object names 3'].str.contains(regex_hydrogen)].reset_index(drop=True)
+
+    combined_regex = f"{regex_renewables}"
+    mask = (bb_dim_4_relationship['Object names 3'].str.contains(combined_regex, regex=True) & ~bb_dim_4_relationship['Object names 3'].str.contains("Gas"))
+    bb_dim_4_relationship.loc[mask, 'Object names 2'] = bb_dim_4_relationship.loc[mask, 'Object names 2'].str.replace('_el', '_re_el')
+    bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
 
 if RFNBO_option == "Defossilized_Grid":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
 
+    try:
+        #use if run in spine-toolbox
+        prerun_path = os.path.join(r"..\Data\HPC_results\RFNBO\2_Def_Grid_2030\2_Def_Grid_prerun")
+        assessment_df = pd.read_csv(os.path.join(prerun_path, "assessment_df.csv"), sep=";")
+    except: 
+        #use if run in Python environment
+        if str(os.getcwd()).find('PythonScripts') > -1:
+            os.chdir('..')
+        #read assessment_df from prerun path
+        prerun_path = os.path.join(r".\Data\HPC_results\RFNBO\2_Def_Grid_2030\2_Def_Grid_prerun")
+        assessment_df = pd.read_csv(os.path.join(prerun_path, "assessment_df.csv"), sep=";")
+
+    #get the countries from the assessment_df that may use grid electricity. The rest is configured as in the no_reg scenario
+    non_def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May_not", "region"].to_list()
+    non_def_regions_list = '|'.join(non_def_regions_list)
+    def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May", "region"].to_list()
+    def_regions_list = '|'.join(def_regions_list)
+
+    print("Regions that may not use grid electricity: " + str(non_def_regions_list) + "\n")
+    print("Regions that may use grid electricity: " + str(def_regions_list) + "\n")
+
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_0_initialization_re = bb_dim_0_initialization[bb_dim_0_initialization['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_0_initialization_re["Object names"] = bb_dim_0_initialization_re["Object names"] + "_add"
+
+    #adding the additional renewable powerplant units to the normal units in unit
+    bb_dim_0_initialization = pd.concat([bb_dim_0_initialization, bb_dim_0_initialization_re], ignore_index=True)
+
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_re = bb_dim_1_relationship[bb_dim_1_relationship['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_re["Object names"] = bb_dim_1_relationship_re["Object names"] + "_add"
+
+    # #setting maxUnitCount to 0 for the original renewable powerplants so that only the additional ones can be invested in
+    # bb_dim_1_relationship.loc[bb_dim_1_relationship['Object names'].str.contains(regex_vre or regex_h2_assets), 'Parameter values'] = eps
+
+    #adding the additional renewable powerplant units to the normal units in p_unit
+    bb_dim_1_relationship = pd.concat([bb_dim_1_relationship, bb_dim_1_relationship_re], ignore_index=True)
+    bb_dim_1_relationship = bb_dim_1_relationship.drop_duplicates()
+
+    #copying the renewable powerplants and adding the suffix "_isl_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_map_re = bb_dim_1_relationship_map[bb_dim_1_relationship_map['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_map_re["Object names"] = bb_dim_1_relationship_map_re["Object names"] + "_add"
+
+    #adding the additional renewable powerplant units to the normal units in p_fuelmap
+    bb_dim_1_relationship_map = pd.concat([bb_dim_1_relationship_map, bb_dim_1_relationship_map_re], ignore_index=True)
+    bb_dim_1_relationship_map = bb_dim_1_relationship_map.drop_duplicates()
+
+    #copying the flow units and adding the suffix "_add" to the Object names 2 to identify them as additional flow units
+    bb_dim_2_relationship_re = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "flow__unit"].reset_index(drop=True)
+    bb_dim_2_relationship_re["Object names 2"] = bb_dim_2_relationship_re["Object names 2"] + "_add"
+
+    bb_dim_2_relationship_re_unittype = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "unit__unittype"].reset_index(drop=True)
+    bb_dim_2_relationship_re_unittype = bb_dim_2_relationship_re_unittype.loc[bb_dim_2_relationship_re_unittype["Object names 1"].str.contains(f"{regex_vre}", regex=True)]
+    bb_dim_2_relationship_re_unittype["Object names 1"] = bb_dim_2_relationship_re_unittype["Object names 1"] + "_add"
+    bb_dim_2_relationship_re_unittype["Object names 2"] = bb_dim_2_relationship_re_unittype["Object names 2"] + "_add"
+
+    #adding the island units to the normal units in p_flowUnit
+    bb_dim_2_relationship = pd.concat([bb_dim_2_relationship, bb_dim_2_relationship_re, bb_dim_2_relationship_re_unittype], ignore_index=True)
+    bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
+
+    #copying the renewable powerplants and adding the suffix "_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_3_relationship_re = bb_dim_3_relationship[bb_dim_3_relationship['Object names 3'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_3_relationship_re["Object names 3"] = bb_dim_3_relationship_re["Object names 3"] + "_add"
+
+    #adding the island units to the normal units in eff_Level
+    bb_dim_3_relationship = pd.concat([bb_dim_3_relationship, bb_dim_3_relationship_re], ignore_index=True)
+    bb_dim_3_relationship = bb_dim_3_relationship.drop_duplicates()
+
+    #reconnecting reelec units to re_el
+    bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_reelec}", regex=True), "Object names 2"] = bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_reelec}", regex=True),"Object names 2"].str.replace('_el','_re_el')
+    #Copying the renewable powerplants to the island nodes and adding the suffix "_re_el" to the Object names 2 to identifiy the renewable electricity node
+    bb_dim_4_relationship_re_add = bb_dim_4_relationship[bb_dim_4_relationship['Object names 3'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)    
+    #Renaming the renewable powerplants to identify them as additional renewable powerplants
+    mask = bb_dim_4_relationship_re_add["Object names 4"] == "output"
+    bb_dim_4_relationship_re_add["Object names 2"] = bb_dim_4_relationship_re_add["Object names 2"].str.replace('_el','_re_el')
+    bb_dim_4_relationship_re_add.loc[mask, "Object names 3"] = (bb_dim_4_relationship_re_add.loc[mask, "Object names 3"] + "_add")
+
+    #adding 100 to the invCosts Parameter for the additional island plants to increase determination of the model
+    bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'invCosts', 'Parameter values'] = bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'invCosts', 'Parameter values'] + 100
+    bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'capacity', 'Parameter values'] = eps
+
+    #adding the island units to the normal units in p_gnu_io
+    bb_dim_4_relationship = pd.concat([bb_dim_4_relationship, bb_dim_4_relationship_re_add], ignore_index=True)
+    bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
+
+#%%
 if RFNBO_option == "Add_and_Corr":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Additionality and Correlation ###
     alt_rfnbo = "Additionality_and_Correlation"
+
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_0_initialization_re = bb_dim_0_initialization[bb_dim_0_initialization['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_0_initialization_re["Object names"] = bb_dim_0_initialization_re["Object names"] + "_add"
+
+    #adding the additional renewable powerplant units to the normal units in unit
+    bb_dim_0_initialization = pd.concat([bb_dim_0_initialization, bb_dim_0_initialization_re], ignore_index=True)
+
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_re = bb_dim_1_relationship[bb_dim_1_relationship['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_re["Object names"] = bb_dim_1_relationship_re["Object names"] + "_add"
+
+    # #setting maxUnitCount to 0 for the original renewable powerplants so that only the additional ones can be invested in
+    # bb_dim_1_relationship.loc[bb_dim_1_relationship['Object names'].str.contains(regex_vre or regex_h2_assets), 'Parameter values'] = eps
+
+    #adding the additional renewable powerplant units to the normal units in p_unit
+    bb_dim_1_relationship = pd.concat([bb_dim_1_relationship, bb_dim_1_relationship_re], ignore_index=True)
+    bb_dim_1_relationship = bb_dim_1_relationship.drop_duplicates()
+
+    #copying the renewable powerplants and adding the suffix "_isl_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_map_re = bb_dim_1_relationship_map[bb_dim_1_relationship_map['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_map_re["Object names"] = bb_dim_1_relationship_map_re["Object names"] + "_add"
+
+    #adding the additional renewable powerplant units to the normal units in p_fuelmap
+    bb_dim_1_relationship_map = pd.concat([bb_dim_1_relationship_map, bb_dim_1_relationship_map_re], ignore_index=True)
+    bb_dim_1_relationship_map = bb_dim_1_relationship_map.drop_duplicates()
+
+    #copying the flow units and adding the suffix "_add" to the Object names 2 to identify them as additional flow units
+    bb_dim_2_relationship_re = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "flow__unit"].reset_index(drop=True)
+    bb_dim_2_relationship_re["Object names 2"] = bb_dim_2_relationship_re["Object names 2"] + "_add"
+
+    bb_dim_2_relationship_re_unittype = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "unit__unittype"].reset_index(drop=True)
+    bb_dim_2_relationship_re_unittype = bb_dim_2_relationship_re_unittype.loc[bb_dim_2_relationship_re_unittype["Object names 1"].str.contains(f"{regex_vre}", regex=True)]
+    bb_dim_2_relationship_re_unittype["Object names 1"] = bb_dim_2_relationship_re_unittype["Object names 1"] + "_add"
+    bb_dim_2_relationship_re_unittype["Object names 2"] = bb_dim_2_relationship_re_unittype["Object names 2"] + "_add"
+
+    #adding the island units to the normal units in p_flowUnit
+    bb_dim_2_relationship = pd.concat([bb_dim_2_relationship, bb_dim_2_relationship_re, bb_dim_2_relationship_re_unittype], ignore_index=True)
+    bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
+
+    #copying the renewable powerplants and adding the suffix "_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_3_relationship_re = bb_dim_3_relationship[bb_dim_3_relationship['Object names 3'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_3_relationship_re["Object names 3"] = bb_dim_3_relationship_re["Object names 3"] + "_add"
+
+    #adding the island units to the normal units in eff_Level
+    bb_dim_3_relationship = pd.concat([bb_dim_3_relationship, bb_dim_3_relationship_re], ignore_index=True)
+    bb_dim_3_relationship = bb_dim_3_relationship.drop_duplicates()
+
+    #reconnecting reelec units to re_el
+    bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_reelec}", regex=True), "Object names 2"] = bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_reelec}", regex=True),"Object names 2"].str.replace('_el','_re_el')
+    #Copying the renewable powerplants to the island nodes and adding the suffix "_re_el" to the Object names 2 to identifiy the renewable electricity node
+    bb_dim_4_relationship_re_add = bb_dim_4_relationship[bb_dim_4_relationship['Object names 3'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)    
+    #Renaming the renewable powerplants to identify them as additional renewable powerplants
+    mask = bb_dim_4_relationship_re_add["Object names 4"] == "output"
+    bb_dim_4_relationship_re_add["Object names 2"] = bb_dim_4_relationship_re_add["Object names 2"].str.replace('_el','_re_el')
+    bb_dim_4_relationship_re_add.loc[mask, "Object names 3"] = (bb_dim_4_relationship_re_add.loc[mask, "Object names 3"] + "_add")
+
+    #adding 100 to the invCosts Parameter for the additional island plants to increase determination of the model
+    bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'invCosts', 'Parameter values'] = bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'invCosts', 'Parameter values'] + 100
+    bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'capacity', 'Parameter values'] = eps
+
+    #adding the island units to the normal units in p_gnu_io
+    bb_dim_4_relationship = pd.concat([bb_dim_4_relationship, bb_dim_4_relationship_re_add], ignore_index=True)
+    bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
 
 if RFNBO_option == "All_at_once":
     print("Applying all regulations for RFNBOs" + "\n")
     ### All at once ###
     alt_rfnbo = "All_at_once"
 
-# introducing the limiting factors option
+    try:
+        #use if run in spine-toolbox
+        prerun_path = os.path.join(r"..\Data\HPC_results\RFNBO\2_Def_Grid_2030\2_Def_Grid_prerun")
+        assessment_df = pd.read_csv(os.path.join(prerun_path, "assessment_df.csv"), sep=";")
+    except: 
+        #use if run in Python environment
+        if str(os.getcwd()).find('PythonScripts') > -1:
+            os.chdir('..')
+        #read assessment_df from prerun path
+        prerun_path = os.path.join(r".\Data\HPC_results\RFNBO\2_Def_Grid_2030\2_Def_Grid_prerun")
+        assessment_df = pd.read_csv(os.path.join(prerun_path, "assessment_df.csv"), sep=";")
+
+    #get the countries from the assessment_df that may use grid electricity. The rest is configured as in the no_reg scenario
+    non_def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May_not", "region"].to_list()
+    non_def_regions_list = '|'.join(non_def_regions_list)
+    def_regions_list = assessment_df.loc[assessment_df["may_draw"] == "May", "region"].to_list()
+    def_regions_list = '|'.join(def_regions_list)
+
+    print("Regions that may not use grid electricity: " + str(non_def_regions_list) + "\n")
+    print("Regions that may use grid electricity: " + str(def_regions_list) + "\n")
+
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_0_initialization_re = bb_dim_0_initialization[bb_dim_0_initialization['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_0_initialization_re["Object names"] = bb_dim_0_initialization_re["Object names"] + "_add"
+
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_re = bb_dim_1_relationship[bb_dim_1_relationship['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_re["Object names"] = bb_dim_1_relationship_re["Object names"] + "_add"
+
+    #copying the renewable powerplants and adding the suffix "_isl_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_map_re = bb_dim_1_relationship_map[bb_dim_1_relationship_map['Object names'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_map_re["Object names"] = bb_dim_1_relationship_map_re["Object names"] + "_add"
+
+    #copying the flow units and adding the suffix "_add" to the Object names 2 to identify them as additional flow units
+    bb_dim_2_relationship_re = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "flow__unit"].reset_index(drop=True)
+    bb_dim_2_relationship_re["Object names 2"] = bb_dim_2_relationship_re["Object names 2"] + "_add"
+
+    bb_dim_2_relationship_re_unittype = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "unit__unittype"].reset_index(drop=True)
+    bb_dim_2_relationship_re_unittype = bb_dim_2_relationship_re_unittype.loc[bb_dim_2_relationship_re_unittype["Object names 1"].str.contains(f"{regex_vre}", regex=True)]
+    bb_dim_2_relationship_re_unittype["Object names 1"] = bb_dim_2_relationship_re_unittype["Object names 1"] + "_add"
+    bb_dim_2_relationship_re_unittype["Object names 2"] = bb_dim_2_relationship_re_unittype["Object names 2"] + "_add"
+
+    #copying the renewable powerplants and adding the suffix "_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_3_relationship_re = bb_dim_3_relationship[bb_dim_3_relationship['Object names 3'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)
+    bb_dim_3_relationship_re["Object names 3"] = bb_dim_3_relationship_re["Object names 3"] + "_add"
+
+    #reconnecting reelec units to re_el
+    bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_reelec}", regex=True), "Object names 2"] = bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_reelec}", regex=True),"Object names 2"].str.replace('_el','_re_el')
+    #Copying the renewable powerplants to the island nodes and adding the suffix "_re_el" to the Object names 2 to identifiy the renewable electricity node
+    bb_dim_4_relationship_re_add = bb_dim_4_relationship[bb_dim_4_relationship['Object names 3'].str.contains(f"{regex_vre}", regex=True)].reset_index(drop=True)    
+    #Renaming the renewable powerplants to identify them as additional renewable powerplants
+    mask = bb_dim_4_relationship_re_add["Object names 4"] == "output"
+    bb_dim_4_relationship_re_add["Object names 2"] = bb_dim_4_relationship_re_add["Object names 2"].str.replace('_el','_re_el')
+    bb_dim_4_relationship_re_add.loc[mask, "Object names 3"] = (bb_dim_4_relationship_re_add.loc[mask, "Object names 3"] + "_add")
+
+    #adding 100 to the invCosts Parameter for the additional island plants to increase determination of the model
+    bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'invCosts', 'Parameter values'] = bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'invCosts', 'Parameter values'] + 25
+    # bb_dim_4_relationship_re_add.loc[bb_dim_4_relationship_re_add['Parameter names'] == 'capacity', 'Parameter values'] = eps
+
+    ### island grid configuration ###
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_0_initialization_isl_re = bb_dim_0_initialization[bb_dim_0_initialization['Object names'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    bb_dim_0_initialization_isl_re["Object names"] = bb_dim_0_initialization_isl_re["Object names"] + "_isl_add"
+
+    bb_dim_0_initialization = bb_dim_0_initialization[~bb_dim_0_initialization['Object names'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    #adding the additional renewable powerplant units to the normal units in unit
+    bb_dim_0_initialization = pd.concat([bb_dim_0_initialization, bb_dim_0_initialization_re, bb_dim_0_initialization_isl_re], ignore_index=True)
+
+    #copying the renewable powerplants and add the suffix "add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_isl_re = bb_dim_1_relationship[bb_dim_1_relationship['Object names'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_isl_re["Object names"] = bb_dim_1_relationship_isl_re["Object names"] + "_isl_add"
+
+    bb_dim_1_relationship = bb_dim_1_relationship[~bb_dim_1_relationship['Object names'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    #adding the additional renewable powerplant units to the normal units in p_unit
+    bb_dim_1_relationship = pd.concat([bb_dim_1_relationship, bb_dim_1_relationship_re, bb_dim_1_relationship_isl_re], ignore_index=True)
+    bb_dim_1_relationship = bb_dim_1_relationship.drop_duplicates()
+
+    #copying the renewable powerplants and adding the suffix "_isl_add" to the Object names 3 to identify them as additional renewable powerplants
+    bb_dim_1_relationship_map_isl_re = bb_dim_1_relationship_map[bb_dim_1_relationship_map['Object names'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    bb_dim_1_relationship_map_isl_re["Object names"] = bb_dim_1_relationship_map_isl_re["Object names"] + "_isl_add"
+
+    bb_dim_1_relationship_map = bb_dim_1_relationship_map[~bb_dim_1_relationship_map['Object names'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    #adding the additional renewable powerplant units to the normal units in p_fuelmap
+    bb_dim_1_relationship_map = pd.concat([bb_dim_1_relationship_map, bb_dim_1_relationship_map_re, bb_dim_1_relationship_map_isl_re], ignore_index=True)
+    bb_dim_1_relationship_map = bb_dim_1_relationship_map.drop_duplicates()
+
+    #copying the flow units and adding the suffix "_isl_add" to the Object names 2 to identify them as additional flow units
+    bb_dim_2_relationship_isl_re_flow = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "flow__unit"].reset_index(drop=True)
+    bb_dim_2_relationship_isl_re_flow["Object names 2"] = bb_dim_2_relationship_isl_re_flow["Object names 2"] + "_isl_add"
+
+    bb_dim_2_relationship_isl_re_unittype = bb_dim_2_relationship[bb_dim_2_relationship["Relationship class names"] == "unit__unittype"].reset_index(drop=True)
+    bb_dim_2_relationship_isl_re_unittype = bb_dim_2_relationship_isl_re_unittype.loc[bb_dim_2_relationship_isl_re_unittype["Object names 1"].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)]
+    bb_dim_2_relationship_isl_re_unittype["Object names 1"] = bb_dim_2_relationship_isl_re_unittype["Object names 1"] + "_isl_add"
+    bb_dim_2_relationship_isl_re_unittype["Object names 2"] = bb_dim_2_relationship_isl_re_unittype["Object names 2"] + "_isl_add"
+
+    bb_dim_2_relationship = bb_dim_2_relationship[~bb_dim_2_relationship['Object names 1'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    #adding the island units to the normal units in p_flowUnit and unittype
+    bb_dim_2_relationship = pd.concat([bb_dim_2_relationship, bb_dim_2_relationship_re, bb_dim_2_relationship_re_unittype, bb_dim_2_relationship_isl_re_flow, bb_dim_2_relationship_isl_re_unittype], ignore_index=True)
+    bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
+
+    bb_dim_3_relationship_isl_re = bb_dim_3_relationship[bb_dim_3_relationship['Object names 3'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    #adding the island units to the normal units in eff_Level
+    bb_dim_3_relationship = pd.concat([bb_dim_3_relationship, bb_dim_3_relationship_re], ignore_index=True)
+    bb_dim_3_relationship = bb_dim_3_relationship.drop_duplicates()
+
+    # #reconnecting reelec units to re_el
+    # bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_h2_assets}", regex=True), "Object names 2"] = bb_dim_4_relationship.loc[bb_dim_4_relationship["Object names 3"].str.contains(f"{regex_h2_assets}", regex=True),"Object names 2"].str.replace('_el','_isl_re_el')
+
+    #Copying the renewable powerplants to the island nodes and adding the suffix "_re_el" to the Object names 2 to identifiy the renewable electricity node
+    bb_dim_4_relationship_isl_re = bb_dim_4_relationship[bb_dim_4_relationship['Object names 3'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    bb_dim_4_relationship_isl_re["Object names 2"] = bb_dim_4_relationship_isl_re["Object names 2"].str.replace('_el','_isl_re_el')
+    bb_dim_4_relationship_isl_re["Object names 3"] = bb_dim_4_relationship_isl_re["Object names 3"] + "_isl_add"
+
+    #adding 100 to the invCosts Parameter for the additional island plants to increase determination of the model
+    bb_dim_4_relationship_isl_re.loc[bb_dim_4_relationship_isl_re['Parameter names'] == 'invCosts', 'Parameter values'] = bb_dim_4_relationship_isl_re.loc[bb_dim_4_relationship_isl_re['Parameter names'] == 'invCosts', 'Parameter values'] + 50
+    bb_dim_4_relationship_isl_re.loc[bb_dim_4_relationship_isl_re['Parameter names'] == 'capacity', 'Parameter values'] = eps
+    
+    bb_dim_4_relationship = bb_dim_4_relationship[~bb_dim_4_relationship['Object names 3'].str.contains(f"{regex_vre}|{regex_h2_assets}", regex=True)].reset_index(drop=True)
+    #adding the island units to the normal units in p_gnu_io
+    bb_dim_4_relationship = pd.concat([bb_dim_4_relationship, bb_dim_4_relationship_re_add, bb_dim_4_relationship_isl_re], ignore_index=True)
+    bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
+
+##### introducing the limiting factors option #####
 print("Apply limiting factors option :" + "\n")
 
 if lim_fac_option == "Vanilla":

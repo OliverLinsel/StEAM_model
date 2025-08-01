@@ -425,9 +425,6 @@ if m_conf.loc[m_conf['Parameter'] == 'hydro_noStorage','Value'].values[0] == 'ye
 
 #### Adding the constraints for the Delegated Act for RFNBOs ####
 
-#%%
-#Error name 'bb_dim_2_relationship_dtype_map' is not defined
-
 if RFNBO_option == "Vanilla":
     bb_dim_4_relationship_dtype_str = bb_dim_4_relationship_dtype_str.drop_duplicates()
     print("Base model without any RFNBO modifications" + "\n")
@@ -456,13 +453,17 @@ if RFNBO_option == "No_reg":
     #dim2ts
     df_bb_ts['node'] = df_bb_ts['node'].str.replace('_el','_re_el')
 
-#%%
-
 if RFNBO_option == "Island_Grids":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Island Grids ###
     alt_rfnbo = "Island_Grid"
-    #reassining all old storages to the mixed electricity nodes and the new storages to the renewable electricity nodes
+    #keeping all old hydro at the mixed electricity nodes. new hydro is considered infeasible because of regulation
+
+if RFNBO_option == "Defossilized_Grid_prerun":
+    print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
+    ### Defossilized Grids ###
+    alt_rfnbo = "Defossilized_Grid_prerun"
+    
     #dim 0
     bb_dim_0_initialization_dtype_str['Object names'] = bb_dim_0_initialization_dtype_str['Object names'].str.replace('_el','_re_el')
     #dim1
@@ -482,20 +483,26 @@ if RFNBO_option == "Island_Grids":
     #dim2ts
     df_bb_ts['node'] = df_bb_ts['node'].str.replace('_el','_re_el')
 
-if RFNBO_option == "Defossilized_Grids":
+if RFNBO_option == "Defossilized_Grid":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
+
+    #the hydro power plants remain at the mixed electricity nodes
 
 if RFNBO_option == "Add_and_Corr":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Additionality and Correlation ###
     alt_rfnbo = "Additionality_and_Correlation"
 
+    #the hydro power plants remain at the mixed electricity nodes
+
 if RFNBO_option == "All_at_once":
     print("Applying all regulations for RFNBOs" + "\n")
     ### All at once ###
     alt_rfnbo = "All_at_once"
+
+    #the hydro power plants remain at the mixed electricity nodes
 
 ################# Write File #############################################################
 

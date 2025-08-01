@@ -35,6 +35,8 @@ Free variables
     v_state_z(grid, node, z) "State in the beginning of the time period z (MWh, unless modified by energyStoredPerUnitOfState parameter)"
     v_userconstraint_LP_t(group, s, f, t) "Variable for storing the results of user defined constraints when the constraint type is toVariable and method is eachTimestep"
     v_userconstraint_LP(group) "Variable for storing the results of user defined constraints when the constraint type is toVariable and method is sumOfTimesteps"
+    v_marginal_cost(grid, node, s, f , t) "Variable for the current marginal costs in a node to use in user constraints"
+    v_emission_intensity(grid, node, emission, s, f, t) "Variable for the current marginal costs in a node to use in user constraints"
 ;
 Integer variables
     v_startup_MIP(starttype, unit, s, f, t) "Sub-units started up after/during an interval, MIP variant"

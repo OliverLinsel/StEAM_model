@@ -14,7 +14,7 @@ baralg = 3
 ** Try scaind = -1 in these cases to not apply scaling. Will increase the solve time.
 *scaind = -1
 
-lpmethod = 2
+lpmethod = 4
 parallelmode = -1
 
 ** Solutiontype 1: cross over Solutiontype 2: no crossover

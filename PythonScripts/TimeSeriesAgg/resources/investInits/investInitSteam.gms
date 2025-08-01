@@ -183,7 +183,7 @@ if (mType('invest'),
         if(p_gnu(grid, node, unit,  'InvCosts')  = replace_this_with_EPS,
            p_gnu(grid, node, unit,'InvCosts') = Eps;
           ) ;
-
+          
     );
 $ontext
 loop() for ## quick fix nuclear no invest

@@ -41,6 +41,8 @@ Option clear = v_transferRamp;
 Option clear = v_state;
 Option clear = v_statemax;
 Option clear = v_statemin;
+Option clear = v_marginal_cost;
+Option clear = v_emission_intensity;
 
 // Integer Variables
 Option clear = v_startup_MIP;

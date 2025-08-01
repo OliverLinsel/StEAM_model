@@ -269,19 +269,27 @@ if RFNBO_option == "No_reg":
     ### None ###
     alt_rfnbo = "No_reg"
     print("No regulation for RFNBOs applied" + "\n")
-    df_bb_subset_re = df_bb_subset.copy()
-    df_bb_subset_re["node"] = df_bb_subset_re["node"].str.replace('_el','_re_el')
-    df_bb_subset = pd.concat([df_bb_subset,df_bb_subset_re], axis = 0)
+    # df_bb_subset_re = df_bb_subset.copy()
+    df_bb_subset["node"] = df_bb_subset["node"].str.replace('_el','_re_el')
+    # df_bb_subset = pd.concat([df_bb_subset,df_bb_subset_re], axis = 0)
 
 if RFNBO_option == "Island_Grids":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Island Grids ###
     alt_rfnbo = "Island_Grid"
-    df_bb_subset_re = df_bb_subset.copy()
-    df_bb_subset_re["node"] = df_bb_subset_re["node"].str.replace('_el','_re_el')
-    df_bb_subset = pd.concat([df_bb_subset,df_bb_subset_re], axis = 0)
+    df_bb_subset_isl_re = df_bb_subset.copy()
+    df_bb_subset_isl_re["node"] = df_bb_subset_isl_re["node"].str.replace('_el','_isl_re_el')
+    df_bb_subset = pd.concat([df_bb_subset,df_bb_subset_isl_re], axis = 0)
 
-if RFNBO_option == "Defossilized_Grids":
+if RFNBO_option == "Defossilized_Grid_prerun":
+    print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
+    ### Defossilized Grids ###
+    alt_rfnbo = "Defossilized_Grid_prerun"
+    # df_bb_subset_re = df_bb_subset.copy()
+    df_bb_subset["node"] = df_bb_subset["node"].str.replace('_el','_re_el')
+    # df_bb_subset = pd.concat([df_bb_subset,df_bb_subset_re], axis = 0)
+
+if RFNBO_option == "Defossilized_Grid":
     print("Applying " + str(RFNBO_option) + " regulation for RFNBOs" + "\n")
     ### Defossilized Grids ###
     alt_rfnbo = "Defossilized_Grid"
@@ -300,10 +308,15 @@ if RFNBO_option == "Add_and_Corr":
 if RFNBO_option == "All_at_once":
     print("Applying all regulations for RFNBOs" + "\n")
     ### All at once ###
+    df_bb_subset_re = df_bb_subset.copy()
+    df_bb_subset_re["node"] = df_bb_subset_re["node"].str.replace('_el','_re_el')
+    df_bb_subset_isl_re = df_bb_subset.copy()
+    df_bb_subset_isl_re["node"] = df_bb_subset_isl_re["node"].str.replace('_el','_isl_re_el')
+    df_bb_subset = pd.concat([df_bb_subset_re, df_bb_subset_isl_re], axis = 0) #df_bb_subset
 
 df_bb_subset = df_bb_subset.loc[df_bb_subset['alternative'].isin(scenarios['alternative']),:]
 df_bb_subset.to_csv(outputfile_BB, mode = 'w', header=True, index=False,float_format='%.2f')
-
+#%%
 
 # %% Format for importer
 ## 

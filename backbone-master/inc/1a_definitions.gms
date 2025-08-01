@@ -498,6 +498,8 @@ param_userconstraint "Set of names used with user constraints" /
     v_invest
     v_reserve
     v_userconstraint
+    v_marginal_cost
+    v_emission_intensity
     // RHS: Timeseries
     ts_unit
     ts_influx
