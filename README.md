@@ -32,7 +32,7 @@ conda activate steam
 ```
 Install requirements (in InstallationScript folder)
 ```
-pip install -r StEAM_model/InstallaltionScript/requirements.txt
+pip install -r StEAM_model/InstallationScript/requirements.txt
 ```
 4. Start SpineToolbox and load the project
 ```
