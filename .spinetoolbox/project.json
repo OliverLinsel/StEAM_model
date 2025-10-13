@@ -2584,19 +2584,35 @@
                 },
                 {
                     "type": "resource",
-                    "arg": "<project>/Data/WACC/ctryprem_July24.xlsx"
+                    "arg": "<project>/Data/WACC/data_country/ctyprem_concat.xlsx"
                 },
                 {
                     "type": "resource",
-                    "arg": "<project>/Data/WACC/alpha-3_countrycodes.csv"
+                    "arg": "<project>/Data/WACC/country_codes/alpha-3_countrycodes.csv"
                 },
                 {
                     "type": "resource",
-                    "arg": "<project>/Data/WACC/alpha-3_manual_fix.csv"
+                    "arg": "<project>/Data/WACC/country_codes/alpha-3_manual_fix.csv"
                 },
                 {
                     "type": "resource",
-                    "arg": "<project>/Data/WACC/waccGlobal_Jan24_StEAM_config.xlsx"
+                    "arg": "<project>/Data/WACC/data_industry/waccGlobal_concat.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/data_taxes/Statutory_Top_Corporate_Tax_Rates_and_Pillar_Two_Implementation.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/data_riskfreerate/DGS10.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/data_riskfreerate/T10YIE.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/Data/WACC/industry_technology_user_config.csv"
                 }
             ],
             "kill_completed_processes": false,
@@ -2748,22 +2764,42 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "Data/WACC/alpha-3_countrycodes.csv"
+                    "path": "Data/WACC/data_country/ctyprem_concat.xlsx"
                 },
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "Data/WACC/alpha-3_manual_fix.csv"
+                    "path": "Data/WACC/country_codes/alpha-3_countrycodes.csv"
                 },
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "Data/WACC/ctryprem_July24.xlsx"
+                    "path": "Data/WACC/country_codes/alpha-3_manual_fix.csv"
                 },
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "Data/WACC/waccGlobal_Jan24_StEAM_config.xlsx"
+                    "path": "Data/WACC/data_industry/waccGlobal_concat.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/data_taxes/Statutory_Top_Corporate_Tax_Rates_and_Pillar_Two_Implementation.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/data_riskfreerate/DGS10.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/data_riskfreerate/T10YIE.csv"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "Data/WACC/industry_technology_user_config.csv"
                 }
             ],
             "db_references": []

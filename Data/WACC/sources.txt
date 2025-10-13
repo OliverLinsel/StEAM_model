@@ -1,0 +1,14 @@
+TaxFoundation.org (2024)
+https://taxfoundation.org/data/all/global/corporate-tax-rates-by-country-2024/
+
+St. Louis Federal Reserve (2025)
+https://fred.stlouisfed.org/series/DGS10
+https://fred.stlouisfed.org/series/T10YIE
+https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html
+
+ISO 3166 Alpha 3 Country codes by Luke Dancalfe (2024)
+https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes/tree/master
+
+Country Default Spreads and Risk Premiums, Cost of Equity and Capital (Global) by Aswath Damodaran (2024) 
+https://pages.stern.nyu.edu/~adamodar/pc/datasets/ctryprem.xlsx
+https://pages.stern.nyu.edu/~adamodar/pc/datasets/waccGlobal.xls

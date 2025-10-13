@@ -30,23 +30,28 @@ Activate conda environment:
 ```
 conda activate steam
 ```
+Install pip in conda:
+```
+conda install pip
+```
 Install requirements (in InstallationScript folder)
 ```
-pip install -r StEAM_model/InstallaltionScript/requirements.txt
+pip install -r StEAM_model/InstallationScript/requirements.txt
 ```
 4. Start SpineToolbox and load the project
 ```
 conda activate steam
 spinetoolbox
 ```
-5. If necessary, refresh data connections in the project <br/>
+5. Load the downloaded project, do not update the data template! 
+6. If necessary, refresh data connections in the project. To do this, click right on the red links in the importer tools with a red exclamation mark and refresh the links. This has to be done iteratively, since sometimes tool exports need to be initially created from the previous tool. Additionally, new databases need to be created in the database tools. To do so, click on the database tools and click on "Create new Spine db" and affirm. The database name can remain the same name as the tool. <br/>
 Use Toolbox Menu in the top left.
-6. Via the model_config.csv the model can be configured <br/>
+7. Via the model_config.csv the model can be configured <br/>
 Default values for CO2 taxes, RFNBO criteria and capacity limitations can be defined here.
-7. The subset_countries.csv defines the regional aggregation <br/>
+8. The subset_countries.csv defines the regional aggregation <br/>
 The left columns lists all countries that should be included (care for nomenclature). The right columns contains the regions to which the countries on the left should be assigned to.
-8. In the TSAM Tool the time aggregation can be defined <br/>
-9. Execute the project in SpineToolbox <br/>
+9. In the TSAM Tool the time aggregation can be defined <br/>
+10. Execute the project in SpineToolbox <br/>
 
 In case you need to uninstall everything, delete the folder StEAM_model and remove the environment including all packages using this command:
 ```
