@@ -203,6 +203,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/bb_importer_sector_coupling_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/importer_transport_visualization_config.json"
                 }
             ],
             "Exporter": [
@@ -1126,7 +1131,8 @@
                     "known_filters": {
                         "db_url@BB_Spine_DB_direct": {
                             "scenario_filter": {
-                                "APS_2030": true
+                                "APS_2030": true,
+                                "APS_2040": true
                             },
                             "tool_filter": {}
                         }
@@ -1183,7 +1189,8 @@
                     "known_filters": {
                         "db_url@BB_Spine_DB_Stuetzjahr_1": {
                             "scenario_filter": {
-                                "APS_2030": true
+                                "APS_2030": true,
+                                "APS_2040": true
                             },
                             "tool_filter": {}
                         }
@@ -1464,7 +1471,8 @@
                     "known_filters": {
                         "db_url@BB_Spine_DB_Stuetzjahr_2": {
                             "scenario_filter": {
-                                "APS_2030": true
+                                "APS_2030": true,
+                                "APS_2040": true
                             },
                             "tool_filter": {}
                         }
@@ -1558,6 +1566,28 @@
                 "to": [
                     "WACC_Tool",
                     "left"
+                ]
+            },
+            {
+                "name": "from TEMP_BB to Importer_Transport_Visualization",
+                "from": [
+                    "TEMP_BB",
+                    "right"
+                ],
+                "to": [
+                    "Importer_Transport_Visualization",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Importer_Transport_Visualization to BB_Spine_DB_direct",
+                "from": [
+                    "Importer_Transport_Visualization",
+                    "right"
+                ],
+                "to": [
+                    "BB_Spine_DB_direct",
+                    "bottom"
                 ]
             }
         ],
@@ -1975,6 +2005,11 @@
                     "type": "path",
                     "relative": true,
                     "path": "PythonScripts/TEMP/Countries_Connections_BB.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "PythonScripts/TEMP/transport_visualisation.xlsx"
                 }
             ],
             "db_references": []
@@ -2019,6 +2054,10 @@
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
                     false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
+                    false
                 ]
             ]
         },
@@ -2061,6 +2100,10 @@
                 ],
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
                     false
                 ]
             ]
@@ -2105,6 +2148,10 @@
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
                     false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
+                    false
                 ]
             ]
         },
@@ -2148,6 +2195,10 @@
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
                     false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
+                    false
                 ]
             ]
         },
@@ -2190,6 +2241,10 @@
                 ],
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
                     false
                 ]
             ]
@@ -2313,6 +2368,10 @@
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
                     false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
+                    false
                 ]
             ]
         },
@@ -2356,14 +2415,18 @@
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
                     true
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
+                    false
                 ]
             ]
         },
         "BB_Importer_Sector_coupling": {
             "type": "Importer",
             "description": "",
-            "x": 263.91423192090633,
-            "y": 597.7311041336677,
+            "x": 263.9142319209064,
+            "y": 706.8401635396237,
             "specification": "bb_importer_sector_coupling_config",
             "cancel_on_error": true,
             "on_conflict": "replace",
@@ -2398,6 +2461,10 @@
                 ],
                 [
                     "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
                     false
                 ]
             ]
@@ -2843,6 +2910,53 @@
             ],
             "kill_completed_processes": false,
             "log_process_output": false
+        },
+        "Importer_Transport_Visualization": {
+            "type": "Importer",
+            "description": "Transfer transport objects to Database",
+            "x": 264.4329559898819,
+            "y": 600.1387385045479,
+            "specification": "Importer_Transport_Visualization_config",
+            "cancel_on_error": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "<project>/PythonScripts/TEMP/Countries_Connections_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Demand_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Hydropower_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_powerplants_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Plexos_storage_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/Renewable_profiles_BB.csv",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/sector_coupling_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_objects_BB.xlsx",
+                    false
+                ],
+                [
+                    "<project>/PythonScripts/TEMP/transport_visualisation.xlsx",
+                    true
+                ]
+            ]
         }
     }
 }

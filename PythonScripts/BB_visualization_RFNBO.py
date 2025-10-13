@@ -52,7 +52,7 @@ print(os.getcwd() + "\n")
 print("Start reading input Data" + "\n")
 
 #Define Case Study
-case_study = "RFNBO"
+case_study = "StEAM_model_paper"
 
 try:
     #use if run in spine-toolbox
@@ -104,14 +104,14 @@ vmax = 140 #maximum value for the color scale
 # default_ylim = (2, 75) #Asia
 default_ylim = (28,70) #Europa
 default_xlim = (-25,38) #Europa
-# default_ylim = (-90,90) #Welt
-# default_xlim = (-180,180) #Welt
+default_ylim = (-90,90) #Welt
+default_xlim = (-180,180) #Welt
 #define legend position as 8% from the left side of the x range and 25% from the top of the y range
 legend_x = default_xlim[0] + (default_xlim[1] - default_xlim[0]) * 0.08
 legend_y = default_ylim[0] + (default_ylim[1] - default_ylim[0]) * 0.3
 
-do_you_want_to_plot_a_specific_node = False
-specific_node = "DE"
+do_you_want_to_plot_a_specific_node = True
+specific_node = "SA-WestCoast"
 str_XX_region = ""
 
 print("Read all scenario paths" + "\n")
@@ -255,24 +255,6 @@ except Exception as e:
     q = 1
 
 #%%
-#Get subset_countries from newly established "steam_subset_countries" sheet in debug
-key_bc = next(k for k in results_dict.keys() if k.startswith("0_"))
-debug = results_dict[key_bc]
-subset_countries = debug.param_as_df_gdxdump("steam_subset_countries")
-subset_countries = subset_countries.rename(columns={"s_countries":"name", "s_regions":"Regions"})
-
-#%%
-ts_cf_bc = debug.param_as_df_gdxdump("ts_cf_")
-# create lists of all continuous time sets in ts_cf_bs["t"]
-ts_list = ts_cf_bc["t"].unique().tolist()
-#break list where count is not contiuous
-t_start = 337
-t_end = 504
-t_start = 1
-t_end = 168
-t_start = 337
-t_end = 505
-
 print("Succesfully read all files" + "\n")
 
 print("Start defining regions and colormaps" + "\n")
@@ -321,6 +303,10 @@ scen_color_dict = {'0_No_reg_bc_2030_results': 'blue', '1_Island_Grid_2030_resul
                     '1_APS_Vanilla_2040_results': "#8d99b8", 'APS 2040 Mix H2': "#8d99b8",
                     "2_APS_noregbc_2030_results": "#457cb6", 'APS 2030 Green H2': "#457cb6",
                     "3_APS_noreg_2040_results": "#93003a", 'APS 2040 Green H2': "#93003a",
+                    "0_testcase_bc_2030_results": "blue", "Testcase 2030": "blue",
+                    "1_testcasecopy_2030_results": "orange", "Testcase Copy 2030": "orange",
+                    "0_testcase_27n_bc_2030_results": "blue", "Testcase 27n 2030": "blue",
+                    "1_testcase_40n_2030_results": "orange", "Testcase 40n 2030": "orange"
                     }
 
 color_dict_countries = {
@@ -360,6 +346,10 @@ scen_names_dict = {'0_lim_fac_bc_2030_results': 'Base case 2030',
                     '2_Def_Grid_2030_results': 'Defossilized Grid RFNBO',
                     '3_Add_Corr_2030_results': 'Additionality and Correlation RFNBO',
                     '4_All_reg_2030_results': 'Complete Regulation RFNBO',
+                    "0_testcase_bc_2030_results": "Testcase 2030",
+                    "1_testcasecopy_2030_results": "Testcase Copy 2030",
+                    "0_testcase_27n_bc_2030_results": "Testcase 27n 2030",
+                    "1_testcase_40n_2030_results": "Testcase 40n 2030"
             }
 
 ### Create a colormap and scale for reference ###
@@ -417,6 +407,37 @@ print("Succesfully defined regions and colormaps" + "\n")
 
 print("Define tool functions for preprocessing" + "\n")
 
+def get_geo_and_time(debug, key):
+    #Get subset_countries from newly established "steam_subset_countries" sheet in debug
+    subset_countries = debug.param_as_df_gdxdump("steam_subset_countries")
+    subset_countries = subset_countries.rename(columns={"s_countries":"name", "s_regions":"Regions"})
+    print("Subset_countries contains " + str(len(subset_countries["Regions"].unique())) + " unique Regions.")
+    print(str(subset_countries["Regions"].unique()))
+
+    ts_cf_bc = debug.param_as_df_gdxdump("ts_cf_")
+    # create lists of all continuous time sets in ts_cf_bs["t"]
+    ts_list = ts_cf_bc["t"].unique().tolist()
+    #create list from 0 to 8759
+    full_year_list = list(range(8760))
+
+    t_spans = pd.DataFrame(columns=["t_start", "t_end"])
+    t_start_i = 0
+    t_end_i = 0
+    for i in full_year_list:
+        if i in ts_list and i-1 not in ts_list:
+            t_start_i = i
+        if i in ts_list and i+1 not in ts_list:
+            t_end_i = i+1
+        t_spans = pd.concat([t_spans, pd.DataFrame({"t_start": [t_start_i], "t_end": [t_end_i]})], ignore_index=True)
+
+    t_spans = t_spans.drop_duplicates("t_start", keep="last")
+    #drop t_start and t_end = 0
+    t_spans = t_spans[(t_spans["t_start"] != 0) & (t_spans["t_end"] != 0)].reset_index(drop=True)
+
+    t_start = t_spans.iloc[0]["t_start"]
+    t_end = t_spans.iloc[0]["t_end"]
+    return subset_countries, t_start, t_end
+
 #Here all transport related dataframes are preprocessed and prepared for visualization
 def transport_df_preprocessing(scenario_results, key):
     transport_results = scenario_results.r_transfer_gnn()
@@ -451,9 +472,9 @@ def transport_df_preprocessing(scenario_results, key):
 
     if q != 1:
         # #terminal connections results
-        terminal_connections_light = terminal_connections[["con_terminal_name", "Regions", "alternative", "geometry"]]
-        terminal_connections_light["connection"] = terminal_connections_light.con_terminal_name + "_" + terminal_connections_light.Regions
-        terminal_connections_light["connection_alt"] =  terminal_connections_light.Regions + "_" + terminal_connections_light.con_terminal_name
+        terminal_connections_light = terminal_connections[["terminal_name", "Regions", "alternative", "geometry"]]
+        terminal_connections_light["connection"] = terminal_connections_light.terminal_name + "_" + terminal_connections_light.Regions
+        terminal_connections_light["connection_alt"] =  terminal_connections_light.Regions + "_" + terminal_connections_light.terminal_name
 
         terminal_connections_m = transport_results.merge(terminal_connections_light, on="connection", how="inner")
         terminal_connections_m = terminal_connections_m.drop(columns=["connection_alt_y", "connection_alt_x"])
@@ -655,7 +676,7 @@ def invest_df_preprocessing(result, debug):
         #order the dataframe by node alphabetically
         invest_df = invest_df.sort_values(by="Region").reset_index(drop=True)
 
-        invest_df[invest_df["Technology"].str.contains("Electrolyzer")].sum()["Capacity [GW]"]
+        # print("Total hydrogen production capacity [GW] " + str(invest_df[invest_df["Technology"].str.contains("Electrolyzer|SMR")].sum()["Capacity [GW]"]) + "\n")
     else:
         invest_df = pd.DataFrame()
         print("No investment data found for " + str(debug) + "\n")
@@ -730,10 +751,10 @@ def potential_hydrogen_transport_system():
                         ]
 
     base = world.plot(color='#a8a8a8', linewidth=0.5, edgecolor='white', figsize=(100,80), alpha=0.2)
-    world_eu_bz.plot(ax=base, color='#daefb0', markersize=5, edgecolor='white', alpha=0.8, label="European interconnected grid")
+    # world_eu_bz.plot(ax=base, color='#daefb0', markersize=5, edgecolor='white', alpha=0.8, label="European interconnected grid")
     con_el_grid.plot(ax=base, color='#ffe99e', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="Connected Electricity Grid")
     eu.plot(ax=base, color='#bce48b', markersize=5, edgecolor='white', linewidth=6, alpha=1, label="EU")
-    # world_regions.plot(ax=base, column='Regions', cmap='YlGn', markersize=0.5, edgecolor='black', linewidth=1, alpha=0.6, legend=True, label="Regions")
+    world_regions.plot(ax=base, column='Regions', cmap='YlGn', markersize=0.5, edgecolor='black', linewidth=1, alpha=0.6, legend=True, label="Regions")
     nodes_h2.plot(ax=base, color="blue", markersize=nodes_h2["h2_demand"]/nodes_h2["h2_demand"].max()*4*10**5, alpha=0.2, edgecolors='white', label="Demand [MWh]", zorder=4) #demand overlay '#cd7565'
     nodes.plot(ax=base, color='black', markersize=1000, linewidth=6, alpha=1, edgecolors='white', label="Country nodes", zorder=3) ##E05252
     pipelines.plot(ax=base, color='blue', linewidth=8, alpha=1, label="Pipelines", zorder=1) #Linestringelemente #9e0027 #6cc287
@@ -941,7 +962,7 @@ def WACC_geoplot(world_regions):
 def cap_diff_plot(invest_df):
     #Sort DataFrame by WACC in descending order
     #invest_diff_ely_sorted = invest_diff_ely.sort_values(by='WACC', ascending=True)
-    invest_df = invest_df[invest_df["Technology"].str.contains("Electrolyzer")]
+    invest_df = invest_df[invest_df["Technology"].str.contains("Electrolyzer|SMR")]
     invest_df["colors"] = invest_df["scenario"].map(scen_color_dict)
     invest_df = invest_df[invest_df["grid"] == "h2"]
     invest_df = invest_df.sort_values(by='node', ascending=True)
@@ -972,7 +993,7 @@ def cap_diff_plot(invest_df):
 
     # Update layout
     fig.update_layout(
-        title='Installed Electrolyzer Capacities [GW]',
+        title='Installed Hydrogen Production Capacities [GW]',
         #change title font to default_font
         font=dict(family=default_font, size=12, color="black"),
         xaxis_title='Node',
@@ -993,7 +1014,7 @@ def cap_diff_plot(invest_df):
 def cap_diff_rel_plot(invest_df):
     # Sort DataFrame by WACC in descending order
     #invest_df_sorted = invest_df.sort_values(by='WACC', ascending=True)
-    invest_df = invest_df[invest_df["Technology"].str.contains("Electrolyzer")]
+    invest_df = invest_df[invest_df["Technology"].str.contains("Electrolyzer|SMR")]
     invest_df = invest_df[invest_df["grid"] == "h2"]
     invest_df = invest_df.sort_values(by='node', ascending=True)
 
@@ -1331,11 +1352,10 @@ def powerplant_scheduling_plot(debug, key):
     ########
 
     if do_you_want_to_plot_a_specific_node == True:
-        node = specific_node
+        node = str(specific_node) + '_el'
     else:
         node = r_gen_gn[(r_gen_gn['grid'] == 'h2') & (r_gen_gn['node'].str.startswith(str_XX_region))].sort_values(by='Val', ascending=False).reset_index(drop=True).loc[0,'node'].strip('_h2') + '_el' 
 
-    node = "DE_el"
     # node = "PT_el"
     # node = "EU-Benelux_el"
     # node = "EU-FRA_el"
@@ -1602,7 +1622,7 @@ def powerplant_scheduling_plot(debug, key):
                         line=dict(color='grey')))
 
     fig.update_layout(
-        title='Hydrogen Scheduling:: ' + node + '   ' + key,
+        title='Hydrogen Scheduling: ' + node + '   ' + key,
         xaxis_title='Time Steps (t)',
         yaxis_title='Stacked Production [GW]',
         legend_title='Unit',
@@ -1780,12 +1800,17 @@ agg_world_regions = pd.DataFrame()
 agg_invest_df = pd.DataFrame()
 agg_tsc_df = pd.DataFrame()
 
+key_bc = next(k for k in results_dict.keys() if k.startswith("0_"))
+
 for key in results_dict.keys():
     if "results" in key:
         results = results_dict[key]
         debug = results_dict[key.replace("results", "debug")]
         scen_key = key
+        #subset_countries, t_start, t_end = get_geo_and_time(debug, scen_key)
         transp_r, transm_r, term_r, ship_r = transport_df_preprocessing(results, scen_key) #transport_results_m, transmission_results_m, terminal_connections_m, shipping_m 
+        #%%
+        potential_hydrogen_transport_system()
         print(results)
         nodes_disag, nodes_h2, world_regions = nodal_df_preprocessing(results, debug, scen_key) #nodes_disag, nodes_h2, world_regions
         agg_transp_r = pd.concat([agg_transp_r, transp_r])
@@ -1806,7 +1831,7 @@ for key in results_dict.keys():
         tsc_df = total_system_costs(results, scen_key)
         agg_tsc_df = pd.concat([agg_tsc_df, tsc_df])
 
-        prod_trans_geoplot(scen_key, world_regions, nodes_h2, transp_r, transm_r, term_r, ship_r)
+        # prod_trans_geoplot(scen_key, world_regions, nodes_h2, transp_r, transm_r, term_r, ship_r)
         # marginals_geoplot(scen_key)
         # invest_df_preprocessing(results, debug)
         # r_capacity(results, debug, key)
@@ -1817,7 +1842,6 @@ for key in results_dict.keys():
         # cost_duration_curve(debug, scen_key)
         print("Succesfully exported results for scenario " + str(key) + "\n")
 
-# potential_hydrogen_transport_system()
 # WACC_geoplot(agg_world_regions)
 # cap_diff_plot(agg_invest_df)
 # cap_diff_rel_plot(agg_invest_df)

@@ -80,20 +80,26 @@ lim_fac_option              = m_conf.loc[m_conf['Parameter'] == "Cap_Lim_option"
 system_integration_factor    = float(m_conf.loc[m_conf['Parameter'] == "system_integration_factor", "Value"].values[0]) # system integration cost read value
 #read availabilityCapacityMargin
 availabilityCapacityMargin_config              = m_conf.loc[m_conf['Parameter'] == "availabilityCapacityMargin", "Value"].values[0] # capacityMargin read value
+# read blue hydrogen option
+blue_hydrogen_option              = m_conf.loc[m_conf['Parameter'] == "blue_hydrogen", "Value"].values[0] # blue hydrogen read value
+# read grey hydrogen option
+grey_hydrogen_option              = m_conf.loc[m_conf['Parameter'] == "grey_hydrogen", "Value"].values[0] # grey hydrogen read value
+# read simplify_vre_profiles option
+simplify_vre_profiles              = m_conf.loc[m_conf['Parameter'] == "simplify_vre_profiles", "Value"].values[0] # simplify VRE profiles read value
 
 print("System integration cost factor: " + str(system_integration_factor) + " not implemented yet" + "\n")
 
 print("Defining regex lists for commodities and technologies" + "\n")
 
 #centrally define relevant lists of energy sources
-list_of_all_commodities = ['Coal', 'Oil', 'Gas', 'Nuclear', 'Wind', 'Solar', 'Geothermal', 'Biomass', 'GAS', "Hydro", "h2", "el"] #list of all commodities
+list_of_all_commodities = ['Coal', 'Oil', 'Gas', 'Gas_CC', 'Nuclear', 'Wind', 'Solar', 'Geothermal', 'Biomass', 'GAS', "Hydro", "h2", "el"] #list of all commodities
 list_of_renewables      = ['Solar', 'PV', 'Wind', 'Hydro', 'Geothermal', 'Biomass'] #list of renewable energy sources
 list_of_renewables_nbo  = ['Solar', 'PV', 'Wind', 'Hydro', 'Geothermal'] #list of renewable energy sources
 list_of_h2_assets       = ['Electrolyzer', 'FuelCell', 'Liquifaction', 'Regasification', r"h2|OCGT", "Engine"] #list of hydrogen assets - needed for RFNBO option to feed into re_elec grid
 list_of_vre             = ['Solar', 'PV', 'Wind', "Hydro"] #list of variable renewable energy sources (Hydro being run of river)
-list_of_fossils         = ['Coal', 'Oil', 'Gas'] #list of fossil energy sources
+list_of_fossils         = ['Coal', 'Oil', 'Gas', 'Gas_CC'] #list of fossil energy sources
 list_of_endo_commodities= ['el', 'h2'] #list of system endogenous commodities
-list_of_fuels           = ["Biomass", "Nuclear", "Coal", "Gas", "Oil"] #list of fuels
+list_of_fuels           = ["Biomass", "Nuclear", "Coal", "Gas", 'Gas_CC', "Oil"] #list of fuels
 dont_invest             = ['Nuclear', "Coal", "Oil", 'Other'] #list of energy sources that should not be invested in 'FuelCell', "Engine", "H2|OCGT", 
 dont_consider           = ["CSP", "Hydro", "Desalination", "Geothermal", "Other", "Liquifaction", "Regasification", "h2_Liquification"] #list of all technologies that should not be considered in the model
 list_reelec             = [r"h2|OCGT", "FuelCell", "Engine"]
@@ -111,10 +117,37 @@ regex_endo_commodities = '|'.join(list_of_endo_commodities) #regular expression 
 regex_fuels = '|'.join(list_of_fuels) #regular expression for fuels
 regex_reelec = '|'.join([re.escape(x) for x in list_reelec]) #regular expression for energy sources that should be invested in
 
+#%%
 ##### Read powerplant base data #####
 print("Reading powerplants base datast from : " + str(df_pp_base_path) + "\n")
 
 df_pp_base              = pd.read_excel(df_pp_base_path, sheet_name="powerplants")
+
+#### Adding or removing blue and/or grey hydrogen according to the configuration options ####
+if blue_hydrogen_option == "0":
+    # Apply blue hydrogen modifications
+    print("Blue hydrogen option: " + str(blue_hydrogen_option)+ "\n")
+    print("Dont include blue hydrogen" + "\n")
+    df_pp_base = df_pp_base[~(df_pp_base["technology"] == "SMR_CCS")]
+
+if grey_hydrogen_option == "0":
+    # Apply grey hydrogen modifications
+    print("Grey hydrogen option: " + str(grey_hydrogen_option)+ "\n")
+    df_pp_base = df_pp_base[~(df_pp_base["technology"] == "SMR")]
+    print("Dont include grey hydrogen" + "\n")
+
+if blue_hydrogen_option == "1":
+    # Apply blue hydrogen modifications
+    print("Blue hydrogen option: " + str(blue_hydrogen_option)+ "\n")
+    print("Introducing blue hydrogen" + "\n")
+    pass
+
+if grey_hydrogen_option == "1":
+    # Apply grey hydrogen modifications
+    print("Grey hydrogen option: " + str(grey_hydrogen_option)+ "\n")
+    print("Introducing grey hydrogen" + "\n")
+    pass
+
 #select only relevant columns
 df_pp_base              = df_pp_base[['Countries', 'Alternative', 'technology', 'commodities_in', 'commodities_out', 'efficiencies', 'capacity', 'fomCosts_factor', 'vomCosts', 'Lifetime', 'reg_fac', "unit_ramp"]]
 #unit being defined as input commodity and technology
@@ -179,7 +212,7 @@ print("Reading VRE potential data from : " + str(path_RE_1dim_data) + "\n")
 df_VRE_potential    = pd.read_csv(path_RE_1dim_data, sep = ';')
 #select only relevant rows with Parameter_name = candidate_units
 df_VRE_potential    = df_VRE_potential[df_VRE_potential['Parameter_name'] == 'candidate_units']
-df_VRE_potential    = df_VRE_potential.rename(columns={'Paramter_value': 'maxUnitCount'})
+df_VRE_potential    = df_VRE_potential.rename(columns={'Parameter_value': 'maxUnitCount'})
 #select only relevant columns
 df_VRE_potential    = df_VRE_potential[['Object_names', 'Alternative', 'maxUnitCount']]
 df_VRE_potential['Object_names'] = df_VRE_potential['Object_names'].str.replace('WINDI','Wind_OnshoreI')
@@ -240,6 +273,19 @@ for filename in os.listdir(dir_scenario_data):
         # Append the dataframe to the list
         df_loop_all = pd.concat([df_loop_all, df_loop], ignore_index=True)
         df_CO2_all = pd.concat([df_CO2_all, df_CO2_scen_source], ignore_index=True)
+
+#additional filter for blue and grey hydrogen
+if blue_hydrogen_option == "0":
+    # Apply blue hydrogen modifications
+    print("Blue hydrogen option: " + str(blue_hydrogen_option)+ "\n")
+    print("Dont include blue hydrogen" + "\n")
+    df_loop_all = df_loop_all[~(df_loop_all["object"] == "Gas_CC|SMR_CCS|")]
+
+if grey_hydrogen_option == "0":
+    # Apply grey hydrogen modifications
+    print("Grey hydrogen option: " + str(grey_hydrogen_option)+ "\n")
+    df_loop_all = df_loop_all[~(df_loop_all["object"] == "Gas|SMR|")]
+    print("Dont include grey hydrogen" + "\n")
 
 #%%
 ##### prepare CO2 data for export #####
@@ -416,6 +462,7 @@ fuel_nodes["usePrice"] = 1
 fuel_nodes.loc[fuel_nodes['fuel_prices'].isna(), 'usePrice'] = 0
 #manually set Biomass rows to 0 until it is incorporated into scenario data
 fuel_nodes.loc[fuel_nodes['commodities_in'] == "Biomass", 'usePrice'] = 1
+fuel_nodes.loc[fuel_nodes['commodities_in'] == "Gas_CC", 'usePrice'] = 1
 fuel_nodes['nodeBalance'] = 0
 #clean up dataframe and drop duplicates and rows without parameter values
 fuel_nodes = fuel_nodes.drop_duplicates().reset_index(drop=True)
@@ -571,6 +618,42 @@ bb_dim_4_relationship.loc[
     (bb_dim_4_relationship['Parameter values'] <  50) &
     (bb_dim_4_relationship['Object names 4'] == 'output'),
     'Parameter values'] = eps
+
+#### Reducing VRE complexity ####
+print("VRE simplification option: " + str(simplify_vre_profiles)+ "\n")
+
+if simplify_vre_profiles == "1":
+    # Apply VRE simplification modifications
+    print("Applying VRE simplification modifications" + "\n")
+
+    #if Object class names contaisn InvestX and X is a number, delete X
+    bb_dim_0_initialization["Object names"] = bb_dim_0_initialization["Object names"].str.replace(r'Invest(\d+)', 'Invest', regex=True)
+    bb_dim_0_initialization = bb_dim_0_initialization.drop_duplicates()
+
+    #aggregate maxUnitCount
+    bb_dim_1_relationship["Object names"] = bb_dim_1_relationship["Object names"].str.replace(r'Invest(\d+)', 'Invest', regex=True)
+    bb_dim_1_relationship_maxUnitCount = bb_dim_1_relationship[bb_dim_1_relationship['Parameter names'] == 'maxUnitCount']
+    bb_dim_1_relationship_maxUnitCount = bb_dim_1_relationship_maxUnitCount.groupby(['Object class names', 'Object names', "Parameter names", 'Alternative names']).agg({'Parameter values': 'sum'}).reset_index()
+    bb_dim_1_relationship = bb_dim_1_relationship[bb_dim_1_relationship['Parameter names'] != 'maxUnitCount']
+    bb_dim_1_relationship = bb_dim_1_relationship.drop_duplicates()
+    bb_dim_1_relationship = pd.concat([bb_dim_1_relationship, bb_dim_1_relationship_maxUnitCount], ignore_index=True)
+
+    bb_dim_1_relationship_map["Object names"] = bb_dim_1_relationship_map["Object names"].str.replace(r'Invest(\d+)', 'Invest', regex=True)
+    bb_dim_1_relationship_map = bb_dim_1_relationship_map.drop_duplicates()
+
+    bb_dim_2_relationship["Object names 1"] = bb_dim_2_relationship["Object names 1"].str.replace(r'Invest(\d+)', 'Invest', regex=True)
+    bb_dim_2_relationship["Object names 2"] = bb_dim_2_relationship["Object names 2"].str.replace(r'Invest(\d+)', 'Invest', regex=True)
+    bb_dim_2_relationship = bb_dim_2_relationship.drop_duplicates()
+
+    bb_dim_4_relationship["Object names 3"] = bb_dim_4_relationship["Object names 3"].str.replace(r'Invest(\d+)', 'Invest', regex=True)
+    bb_dim_4_relationship_capacity = bb_dim_4_relationship[bb_dim_4_relationship['Parameter names'] == 'capacity']
+    bb_dim_4_relationship_capacity = bb_dim_4_relationship_capacity.groupby(['Relationship class names', "Object class names 1", "Object class names 2", "Object class names 3", "Object class names 4", "Object names 1", "Object names 2", "Object names 3", "Object names 4", 'Parameter names', 'Alternative names']).agg({'Parameter values': 'sum'}).reset_index()
+    #cut decimals
+    bb_dim_4_relationship_capacity['Parameter values'] = bb_dim_4_relationship_capacity['Parameter values'].round(0)
+    bb_dim_4_relationship = bb_dim_4_relationship[bb_dim_4_relationship['Parameter names'] != 'capacity']
+    bb_dim_4_relationship = bb_dim_4_relationship.drop_duplicates()
+    bb_dim_4_relationship = pd.concat([bb_dim_4_relationship, bb_dim_4_relationship_capacity], ignore_index=True)
+    pass
 
 #### Adding the constraints for the Delegated Act for RFNBOs ####
 print("Apply RFNBO options: " + str(RFNBO_option) + "\n")

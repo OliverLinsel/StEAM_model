@@ -55,7 +55,7 @@ os.system(f"gdxxrw {path_input_gdx} output={path_excel_path_tmp} @{path_howToWri
 # %% Settings## IF length is zero the total time series is taken 
 #numberOfPeriods = 1
 #length = 0 
-numberOfPeriods = 8
+numberOfPeriods = 5 #5
 length = 24*7 # 24*7 # Length in hours
 
 ## Segmentation (hours per time step)

@@ -14,9 +14,10 @@ except:
     #use if run in Python environment
     if str(os.getcwd()).find('PythonScripts') > -1:
         os.chdir('..')
-    base_output_path    = r"..\.spinetoolbox\items\export_to_bb\output"
-    outputfile_dir      = r"..\backbone-master\input"
+    base_output_path = os.path.join(os.getcwd(), ".spinetoolbox", "items", "export_to_bb", "output")
+    outputfile_dir = os.path.join(os.getcwd(), "backbone-master", "input")
 
+#%%
 print("Change the working directory to your local script's directory" + "\n")
 #hard coding the output directory temporarily because for some unidentifiable reason it is not working with the above code
 base_output_path = r"C:\Users\oliver\Documents\RUB\01_Projekte\StEAM\Programme\StEAM_model\.spinetoolbox\items\export_to_bb\output"

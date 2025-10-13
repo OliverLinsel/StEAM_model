@@ -246,8 +246,6 @@ df_H2_APS = df_APS.iloc[country_idx, [0] + list(range(8, 15))]
 df_H2_RES = df_RES.iloc[country_idx, [0] + list(range(8, 15))]
 df_H2_HRU = df_HRU.iloc[country_idx, [0] + list(range(8, 15))]
 
-
-
 demand_H2_APS = transform_dataframe(df_H2_APS, df_subset_nodes, 'h2', scenario_names[0])
 demand_H2_RES = transform_dataframe(df_H2_RES, df_subset_nodes, 'h2', scenario_names[1])
 demand_H2_HRU = transform_dataframe(df_H2_HRU, df_subset_nodes, 'h2', scenario_names[2])

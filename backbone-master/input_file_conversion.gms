@@ -48,26 +48,38 @@ Sets
     uss_bound(*, *, *)                            "Bound the samples so that the unit online state at the last interval of the first sample equals the state at the first interval of the second sample"
     s_countries                               "(KT) countries of subset_countries.csv"
     s_regions                                 "(KT) regions of subset_countries.csv"
-    s_terminals                               "(KT) terminals of transport_visualisation.xlsx"
     steam_subset_countries(*,*)                   "(KT) subset_countries.csv resulting in the regional configuration"
     s_scenario                                "(KT) scenario of scenario.csv"
     s_alternative                             "(KT) alternatives of scenario.csv"
     steam_scenarioAlternative(*,*)                "(KT) scenarios.csv displaying the chosen scenario configuration"
-    s_x_longitude                                   "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
-    s_y_latitude                                    "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
     s_regional_WACC_avg                             "(KT) technological and regional average of the WACC"
-    steam_coordinates_regions(*,*,*)              "(KT) coordinates of regions from transport_visualisation.xlsx"
     steam_WACC(*,*)                               "(KT) assigning the average WACC to each region"
-    steam_coordinates_terminals(*,*,*,*)          "(KT) coordinates of terminals assigned to their respective regions from transport_visualisation.xlsx"
     s_shipping_index                                "(KT) Index assigned to shipping routes points from start to finish"
     s_shipping_route                          "(KT) Shipping routes with origin and destination seperated by '___'"
-    steam_coordinates_shipping(*,*,*,*,*,*)       "(KT) Split linestrings of shipping connecting two terminals from transport_visualisation.xlsx"
     s_config_parameter                              "(KT) part of Steam model config"
     s_config_object                                 "(KT) part of Steam model config"
     s_config_value                                  "(KT) part of Steam model config"
     s_config_alternative                            "(KT) part of Steam model config"
     s_config_info                                   "(KT) part of Steam model config"
     steam_model_config(*,*,*,*,*)                 "(KT) Steam model config sheet of MainInput.xlsx"
+    s_node                                   "(OL) data for transport visualization"
+    s_pipeline                                   "(OL) data for transport visualization"
+    s_terminal                                   "(OL) data for transport visualization"
+    s_terminal_connection                                   "(OL) data for transport visualization"
+    s_shipping                                   "(OL) data for transport visualization"
+    //s_regions_n                                   "(OL) data for transport visualization"
+    //s_alternative_n                               "(OL) data for transport visualization"
+    //s_x_n                                         "(OL) data for transport visualization"
+    //s_y_n                                         "(OL) data for transport visualization"
+    //s_geometry_n                                  "(OL) data for transport visualization"
+    //s_list_of_countries_n                         "(OL) data for transport visualization"
+    //s_WACC_n                                      "(OL) data for transport visualization"
+    //steam_geo_nodes(*,*,*,*,*,*,*)            "(OL) data for transport visualization"
+    //steam_geo_pipelines(*,*,*,*,*,*)            "(OL) data for transport visualization"
+    //steam_geo_terminals(*,*,*,*,*,*,*,*,*,*,*)      "(OL) data for transport visualization"
+    //steam_geo_terminals_con(*,*,*,*,*,*)        "(OL) data for transport visualization"
+    //steam_geo_shipping(*,*,*,*,*)               "(OL) data for transport visualization"
+
 ;
 Parameters
     p_fuelEmission(*,*)                           "Fuel emission content"
@@ -165,27 +177,63 @@ $loaddc  ts_reserveDemand
 $loaddc  ts_unit
 $loaddc  s_countries
 $loaddc  s_regions
-$loaddc  s_terminals
 $loaddc  steam_subset_countries
 $loaddc  s_scenario
 $loaddc  s_alternative
 $loaddc  steam_scenarioAlternative
-$loaddc  s_x_longitude
-$loaddc  s_y_latitude
 $loaddc  s_regional_WACC_avg
-$loaddc  steam_coordinates_regions
 $loaddc  steam_WACC
-$loaddc  steam_coordinates_terminals
-$loaddc  s_shipping_index
-$loaddc  s_shipping_route
-$loaddc  steam_coordinates_shipping
 $loaddc  s_config_parameter
 $loaddc  s_config_object
 $loaddc  s_config_value
 $loaddc  s_config_alternative
 $loaddc  s_config_info
 $loaddc  steam_model_config
-
+$loaddc  s_node
+$loaddc  s_terminal
+$loaddc  s_pipeline
+$loaddc  s_terminal_connection
+$loaddc  s_shipping
+* $loaddc  s_regions_n
+* $loaddc  s_alternative_n
+* $loaddc  s_x_n
+* $loaddc  s_y_n
+* $loaddc  s_geometry_n
+* $loaddc  s_list_of_countries_n
+* $loaddc  s_WACC_n
+* $loaddc  steam_geo_nodes
+* $loaddc  s_name_p
+* $loaddc  s_h2_node1_p
+* $loaddc  s_h2_node2_p
+* $loaddc  s_commodity_p
+* $loaddc  s_alternative_p
+* $loaddc  s_geometry_p
+* $loaddc  steam_geo_pipelines
+* $loaddc  s_terminal_name_t
+* $loaddc  s_node_t
+* $loaddc  s_commodity_t
+* $loaddc  s_con_terminal_name_t
+* $loaddc  s_unit_name_trans_t
+* $loaddc  s_unit_name_retrans_t
+* $loaddc  s_region_t
+* $loaddc  s_alternative_t
+* $loaddc  s_y_t
+* $loaddc  s_x_t
+* $loaddc  s_geometry_t
+* $loaddc  steam_geo_terminals
+* $loaddc  s_terminal_name_tc
+* $loaddc  s_Regions_tc
+* $loaddc  s_node1_tc
+* $loaddc  s_node2_tc
+* $loaddc  s_alternative_tc
+* $loaddc  s_geometry_tc
+* $loaddc  steam_geo_terminals_con
+* $loaddc  s_name_s
+* $loaddc  s_origin_s
+* $loaddc  s_destination_s
+* $loaddc  s_alternative_s
+* $loaddc  s_geometry_s
+* $loaddc  steam_geo_shipping
 
 *============================================================================
 *----------Necessary or intermediary sets and parameters---------------------
@@ -432,26 +480,62 @@ execute_unload 'conversion/%output_name%.gdx', grid_2=grid
                                                uss_bound
                                                s_countries
                                                s_regions
-                                               s_terminals
                                                steam_subset_countries
                                                s_scenario
                                                s_alternative
                                                steam_scenarioAlternative
-                                               s_x_longitude
-                                               s_y_latitude
-                                               s_regional_WACC_avg
-                                               steam_coordinates_regions
                                                steam_WACC
-                                               steam_coordinates_terminals
-                                               s_shipping_index
-                                               s_shipping_route
-                                               steam_coordinates_shipping
                                                s_config_parameter
                                                s_config_object
                                                s_config_value
                                                s_config_alternative
                                                s_config_info
                                                steam_model_config
+                                               s_node
+                                               s_pipeline
+                                               s_terminal
+                                               s_terminal_connection
+                                               s_shipping
+                                               //s_regions_n
+                                               //s_alternative_n
+                                               //s_x_n
+                                               //s_y_n
+                                               //s_geometry_n
+                                               //s_list_of_countries_n
+                                               //s_WACC_n
+                                               //steam_geo_nodes
+                                               //s_name_p
+                                               //s_h2_node1_p
+                                               //s_h2_node2_p
+                                               //s_commodity_p
+                                               //s_alternative_p
+                                               //s_geometry_p
+                                               //steam_geo_pipelines
+                                               //s_terminal_name_t
+                                               //s_node_t
+                                               //s_commodity_t
+                                               //s_con_terminal_name_t
+                                               //s_unit_name_trans_t
+                                               //s_unit_name_retrans_t
+                                               //s_region_t
+                                               //s_alternative_t
+                                               //s_y_t
+                                               //s_x_t
+                                               //s_geometry_t
+                                               //steam_geo_terminals
+                                               //s_terminal_name_tc
+                                               //s_Regions_tc
+                                               //s_node1_tc
+                                               //s_node2_tc
+                                               //s_alternative_tc
+                                               //s_geometry_tc
+                                               //steam_geo_terminals_con
+                                               //s_name_s
+                                               //s_origin_s
+                                               //s_destination_s
+                                               //s_alternative_s
+                                               //s_geometry_s
+                                               //steam_geo_shipping
                                                ;
 *============================================================================
 *----------END-----------------------------------------------------

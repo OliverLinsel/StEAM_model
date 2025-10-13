@@ -207,26 +207,64 @@ Sets
 * --- Background Infos for the Steam Model ------------------------------------
     s_countries "(KT) countries of subset_countries.csv"
     s_regions "(KT) regions of subset_countries.csv"
-    s_terminals "(KT) terminals of transport_visualisation.xlsx"
     steam_subset_countries(s_countries, s_regions) "(KT) subset_countries.csv resulting in the regional configuration"
     s_scenario "(KT) scenario of scenario.csv"
     s_alternative "(KT) alternatives of scenario.csv"
     steam_scenarioAlternative(s_scenario, s_alternative) "(KT) scenarios.csv displaying the chosen scenario configuration"
-    s_x_longitude "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
-    s_y_latitude "(KT) Geopandas Geometry exported as Point from transport_visualisation.xlsx"
     s_regional_WACC_avg "(KT) technological and regional average of the WACC"
-    steam_coordinates_regions(s_regions, s_x_longitude, s_y_latitude) "(KT) coordinates of regions from transport_visualisation.xlsx"
     steam_WACC(s_regions, s_regional_WACC_avg) "(KT) assigning the average WACC to each region"
-    steam_coordinates_terminals(s_terminals, s_x_longitude, s_y_latitude, s_regions) "(KT) coordinates of terminals assigned to their respective regions from transport_visualisation.xlsx"
     s_shipping_index "(KT) Index assigned to shipping routes points from start to finish"
-    s_shipping_route "(KT) Shipping routes with origin and destination seperated by '___'"
-    steam_coordinates_shipping(s_shipping_route, s_terminals, s_terminals, s_x_longitude, s_y_latitude, s_shipping_index) "(KT) Split linestrings of shipping connecting two terminals from transport_visualisation.xlsx"
     s_config_parameter "(KT) part of Steam model config"
     s_config_object "(KT) part of Steam model config"
     s_config_value "(KT) part of Steam model config"
     s_config_alternative "(KT) part of Steam model config"
     s_config_info "(KT) part of Steam model config"
     steam_model_config(s_config_parameter, s_config_object, s_config_value, s_config_alternative, s_config_info) "(KT) Steam model config sheet of MainInput.xlsx"
+    s_node
+    s_pipeline
+    s_terminal
+    s_terminal_connection
+    s_shipping
+    //s_regions_n
+    //s_alternative_n
+    //s_x_n
+    //s_y_n
+    //s_geometry_n
+    //s_list_of_countries_n
+    //s_WACC_n
+    //steam_geo_nodes(s_regions_n, s_alternative_n, s_x_n, s_y_n, s_geometry_n, s_list_of_countries_n, s_WACC_n) "(OL) data for transport visualization"
+    //s_name_p
+    //s_h2_node1_p
+    //s_h2_node2_p
+    //s_commodity_p
+    //s_alternative_p
+    //s_geometry_p
+    //steam_geo_pipelines(s_name_p, s_h2_node1_p, s_h2_node2_p, s_commodity_p, s_alternative_p, s_geometry_p) "(OL) data for transport visualization"
+    //s_terminal_name_t
+    //s_node_t
+    //s_commodity_t
+    //s_con_terminal_name_t
+    //s_unit_name_trans_t
+    //s_unit_name_retrans_t
+    //s_region_t
+    //s_alternative_t
+    //s_y_t
+    //s_x_t
+    //s_geometry_t
+    //steam_geo_terminals(s_terminal_name_t, s_node_t, s_commodity_t, s_con_terminal_name_t, s_unit_name_trans_t, s_unit_name_retrans_t, s_region_t, s_alternative_t, s_y_t, s_x_t, s_geometry_t) "(OL) data for transport visualization"
+    //s_terminal_name_tc
+    //s_Regions_tc
+    //s_node1_tc
+    //s_node2_tc
+    //s_alternative_tc
+    //s_geometry_tc
+    //steam_geo_terminals_con(s_terminal_name_tc, s_Regions_tc, s_node1_tc, s_node2_tc, s_alternative_tc, s_geometry_tc) "(OL) data for transport visualization"
+    //s_name_s
+    //s_origin_s
+    //s_destination_s
+    //s_alternative_s
+    //s_geometry_s
+    //steam_geo_shipping(s_name_s, s_origin_s, s_destination_s, s_alternative_s, s_geometry_s) "(OL) data for transport visualization"'
 ;
 * --- Sets to define time, forecasts and samples ------------------------------
 

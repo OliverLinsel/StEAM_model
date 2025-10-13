@@ -2,7 +2,7 @@
 #test script for slurm for general "backbone-master"
 ###########################
 ## Set up submit to ...
-#SBATCH -J co_RFNBO_OL
+#SBATCH -J t_h2bb_OL
 #SBATCH -t 0
 #SBATCH --ntasks-per-node=48
 #SBATCH -N 1
@@ -10,7 +10,7 @@
 ##SBATCH -o test-%j.out
 ###########################
 
-## Start Slurm Script command:  sbatch -w dermaschine RFNBO/bbm_complete/slurmScript_invest.sh
+## Start Slurm Script command:  sbatch -w dermaschine bridge_bonds/bbm_h2_bb_freetrade/slurmScript_invest.sh
 
 ## -J Jobname -> frei zu vergeben 
 ## -t 0 -> heißt die Zeit des laufenden Jobs - 0 unendliche Jobzeit
@@ -23,7 +23,7 @@ PATH=$PATH:/opt/gams/gams42.1_linux_x64_64_sfx
 
 ##free -mh
 ##uname -a
-cd /mnt/speicher/.wissmit/oliver/Data/Backbone/RFNBO/bbm_complete
+cd /mnt/speicher/.wissmit/oliver/Data/Backbone/h2bb/bb_22n_5p7d
 
 ##echo "...................................check CPU Speed..................................."
 ##watch -n1 "grep Hz /proc/cpuinfo" 
@@ -34,7 +34,7 @@ cd /mnt/speicher/.wissmit/oliver/Data/Backbone/RFNBO/bbm_complete
 gams Backbone.gms --input_dir=./input --input_file_gdx="inputData.gdx" --output_dir=./output --init_file=investInit.gms --debug=1 --penalty=100000
 ##echo "...................................job finished, return to conda..................................."
 ##free -mh
-cp Backbone.lst /mnt/speicher/.wissmit/oliver/Data/Backbone/RFNBO/bbm_complete/output
+cp Backbone.lst /mnt/speicher/.wissmit/oliver/Data/Backbone/h2bb/bb_22n_5p7d/output
 
 #SBATCH --mail-user=oliver.linsel@rub.de
 #SBATCH --mail-type=END,FAIL

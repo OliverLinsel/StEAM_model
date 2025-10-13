@@ -562,7 +562,8 @@ with pd.ExcelWriter(path = outputfile_BB, engine="openpyxl", mode="a", if_sheet_
     bb_dim_1_relationship_dtype_map.to_excel(writer, index=False, sheet_name="04_dim1_map")
     bb_dim_3_relationship_dtype_str.to_excel(writer, index=False, sheet_name="05_dim3")
     bb_dim_4_relationship_dtype_str.to_excel(writer, index=False, sheet_name="06_dim4")
-    bb_dim_2_relationship_dtype_map.to_excel(writer, index=False, sheet_name='07_dim2_map')
+    if m_conf.loc[m_conf['Parameter'] == 'hydro_noStorage','Value'].values[0] == 'yes':
+        bb_dim_2_relationship_dtype_map.to_excel(writer, index=False, sheet_name='07_dim2_map')
 
 print("\n" + "Backbones Hydropower data overwritten with NO STORAGE OPTION to: " + outputfile_BB + "\n")
 

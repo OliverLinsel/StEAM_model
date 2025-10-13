@@ -66,7 +66,17 @@
             "unit_fail": "unit_fail",
             "unit_ts": "unit_ts",
             "unittype": "unittype",
-            "up_down": "up_down"
+            "up_down": "up_down",
+            "steam_geo_nodes": "steam_geo_nodes",
+            "steam_geo_pipelines": "steam_geo_pipelines",
+            "steam_geo_shipping": "steam_geo_shipping",
+            "steam_geo_terminals": "steam_geo_terminals",
+            "steam_geo_terminals_con": "steam_geo_terminals_con",
+            "s_name_n": "s_node",
+            "s_name_p": "s_pipeline",
+            "s_terminal_name_t": "s_terminal",
+            "s_terminal_name_tc": "s_terminal_connection",
+            "s_name_s": "s_shipping"
         }
     }
 }

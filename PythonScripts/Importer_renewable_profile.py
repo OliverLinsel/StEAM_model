@@ -21,7 +21,6 @@ import re
 import time
 import json
 
-# %%
 ################# Options ################################################################
 
 print("Start converting renewable profiles" + "\n")
@@ -30,25 +29,25 @@ print('Execute in Directory:')
 print(os.getcwd())
 
 try:
-    path_solar                  = sys.argv[1]
-    path_wind                   = sys.argv[2]
-    path_demand                 = sys.argv[3]
+    # path_solar                  = sys.argv[1]
+    # path_wind                   = sys.argv[2]
+    # path_demand                 = sys.argv[3]
     path_MainInput              = sys.argv[4]
+    m_conf                      = pd.read_excel(path_MainInput, sheet_name="model_config")
     path_RE_invest              = sys.argv[5]
     outputfile                  = r"TEMP\Renewable_profiles.csv"
     outputfile_BB               = r"TEMP\Renewable_profiles_BB.csv"
-    path_RE_invest              = r'..\Data\Invest_Renew\Steps_5\df_profiles.csv'    # kann auch ueber sys.argv
-    m_conf                      = pd.read_excel(path_MainInput, sheet_name="model_config")
+    # path_RE_invest              = r'..\Data\Invest_Renew\Steps_5\df_profiles.csv'    # kann auch ueber sys.argv
 except:
     if str(os.getcwd()).find('PythonScripts') > -1:
         os.chdir('..')
-    path_solar                  = r'.\Data\Plexos\MESSAGEix-GLOBIOM\Input timeseries EN_NPi2020_500_pool-bi_new\CSV Files\All Nodes Solar Only Normalised.csv'
-    path_demand                 = r'.\Data\Plexos\MESSAGEix-GLOBIOM\Input timeseries EN_NPi2020_500_pool-bi_new\CSV Files\All Demand UTC 2015.csv'
+    # path_solar                  = r'.\Data\Plexos\MESSAGEix-GLOBIOM\Input timeseries EN_NPi2020_500_pool-bi_new\CSV Files\All Nodes Solar Only Normalised.csv'
+    # path_demand                 = r'.\Data\Plexos\MESSAGEix-GLOBIOM\Input timeseries EN_NPi2020_500_pool-bi_new\CSV Files\All Demand UTC 2015.csv'
     path_MainInput              = r'.\PythonScripts\TEMP\MainInput.xlsx'
+    m_conf                      = pd.read_excel(path_MainInput, sheet_name="model_config")
     path_RE_invest              = r'.\Data\Invest_Renew\Steps_5\df_profiles.csv'
     path_RE_1dim_data           = r'.\Data\Invest_Renew\Steps_5\02_dim1.csv'
     outputfile                  = r'.\PythonScripts\TEMP\Renewable_profiles.csv'
-    m_conf                      = pd.read_excel(path_MainInput, sheet_name="model_config")
     outputfile_BB               = r'.\PythonScripts\TEMP\Renewable_profiles_BB.csv'
 # %%
 ################# Options End ############################################################
@@ -57,8 +56,8 @@ START = time.perf_counter()
 
 ################# Read Data ##############################################################
 
-solar               = pd.read_csv(path_solar)                                           # XX-XXX-XX ONLY -> concatinated subset works fine
-df_demand           = pd.read_csv(path_demand)                                          # XX-XXX PLUS XX-XXX-XX -> DO NOT USE CONCATINATED subet to avoid double counting
+# solar               = pd.read_csv(path_solar)                                           # XX-XXX-XX ONLY -> concatinated subset works fine
+# df_demand           = pd.read_csv(path_demand)                                          # XX-XXX PLUS XX-XXX-XX -> DO NOT USE CONCATINATED subet to avoid double counting
 df_profiles_invest  = pd.read_csv(path_RE_invest, sep=';')                              # XX-XXX ONLY -> concatinated subset works fine (not even needed here)
 df_subset_nodes     = pd.read_excel(path_MainInput, sheet_name='subset_countries')
 
@@ -67,6 +66,12 @@ df_profiles_invest.columns = df_profiles_invest.columns.str.replace('WINDInvest'
 
 df_RE_1dim_data     = pd.read_csv(path_RE_1dim_data, sep = ';') # VRE potential used for weighing of profiles
 df_RE_1dim_data["Object_names"] = df_RE_1dim_data["Object_names"].str.replace('WINDInvest', 'Wind_OnshoreInvest').str.replace("WIND_OFFSHOREInvest", "Wind_OffshoreInvest") # ermoeglicht Zuordnun
+
+source_country_list_df = pd.DataFrame()
+source_country_list_df["Countries_short"] = df_RE_1dim_data["Object_names"].copy()
+#only take the last part of the Object_names
+source_country_list_df["Countries_short"] = source_country_list_df["Countries_short"].str.split('|').str[-1]
+source_country_list_df = source_country_list_df.drop_duplicates(subset=["Countries_short"]).reset_index(drop=True)
 
 df_main         = pd.read_excel(path_MainInput, sheet_name='model_date')
 model_start     = df_main.query('object_class_name =="backbone" and parameter_name == "model_start"')['value'].values[0]
@@ -77,6 +82,8 @@ model_config = pd.read_excel(path_MainInput, sheet_name='model_config')
 
 #read RFNBO regulation option
 RFNBO_option                       = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", "Value"].values[0] # RFNBO read value
+# read simplify_vre_profiles option
+simplify_vre_profiles_to           = int(m_conf.loc[m_conf['Parameter'] == "simplify_vre_profiles", "Value"].values[0]) # simplify VRE profiles read value
 
 #%%
 ################# Read Data End ##########################################################
@@ -162,36 +169,14 @@ print('Wind_Onshore avg. cf global new: ' + str(df_profiles_invest.loc[:,df_prof
 print('Solar avg. cf global new: ' + str(df_profiles_invest.loc[:,df_profiles_invest.columns[(df_profiles_invest.columns.str.contains('Solar'))]].mean().mean()))
 # %%
 
-list_subset_countries   = df_subset_nodes.Countries.to_list()
-if not (set(list_subset_countries).issubset(set(df_demand.columns))):                   # brauchen wir den Demand hier wirklich? ## to klaer ##
-    raise Exception('Country of subset is not present in the countries of the Plexos data')
-demand_datetimes        = pd.to_datetime(df_demand["Datetime"],dayfirst=True,format="mixed")
+df_subset_nodes["Countries_short"] = df_subset_nodes["Countries"].str.split('-').str[-1]
+list_subset_countries   = df_subset_nodes.Countries_short.to_list()
 
-nodes_solar             = [ x[-1] for x in solar.columns.str.split('|').tolist()]
+if not (set(list_subset_countries).issubset(set(source_country_list_df["Countries_short"]))):
+    error_list = set(list_subset_countries) - set(source_country_list_df["Countries_short"].tolist())
+    print('Countries not found in source: ' + str(error_list))
+    raise Exception('Country of subset ' + str(error_list) + ' is not present in the countries of the Plexos data')
 
-## Add Continent codes to the country codes from the cost potential curves
-
-continent_country_mapping = pd.DataFrame({'Plexos_code_country': nodes_solar[3:]})
-continent_country_mapping['continent']  = continent_country_mapping['Plexos_code_country'].str.split('-', n=1).str[0]
-continent_country_mapping['country']    = continent_country_mapping['Plexos_code_country'].str.split('-', n=1).str[1]
-
-#dict(continent_country_mapping['country'], continent_country_mapping['Plexos_code_country'])
-replace_dict = dict(zip(continent_country_mapping['country'].str[:3], continent_country_mapping['Plexos_code_country'].str[:6]))
-
-df_profiles_invest_2 = df_profiles_invest.copy()
-
-
-def replace_last_part(s,substring,replacement ):
-    parts = s.split('|')
-    if parts[-1] ==substring:
-        parts[-1] = replacement
-    return '|'.join(parts)
-
-# Replace substrings in the DataFrame from countries to regions
-for substring, replacement in replace_dict.items():
-     df_profiles_invest_2.columns = df_profiles_invest_2.columns.map(lambda x: replace_last_part(x,substring = substring, replacement=replacement ))
-
-renew_agg_subset= pd.concat([df_profiles_invest_2], axis = 1)
 
 # %% aggregate to regions
 #########################################################################################################
@@ -199,36 +184,31 @@ renew_agg_subset= pd.concat([df_profiles_invest_2], axis = 1)
 # hier Leistungspotenzial gewaehlt (maximal zubaubare Kapazitaet -> candidate_units)
 #########################################################################################################
 
-# %%
-renew_agg = (renew_agg_subset
+renew_agg_subset = df_profiles_invest.copy()
+renew_agg = (renew_agg_subset.T.reset_index(names='Units'))
 
-             .T
-             .reset_index(names='Units')
-)
-
+#deconstructing unit names
 renew_agg['Countries'] = renew_agg['Units'].astype(str).str.split('|',expand=True)[2]
-
-# Remove the node part in the last of the sequence after split by |
 renew_agg['unit'] = renew_agg['Units'].str.split('|', expand=True).iloc[:, :-1].apply('|'.join, axis=1)
 
-renew_agg = renew_agg.merge(df_subset_nodes, how='left', on='Countries')
-renew_agg['Units'] = renew_agg['unit'] + "|" + renew_agg['Regions']
-
-### weighted aggregation by each countries VRE potential ###
+renew_agg = renew_agg.merge(df_subset_nodes[["Countries_short", "Regions"]], how='left', left_on='Countries', right_on='Countries_short')
 
 # VRE potential
 df_candidate_units = df_RE_1dim_data[df_RE_1dim_data['Parameter_name'] == 'candidate_units']
-#df_candidate_units['Object_names'] = df_candidate_units['Object_names'].str.replace('WINDInvest', 'Wind_OnshoreInvest').str.replace("WIND_OFFSHORE", "Wind_Offshore") 
+df_candidate_units = df_candidate_units.rename(columns={'Object_names':'Units'})
+# Add VRE potential
+renew_agg = renew_agg.merge(df_candidate_units[['Units','Parameter_value']]).rename(columns={'Parameter_value':'potential_GW'})
 
-# rename for merge
-renew_agg['Object_names'] = renew_agg['unit'] + '|' + renew_agg['Countries'].str[-3:]
-renew_agg = renew_agg.merge(df_candidate_units[['Object_names','Paramter_value']]).rename(columns={'Paramter_value':'potential_GW'})
+renew_agg['Units'] = renew_agg['unit'] + "|" + renew_agg['Regions']
+
+#drop unnecessary rows where Units is NaN
+renew_agg = renew_agg[renew_agg['Units'].notna()]
 
 ## if you wanna compare to non weighted profiles do steps 1 - 3 commented below ##
 # weigh capacity profiles by country potential (multiply)
 renew_agg.loc[:,0:8759] = (renew_agg.loc[:,0:8759].T * renew_agg.loc[:,'potential_GW']).T   # step1: for non weighted profiles comment this out
 
-# aggregation
+# # aggregation
 renew_agg = renew_agg.drop(['Countries','Regions','unit'], axis = 1)
 
 agg_dict = dict(zip(range(8760), 8760*['sum']))                                             # step2: for non weighted profiles change this from 'sum' to 'mean'
@@ -240,28 +220,58 @@ renew_agg.index.name = ''
 # normalize capacity profiles by regional potential (divide)
 renew_agg.loc[:,0:8759] = (renew_agg.loc[:,0:8759].T / renew_agg.loc[:,'potential_GW']).T   # step3: for non weighted profiles comment this out
 
-df_combined        = pd.concat([pd.DataFrame(demand_datetimes),renew_agg.T], axis = 1 )
+#%%
+##################### Reduce VRE Steps to X ##########################
 
-# %%
-################# Write File #############################################################
+#determine existing number of steps
+renew_agg["Object_names"] = renew_agg.index
+renew_agg["Countries"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[2]
+renew_agg["Flow"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[1]
+renew_agg["Commodity"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[0]
+#delete the last number in Flow
+renew_agg["Flow"] = renew_agg["Flow"].str.replace(r'\d+$', '', regex=True)
+#get number X after InvestX im Step String
+renew_agg["Step"] = renew_agg["Object_names"].astype(str).str.extract('(\d+)').astype(int)
+initial_steps = len(renew_agg["Step"].unique())
 
-df_combined.to_csv(outputfile, header=True, index=False)
+#calculate total potential_GW for each Country and Flow combination and fill in renew_agg["Total Potential GW"]
+renew_agg["Total Potential GW"] = renew_agg.groupby(['Countries', 'Flow'])['potential_GW'].transform('sum')
+renew_agg["Share of Total GW"] = renew_agg["potential_GW"] / renew_agg["Total Potential GW"]
 
-#########################################################################################
-#convert to BB format
-df_bb = df_combined.drop(columns='Datetime').T
-df_bb = df_bb.rename(columns=dict(zip(range(0,8760),'t' + pd.Series(range(1,8761)).astype(str).str.zfill(6)))).reset_index().rename(columns={'index':'flow'})
-df_bb.insert(loc=1, column='node', value=df_bb['flow'].astype(str).str.split('|',expand=True)[2] + '_el')
-df_bb['flow'] = df_bb['flow'].astype(str).str.split('|',expand=True)[0] + '|' + df_bb['flow'].astype(str).str.split('|',expand=True)[1]
-df_bb.insert(loc=2, column='alternative', value='Base')
-df_bb.insert(loc=3, column='forecast_index', value='f00')
+#build weighted sum for all timeseries and flows SUM(Share of Total GW * potential_GW) for each Country and Flow
+renew_agg.loc[:, 0:8759] = renew_agg.loc[:, 0:8759].multiply(renew_agg["Share of Total GW"], axis=0)
+#aggregate for each Country and Flow
+renew_agg = renew_agg.groupby(['Countries', 'Flow', "Commodity"]).sum().reset_index()
 
-df_bb = df_bb.fillna(0)
+renew_agg.index = renew_agg["Commodity"] + "|" + renew_agg["Flow"] + "|" + renew_agg["Countries"]
+renew_agg = renew_agg.drop(columns=["Object_names", "Step", "Total Potential GW", "Share of Total GW", "Countries", "Flow", "Commodity"])
 
-df_bb_subset = pd.concat([df_bb.iloc[:,0:4] ,df_bb.iloc[:, np.arange(model_start+3, model_start+model_duration+3) ]], axis = 1)   
-id_columns = df_bb_subset.iloc[:,0:4].columns.to_list()
-value_columns = df_bb_subset.iloc[:, np.arange(model_start+3, model_start+model_duration+3) ].columns.to_list() 
-df_bb_subset = df_bb_subset.melt(id_vars=id_columns,value_vars=value_columns, var_name='time_step')
+#%%
+##################### Convert to BB format ##########################
+
+if simplify_vre_profiles_to == 1:
+    df_bb = renew_agg
+    #drop row with index potential_GW
+    df_bb = df_bb.drop('potential_GW', axis=1)
+    #translate index to column Units and reset
+    df_bb = df_bb.rename_axis('Units').reset_index()
+    #split Units in flow and node
+    df_bb['flow'] = df_bb['Units'].astype(str).str.split('|', expand=True)[0] + '|' + df_bb['Units'].astype(str).str.split('|', expand=True)[1]
+    df_bb['node'] = df_bb['Units'].astype(str).str.split('|', expand=True)[2] + '_el'
+    df_bb["alternative"] = "Base"
+    df_bb["forecast_index"] = "f00"
+    df_bb["time_step"] = df_bb.index
+
+    df_bb = df_bb.fillna(0)
+
+    df_bb_melt = df_bb.melt(id_vars=['flow', 'node', 'alternative', 'forecast_index'], value_vars=list(range(0, 8760)), var_name='time_step')
+    df_bb_melt['time_step'] = df_bb_melt['time_step'].apply(lambda x: f"t{int(x):06d}")
+
+    #set values <0 to 0
+    df_bb_melt.loc[df_bb_melt['value'] < 0, 'value'] = 0
+    #reorder columns to flow, node, alternative, forecast_index, time_step
+    df_bb_melt = df_bb_melt[['flow', 'node', 'alternative', 'forecast_index', 'time_step', 'value']]
+    df_bb_subset = df_bb_melt.copy()
 
 #### Adding the constraints for the Delegated Act for RFNBOs ####
 
@@ -314,8 +324,10 @@ if RFNBO_option == "All_at_once":
     df_bb_subset_isl_re["node"] = df_bb_subset_isl_re["node"].str.replace('_el','_isl_re_el')
     df_bb_subset = pd.concat([df_bb_subset_re, df_bb_subset_isl_re], axis = 0) #df_bb_subset
 
+###################### Write File ##############################
 df_bb_subset = df_bb_subset.loc[df_bb_subset['alternative'].isin(scenarios['alternative']),:]
 df_bb_subset.to_csv(outputfile_BB, mode = 'w', header=True, index=False,float_format='%.2f')
+
 #%%
 
 # %% Format for importer

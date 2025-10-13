@@ -3691,7 +3691,7 @@
                     "header": "s_shipping_route"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -3710,7 +3710,7 @@
                     "header": "s_shipping_index"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -3729,7 +3729,7 @@
                     "header": "s_regional_WACC_avg"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -3748,7 +3748,7 @@
                     "header": "s_y_latitude"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -3767,7 +3767,7 @@
                     "header": "s_x_longitude"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -3824,7 +3824,7 @@
                     "header": "s_terminals"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -3943,7 +3943,7 @@
                     "header": "s_y_latitude"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -4060,7 +4060,7 @@
                     "header": "s_regions"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -4168,7 +4168,7 @@
                     "header": "s_shipping_index"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "always_export_header": true,
             "group_fn": "no_group",
             "use_fixed_table_name": false
@@ -4202,6 +4202,684 @@
                     "map_type": "RelationshipObject",
                     "position": 1,
                     "header": "s_regional_WACC_avg"
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "steam_geo_nodes": {
+            "type": "relationships",
+            "mapping": [
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "table_name",
+                    "filter_re": "^steam_geo_nodes$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0,
+                    "header": "s_regions_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1,
+                    "header": "s_alternative_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2,
+                    "header": "s_commodity_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 3,
+                    "header": "s_x_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 4,
+                    "header": "s_y_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 5,
+                    "header": "s_geometry_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 6,
+                    "header": "s_list_of_countries_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 7,
+                    "header": "s_WACC_n"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 8,
+                    "header": "s_regional_WACC_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "steam_geo_pipelines": {
+            "type": "relationships",
+            "mapping": [
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "table_name",
+                    "filter_re": "^steam_geo_pipelines$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0,
+                    "header": "s_name_p"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1,
+                    "header": "s_h2_node1_p"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2,
+                    "header": "s_h2_node2_p"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 3,
+                    "header": "s_commodity_p"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 4,
+                    "header": "s_alternative_p"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 5,
+                    "header": "s_geometry_p"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 6,
+                    "header": "s_length_p"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "steam_geo_terminals_con": {
+            "type": "relationships",
+            "mapping": [
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "table_name",
+                    "filter_re": "^steam_geo_terminals_con$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0,
+                    "header": "s_terminal_name_tc"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1,
+                    "header": "s_Regions_tc"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2,
+                    "header": "s_node1_tc"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 3,
+                    "header": "s_node2_tc"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 4,
+                    "header": "s_alternative_tc"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 5,
+                    "header": "s_geometry_tc"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 6,
+                    "header": "s_length_tc"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "steam_geo_terminals": {
+            "type": "relationships",
+            "mapping": [
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "table_name",
+                    "filter_re": "^steam_geo_terminals$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0,
+                    "header": "s_terminal_name_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1,
+                    "header": "s_node_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2,
+                    "header": "s_commodity_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 3,
+                    "header": "s_con_terminal_name_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 4,
+                    "header": "s_unit_name_trans_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 5,
+                    "header": "s_unit_name_retrans_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 6,
+                    "header": "s_region_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 7,
+                    "header": "s_alternative_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 8,
+                    "header": "s_y_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 9,
+                    "header": "s_x_t"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 10,
+                    "header": "s_geometry_t"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "steam_geo_shipping": {
+            "type": "relationships",
+            "mapping": [
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "table_name",
+                    "filter_re": "^steam_geo_shipping$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0,
+                    "header": "s_name_s"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1,
+                    "header": "s_origin_s"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2,
+                    "header": "s_destination_s"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 3,
+                    "header": "s_alternative_s"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 4,
+                    "header": "s_geometry_s"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 5,
+                    "header": "s_length_s"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_regions_n": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_regions_n$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_regions_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_alternative_n": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_alternative_n$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_alternative_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_x_n": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_x_n$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_x_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_y_n": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_y_n$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_y_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_geometry_n": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_geometry_n$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_geometry_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_list_of_countrycodes_n": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_list_of_countrycodes_n$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_list_of_countrycodes_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_WACC_n": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_WACC_n$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_WACC_n"
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_node": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_node$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_node"
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_terminal": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_terminal$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_terminal"
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_shipping": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_shipping$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_shipping"
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_terminal_connection": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_terminal_connection$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_terminal_connection"
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "s_pipeline": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^s_pipeline$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0,
+                    "header": "s_pipeline"
                 }
             ],
             "enabled": true,

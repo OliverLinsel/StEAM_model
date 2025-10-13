@@ -280,29 +280,64 @@ $ifthen.fileExists exist '%input_dir%/%input_file_debugGdx%'
     $$loaddcm p_roundingTs
     $$loaddcm p_roundingParam
     $$loaddcm node_superpos
-    
     $$loaddcm s_countries
     $$loaddcm s_regions
-    $$loaddcm s_terminals
     $$loaddcm steam_subset_countries
     $$loaddcm s_scenario
     $$loaddcm s_alternative
     $$loaddcm steam_scenarioAlternative
-    $$loaddcm s_x_longitude
-    $$loaddcm s_y_latitude
     $$loaddcm s_regional_WACC_avg
-    $$loaddcm steam_coordinates_regions
     $$loaddcm steam_WACC
-    $$loaddcm steam_coordinates_terminals
-    $$loaddcm s_shipping_index
-    $$loaddcm s_shipping_route
-    $$loaddcm steam_coordinates_shipping
     $$loaddcm s_config_parameter
     $$loaddcm s_config_object
     $$loaddcm s_config_value
     $$loaddcm s_config_alternative
     $$loaddcm s_config_info
     $$loaddcm steam_model_config
+    $$loaddcm s_node
+    $$loaddcm s_terminal
+    $$loaddcm s_shipping
+    $$loaddcm s_terminal
+    $$loaddcm s_terminal_connection
+    //$$loaddcm s_regions_n
+    //$$loaddcm s_alternative_n
+    //$$loaddcm s_x_n
+    //$$loaddcm s_y_n
+    //$$loaddcm s_geometry_n
+    //$$loaddcm s_list_of_countries_n
+    //$$loaddcm s_WACC_n
+    //$$loaddcm steam_geo_nodes
+    //$$loaddcm s_h2_node1_p
+    //$$loaddcm s_h2_node2_p
+    //$$loaddcm s_commodity_p
+    //$$loaddcm s_alternative_p
+    //$$loaddcm s_geometry_p
+    //$$loaddcm steam_geo_pipelines
+    //$$loaddcm s_terminal_name_t
+    //$$loaddcm s_node_t
+    //$$loaddcm s_commodity_t
+    //$$loaddcm s_con_terminal_name_t
+    //$$loaddcm s_unit_name_trans_t
+    //$$loaddcm s_unit_name_retrans_t
+    //$$loaddcm s_region_t
+    //$$loaddcm s_alternative_t
+    //$$loaddcm s_y_t
+    //$$loaddcm s_x_t
+    //$$loaddcm s_geometry_t
+    //$$loaddcm steam_geo_terminals
+    //$$loaddcm s_terminal_name_tc
+    //$$loaddcm s_Regions_tc
+    //$$loaddcm s_node1_tc
+    //$$loaddcm s_node2_tc
+    //$$loaddcm s_alternative_tc
+    //$$loaddcm s_geometry_tc
+    //$$loaddcm steam_geo_terminals_con
+    //$$loaddcm s_name_s
+    //$$loaddcm s_origin_s
+    //$$loaddcm s_destination_s
+    //$$loaddcm s_alternative_s
+    //$$loaddcm s_geometry_s
+    //$$loaddcm steam_geo_shipping
     
     $$gdxin
 $endif.debugGdx_v39

@@ -1,4 +1,4 @@
-Chemical (Basic);[Cracker,Regasification,HaberBosch,Liquefaction,NH3|Capacity]
+Chemical (Basic);[Cracker,Regasification,HaberBosch,Liquefaction,NH3|Capacity, SMR, SMR_CSS]
 Coal & Related Energy;[Coal,Gas|CCGT,Gas|OCGT,H2|OCGT,Oil]
 Electronics (General);[H2|FuelCell,Electrolyzer,Bat|Discharge,Bat|Capacity,Bat|Charge]
 Green & Renewable Energy;[Biomass,Solar|PVInvest,Wind|WIND_OFFSHOREInvest,Wind|WIND_ONSHOREInvest]

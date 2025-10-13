@@ -50,7 +50,7 @@ try:
     path_WACC_Update                    = sys.argv[6]
     outputfile                          = 'TEMP/transport_objects.xlsx'
     outputfile_BB                       = 'TEMP/transport_objects_BB.xlsx'
-    visualisation_output                = '../Pythonscripts/TEMP/Visualisation/'
+    output_path                         = '../Pythonscripts/TEMP/'
     world                               = gpd.read_file(os.path.join("..", "Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
 except: 
     #use if run in Python environment
@@ -69,7 +69,7 @@ except:
     path_WACC_Update                    = r".\PythonScripts\TEMP\weighted_WACC_final.csv"
     outputfile                          = 'Pythonscripts/TEMP/transport_objects.xlsx'
     outputfile_BB                       = 'Pythonscripts/TEMP/transport_objects_BB.xlsx'
-    visualisation_output                = 'Pythonscripts/TEMP/Visualisation/'
+    output_path                         = 'Pythonscripts/TEMP/'
     world                               = gpd.read_file(os.path.join("Data", "Transport", "data_input", "naturalearthdata", "ne_110m_admin_0_countries.shp")) #read the world regions shapefile
 
 subset_countries                    = pd.read_excel(path_Main_Input, sheet_name='subset_countries').rename(columns={'Countries':'name'})
@@ -109,7 +109,7 @@ RFNBO_option                       = m_conf.loc[m_conf['Parameter'] == "RFNBO_op
 
 print("Alternative: " + str(default_alternative) + "\n")
 initial_cap = 0
-exclude_countries = 1   #if this is enabled Belarus and Russia are disconnected from the transport grid (which is probably a good idea all things considered)
+exclude_countries = 0   #if this is enabled Belarus and Russia are disconnected from the transport grid (which is probably a good idea all things considered)
 
 con_flow_cost = 2           #connection flow costs
 node_slack_pen              = 10**6             #slack penalty cost
@@ -1146,6 +1146,11 @@ new_nodes = (
         how='left')
 )
 
+#cleanup new_nodes
+nodes = new_nodes[["Regions", "alternative", "x", "y", "geometry", "list_of_countrycodes", "WACC"]]
+terminals = terminals[["terminal_name", "node", "commodity", "con_terminal_name", "unit_name_trans", "unit_name_retrans", "region", "alternative", "y", "x", "geometry"]]
+pipelines = h2_pipelines[["name", "h2_node1", "h2_node2", "commodity", "alternative", "geometry"]]
+
 if q == 0:
     # add the shipping lines in form of multiple points instead of one long linestring for further processing in Backbone 
     shipping_coords = total_shipping[['origin','destination','geometry']].copy()
@@ -1161,18 +1166,21 @@ if q == 0:
         index_inside_shipping_routes = pd.concat([index_inside_shipping_routes, pd.Series(range(number_of_points))], ignore_index=True, axis=0)
     shipping_coords = pd.concat([shipping_coords, index_inside_shipping_routes], ignore_index=True, axis=1)
 
+    con_line = con_line[["terminal_name", "Regions", "node1", "node2", "alternative", "geometry"]]
+    total_shipping = total_shipping[["name", "origin", "destination", "alternative", "commodity", "geometry"]].rename(columns={"length_km": "length"})
+
 ############### Export dataframes for visualisation tool ###############
 
-with pd.ExcelWriter(os.path.join(visualisation_output, "transport_visualisation.xlsx")) as writer:
+with pd.ExcelWriter(os.path.join(output_path, "transport_visualisation.xlsx")) as writer:
 
-    new_nodes.to_excel(writer, sheet_name="nodes", index=False)
+    nodes.to_excel(writer, sheet_name="nodes", index=False)
     terminals.to_excel(writer, sheet_name="terminals", index=False)
-    h2_pipelines.to_excel(writer, sheet_name="pipelines", index=False)
+    pipelines.to_excel(writer, sheet_name="pipelines", index=False)
     if q == 0:
         con_line.to_excel(writer, sheet_name="terminal_connections", index=False)
         total_shipping.astype(str).to_excel(writer, sheet_name="shipping", index=False)
 
-print("Succesfully exported data for visualisation tool to " + str(os.path.join(visualisation_output)) + "\n")
+print("Succesfully exported data for visualisation tool to " + str(os.path.join(output_path, "transport_visualisation.xlsx")) + "\n")
 
 STOP = time.perf_counter()
 print('Total execution time of script',round((STOP-START), 1), 's')
