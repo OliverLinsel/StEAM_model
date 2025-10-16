@@ -223,55 +223,56 @@ renew_agg.loc[:,0:8759] = (renew_agg.loc[:,0:8759].T / renew_agg.loc[:,'potentia
 #%%
 ##################### Reduce VRE Steps to X ##########################
 
-#determine existing number of steps
-renew_agg["Object_names"] = renew_agg.index
-renew_agg["Countries"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[2]
-renew_agg["Flow"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[1]
-renew_agg["Commodity"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[0]
-#delete the last number in Flow
-renew_agg["Flow"] = renew_agg["Flow"].str.replace(r'\d+$', '', regex=True)
-#get number X after InvestX im Step String
-renew_agg["Step"] = renew_agg["Object_names"].astype(str).str.extract('(\d+)').astype(int)
-initial_steps = len(renew_agg["Step"].unique())
+#only execute if the simplification for vre profiles is enabled in the model_config
+if simplify_vre_profiles_to == 1:
+    #determine existing number of steps
+    renew_agg["Object_names"] = renew_agg.index
+    renew_agg["Countries"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[2]
+    renew_agg["Flow"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[1]
+    renew_agg["Commodity"] = renew_agg["Object_names"].astype(str).str.split('|', expand=True)[0]
+    #delete the last number in Flow
+    renew_agg["Flow"] = renew_agg["Flow"].str.replace(r'\d+$', '', regex=True)
+    #get number X after InvestX im Step String
+    renew_agg["Step"] = renew_agg["Object_names"].astype(str).str.extract('(\d+)').astype(int)
+    initial_steps = len(renew_agg["Step"].unique())
 
-#calculate total potential_GW for each Country and Flow combination and fill in renew_agg["Total Potential GW"]
-renew_agg["Total Potential GW"] = renew_agg.groupby(['Countries', 'Flow'])['potential_GW'].transform('sum')
-renew_agg["Share of Total GW"] = renew_agg["potential_GW"] / renew_agg["Total Potential GW"]
+    #calculate total potential_GW for each Country and Flow combination and fill in renew_agg["Total Potential GW"]
+    renew_agg["Total Potential GW"] = renew_agg.groupby(['Countries', 'Flow'])['potential_GW'].transform('sum')
+    renew_agg["Share of Total GW"] = renew_agg["potential_GW"] / renew_agg["Total Potential GW"]
 
-#build weighted sum for all timeseries and flows SUM(Share of Total GW * potential_GW) for each Country and Flow
-renew_agg.loc[:, 0:8759] = renew_agg.loc[:, 0:8759].multiply(renew_agg["Share of Total GW"], axis=0)
-#aggregate for each Country and Flow
-renew_agg = renew_agg.groupby(['Countries', 'Flow', "Commodity"]).sum().reset_index()
+    #build weighted sum for all timeseries and flows SUM(Share of Total GW * potential_GW) for each Country and Flow
+    renew_agg.loc[:, 0:8759] = renew_agg.loc[:, 0:8759].multiply(renew_agg["Share of Total GW"], axis=0)
+    #aggregate for each Country and Flow
+    renew_agg = renew_agg.groupby(['Countries', 'Flow', "Commodity"]).sum().reset_index()
 
-renew_agg.index = renew_agg["Commodity"] + "|" + renew_agg["Flow"] + "|" + renew_agg["Countries"]
-renew_agg = renew_agg.drop(columns=["Object_names", "Step", "Total Potential GW", "Share of Total GW", "Countries", "Flow", "Commodity"])
+    renew_agg.index = renew_agg["Commodity"] + "|" + renew_agg["Flow"] + "|" + renew_agg["Countries"]
+    renew_agg = renew_agg.drop(columns=["Object_names", "Step", "Total Potential GW", "Share of Total GW", "Countries", "Flow", "Commodity"])
 
 #%%
 ##################### Convert to BB format ##########################
 
-if simplify_vre_profiles_to == 1:
-    df_bb = renew_agg
-    #drop row with index potential_GW
-    df_bb = df_bb.drop('potential_GW', axis=1)
-    #translate index to column Units and reset
-    df_bb = df_bb.rename_axis('Units').reset_index()
-    #split Units in flow and node
-    df_bb['flow'] = df_bb['Units'].astype(str).str.split('|', expand=True)[0] + '|' + df_bb['Units'].astype(str).str.split('|', expand=True)[1]
-    df_bb['node'] = df_bb['Units'].astype(str).str.split('|', expand=True)[2] + '_el'
-    df_bb["alternative"] = "Base"
-    df_bb["forecast_index"] = "f00"
-    df_bb["time_step"] = df_bb.index
+df_bb = renew_agg
+#drop row with index potential_GW
+df_bb = df_bb.drop('potential_GW', axis=1)
+#translate index to column Units and reset
+df_bb = df_bb.rename_axis('Units').reset_index()
+#split Units in flow and node
+df_bb['flow'] = df_bb['Units'].astype(str).str.split('|', expand=True)[0] + '|' + df_bb['Units'].astype(str).str.split('|', expand=True)[1]
+df_bb['node'] = df_bb['Units'].astype(str).str.split('|', expand=True)[2] + '_el'
+df_bb["alternative"] = "Base"
+df_bb["forecast_index"] = "f00"
+df_bb["time_step"] = df_bb.index
 
-    df_bb = df_bb.fillna(0)
+df_bb = df_bb.fillna(0)
 
-    df_bb_melt = df_bb.melt(id_vars=['flow', 'node', 'alternative', 'forecast_index'], value_vars=list(range(0, 8760)), var_name='time_step')
-    df_bb_melt['time_step'] = df_bb_melt['time_step'].apply(lambda x: f"t{int(x):06d}")
+df_bb_melt = df_bb.melt(id_vars=['flow', 'node', 'alternative', 'forecast_index'], value_vars=list(range(0, 8760)), var_name='time_step')
+df_bb_melt['time_step'] = df_bb_melt['time_step'].apply(lambda x: f"t{int(x):06d}")
 
-    #set values <0 to 0
-    df_bb_melt.loc[df_bb_melt['value'] < 0, 'value'] = 0
-    #reorder columns to flow, node, alternative, forecast_index, time_step
-    df_bb_melt = df_bb_melt[['flow', 'node', 'alternative', 'forecast_index', 'time_step', 'value']]
-    df_bb_subset = df_bb_melt.copy()
+#set values <0 to 0
+df_bb_melt.loc[df_bb_melt['value'] < 0, 'value'] = 0
+#reorder columns to flow, node, alternative, forecast_index, time_step
+df_bb_melt = df_bb_melt[['flow', 'node', 'alternative', 'forecast_index', 'time_step', 'value']]
+df_bb_subset = df_bb_melt.copy()
 
 #### Adding the constraints for the Delegated Act for RFNBOs ####
 
