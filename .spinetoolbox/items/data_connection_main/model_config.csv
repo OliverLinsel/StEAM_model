@@ -20,7 +20,7 @@ capacityMargin_h2;Investable Units;0;Base;Capacity margin used in invest mode (M
 availabilityCapacityMargin;Investable Units;0;Base;Availability of the unit in the capacity margin equation (p.u.). If zero, v_gen is used. Currently used only for output capacity
 unit_investment_cost;Investable Units;800000000;Base;EUR/(a*Subunit)
 eps;All;0.0001;Base;Small number to immitate near zero (because of Backbone)
-RFNBO_option;All;Vanilla;Base;Choose from Vanilla, No_reg, Island_Grids, Defossilized_Grid_prerun, Defossilized_Grid, Add_and_Corr and All_at_once
+RFNBO_option;All;No_reg;Base;Choose from Vanilla, No_reg, Island_Grids, Defossilized_Grid_prerun, Defossilized_Grid, Add_and_Corr and All_at_once
 Cap_Lim_option;All;Vanilla;Base;Choose from Vanilla, Base_case, Cap_lim, Kickstart
 ts_cf_fix;All;specific_scaling;Base;Choose from specific_scaling, flat_scaling
 hydro_noStorage;Hydro;yes;Base;Choose yes or no
@@ -29,6 +29,8 @@ cross_border_transmission_cap;Investable electricity connections;5000;Base;Maxim
 blue_hydrogen;All;0;Base;Binary parameter (1 or 0) to enable/disable blue hydrogen in the model
 grey_hydrogen;All;0;Base;Binary parameter (1 or 0) to enable/disable grey hydrogen in the model
 simplify_vre_profiles;VRE;0;Base;Binary parameter (1 or 0) to reduce the number of VRE profiles per technology from 5 to 1
+use_mga;All;0;Base;Binary parameter (1 or 0) to enable/disable modelling to generate alternatives
+mga_margin;All;0.01;Base;mga margin of optimal result (0 to 1)
 emission_factor;Coal;0.35;Base;tCO2/MWh
 emission_factor;Gas;0.2;Base;tCO2/MWh
 emission_factor;Gas_CC;0.02;Base;tCO2/MWh 90% Capturing rate

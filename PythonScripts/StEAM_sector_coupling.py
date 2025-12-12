@@ -86,6 +86,9 @@ eps                         = float(m_conf.loc[m_conf['Parameter'] == "eps", "Va
 RFNBO_option                = m_conf.loc[m_conf['Parameter'] == "RFNBO_option", "Value"].values[0] # RFNBO read value
 #read capacityMargin
 availabilityCapacityMargin              = m_conf.loc[m_conf['Parameter'] == "availabilityCapacityMargin", "Value"].values[0] # capacityMargin read value
+# mga settings
+use_mga = int(m_conf.loc[m_conf['Parameter'] == "use_mga", "Value"].values[0])  # Binary parameter (1 or 0) to enable/disable modelling to generate alternatives
+mga_margin = float(m_conf.loc[m_conf['Parameter'] == "mga_margin", "Value"].values[0])  # mga margin of optimal result (0 to 1)
 
 print("Alternative: " + str(alternative) + "\n")
 
@@ -643,9 +646,56 @@ h2_units_concat_4D_BB.loc[
     (h2_units_concat_4D_BB['Object names 4'] == 'output'),
     'Parameter values'] = eps
 
-#%%
-#######################################################################
+#### introduce MGA ####
 
+if use_mga == 1:
+    groups = ['reelectrification_group', 'electrolyzer_group']
+
+    # dim1: define group weights
+    bb_dim_1_p_groupPolicy_MGA = pd.DataFrame(
+        {'Object class names':'group',
+        'Object names':groups,
+        'Parameter names':'generationWeight_MGA',
+        'Alternative names':'Base',
+        'Parameter values':[0,0]}
+    )
+
+    h2_units_concat_1D_BB = pd.concat([
+            h2_units_concat_1D_BB,
+            bb_dim_1_p_groupPolicy_MGA],
+        ignore_index=True)
+
+    # dim2: relate units to groups
+    bb_dim_2_uGroup_reelectrification = pd.DataFrame(
+        {'Relationship class names':'unit__group',
+        'Object class names 1':'unit',
+        'Object class names 2':'group',
+        'Object names 1':list(
+            h2_units_concat_4D_BB.loc[h2_units_concat_4D_BB['Object names 3'].str.contains(regex_reelec),'Object names 3']
+                .unique()
+                ),
+        'Object names 2':groups[0]}
+    )
+
+    bb_dim_2_uGroup_electrolyzer = pd.DataFrame(
+        {'Relationship class names':'unit__group',
+        'Object class names 1':'unit',
+        'Object class names 2':'group',
+        'Object names 1':list(
+            h2_units_concat_4D_BB.loc[h2_units_concat_4D_BB['Object names 3'].str.contains('Electrolyzer'),'Object names 3']
+                .unique()
+                ),
+        'Object names 2':groups[1]}
+    )
+
+    h2_units_concat_2D_BB = pd.concat([
+            h2_units_concat_2D_BB,
+            bb_dim_2_uGroup_reelectrification,
+            bb_dim_2_uGroup_electrolyzer],
+        ignore_index=True)
+
+
+#%%
 #### Adding the constraints for the Delegated Act for RFNBOs ####
 
 if RFNBO_option == "Vanilla":

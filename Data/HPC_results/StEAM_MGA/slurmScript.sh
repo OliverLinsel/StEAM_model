@@ -2,7 +2,7 @@
 #test script for slurm for general "backbone-master"
 ###########################
 ## Set up submit to ...
-#SBATCH -J mga_test_OL
+#SBATCH -J 0_mga_OL
 #SBATCH -t 0
 #SBATCH --ntasks-per-node=48
 #SBATCH -N 1
@@ -10,7 +10,7 @@
 ##SBATCH -o test-%j.out
 ###########################
 
-## Start Slurm Script command:  sbatch -w dermaschine Data/Backbone/steam_mga/slurmScript_invest.sh
+## Start Slurm Script command:  sbatch -w dermaschine bridge_bonds/bbm_h2_bb_freetrade/slurmScript_invest.sh
 
 ## -J Jobname -> frei zu vergeben 
 ## -t 0 -> heißt die Zeit des laufenden Jobs - 0 unendliche Jobzeit
@@ -23,7 +23,7 @@ PATH=$PATH:/opt/gams/gams42.1_linux_x64_64_sfx
 
 ##free -mh
 ##uname -a
-cd /mnt/speicher/.wissmit/oliver/Data/Backbone/steam_mga
+cd /mnt/speicher/studis/steam/backbone-master
 
 ##echo "...................................check CPU Speed..................................."
 ##watch -n1 "grep Hz /proc/cpuinfo" 
@@ -34,7 +34,7 @@ cd /mnt/speicher/.wissmit/oliver/Data/Backbone/steam_mga
 gams Backbone.gms --input_dir=./input --input_file_gdx="inputData.gdx" --output_dir=./output --init_file=investInit.gms --debug=1 --penalty=100000
 ##echo "...................................job finished, return to conda..................................."
 ##free -mh
-cp Backbone.lst /mnt/speicher/.wissmit/oliver/Data/Backbone/steam_mga
+cp Backbone.lst /mnt/speicher/studis/steam/backbone-master/output
 
 #SBATCH --mail-user=oliver.linsel@rub.de
 #SBATCH --mail-type=END,FAIL

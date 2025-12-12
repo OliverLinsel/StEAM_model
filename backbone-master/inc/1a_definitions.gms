@@ -476,6 +476,8 @@ param_policy "Set of possible data parameters for groups or grid, node, regulati
     down            "Downward direction, e.g. for reserve provisions"
     usePrice        "A flag to decide if market link is added to reserve balance equation (empty or 1). Default = 0."
     userConstraintRHS  "Timeseries format RHS parameter for user defined generic constraints"
+    generationWeight_MGA "Weights for unit groups to be used in generation (capacity) objective for MGA"
+    capacityWeight_MGA "Weights for unit groups to be used in generation (capacity) objective for MGA"
 /
 
 param_userconstraint "Set of names used with user constraints" /
